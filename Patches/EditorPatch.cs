@@ -44,6 +44,19 @@ namespace LotsOfItems.Patches
 				__instance.toolCats.Find(x => x.name == "items").tools.Add(new ItemTool(tool.Key));
 		}
 
+		[HarmonyPatch(typeof(LotOfItemsPlugin), "PostLoad")]
+		[HarmonyPostfix]
+		static void LevelEditorChangesHere()
+		{
+			string[] files = Directory.GetFiles(Path.Combine(LotOfItemsPlugin.ModPath, "EditorUI"));
+			for (int i = 0; i < files.Length; i++)
+				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
+
+			foreach (var item in itemsToAdd)
+				BaldiLevelEditorPlugin.itemObjects.Add(item.Key, item.Value);
+			
+		}
+
 		readonly internal static Dictionary<string, ItemObject> itemsToAdd = [];
 
 		
@@ -58,15 +71,8 @@ namespace LotsOfItems.Patches
 		[HarmonyPatch(typeof(LotOfItemsPlugin), "PostLoad")]
 		static void AddMyItems()
 		{
-			string[] files = Directory.GetFiles(Path.Combine(LotOfItemsPlugin.ModPath, "EditorUI"));
-			for (int i = 0; i < files.Length; i++)
-				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
-
 			foreach (var item in EditorPatch.itemsToAdd)
-			{
-				BaldiLevelEditorPlugin.itemObjects.Add(item.Key, item.Value);
 				PlusLevelLoaderPlugin.Instance.itemObjects.Add(item.Key, item.Value);
-			}
 		}
 	}
 }

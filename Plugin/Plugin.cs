@@ -47,6 +47,7 @@ namespace LotsOfItems.Plugin
 
 						fieldTrip.potentialItems = fieldTrip.potentialItems.AddToArray(new() { selection = itm.itm, weight = itm.weight });
 					}
+					fieldTrip.MarkAsNeverUnload();
 				}
 				catch (System.Exception e)
 				{
@@ -61,15 +62,32 @@ namespace LotsOfItems.Plugin
 				if (!sco.levelObject)
 					return;
 
+				bool levelObjectUsed = false;
+				
 				for (int i = 0; i < availableItems.Count; i++)
 				{
 					if (availableItems[i].acceptableFloors.Contains(name))
 					{
+						levelObjectUsed = true;
+						
 						if (!availableItems[i].ItemForcedToSpawn)
-							sco.levelObject.items = sco.levelObject.items.AddToArray(new() { selection = availableItems[i].itm, weight = availableItems[i].weight });
+						{
+							var weight = new WeightedItemObject() { selection = availableItems[i].itm, weight = availableItems[i].weight };
+							sco.levelObject.potentialItems = sco.levelObject.potentialItems.AddToArray(weight);
+							if (availableItems[i].appearsInStore)
+								sco.shopItems = sco.shopItems.AddToArray(weight);
+						}
 						else
 							sco.levelObject.forcedItems.Add(availableItems[i].itm);
+
+						
 					}
+				}
+
+				if (levelObjectUsed)
+				{
+					sco.levelObject.maxItemValue += 125; // To make more items spawn :)
+					sco.levelObject.MarkAsNeverUnload();
 				}
 			});
 

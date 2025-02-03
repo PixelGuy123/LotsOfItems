@@ -28,15 +28,13 @@ namespace LotsOfItems.CustomItems.YTPs
 
 			if (!ec.CellFromPosition(pickup.transform.position).TileMatches(room))
 				pickup.transform.position = prevPos;
-			
+			pickup.icon.UpdatePosition(ec.map);
 
 			ray.origin = pickup.transform.position;
 			ray.direction = dir;
 			if (Physics.Raycast(ray, out hit, maxDistance, layer) || !ec.CellFromPosition(ray.origin).TileMatches(room))
-			{
 				dir = Vector3.Reflect(dir, hit.normal);
-				pickup.transform.position = ray.origin; // To align correctly
-			}
+			
 		}
 
 		RaycastHit hit;
@@ -50,7 +48,7 @@ namespace LotsOfItems.CustomItems.YTPs
 		internal float maxDistance = 2f, speed = 20f;
 
 		[SerializeField]
-		internal LayerMask layer = 1;
+		internal LayerMask layer = LayerMask.GetMask(LayerMask.LayerToName(1), "Windows");
 	}
 
 	[HarmonyPatch(typeof(Pickup))]
