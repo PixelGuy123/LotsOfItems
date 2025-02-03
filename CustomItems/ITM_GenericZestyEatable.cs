@@ -1,13 +1,17 @@
-﻿using MTM101BaldAPI.Components;
+﻿using LotsOfItems.ItemPrefabStructures;
+using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems
 {
-	public class ITM_GenericZestyEatable : Item
+	public class ITM_GenericZestyEatable : Item, IItemPrefab
 	{
-
+		public void SetupPrefab(ItemObject _) =>
+			audEat = GenericExtensions.FindResourceObjectByName<SoundObject>("ChipCrunch");
+		public void SetupPrefabPost() { }
 		public override bool Use(PlayerManager pm)
 		{
 			if (!CanBeUsed())

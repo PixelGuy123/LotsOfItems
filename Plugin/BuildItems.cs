@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Extensions;
 using LotsOfItems.CustomItems;
+using LotsOfItems.CustomItems.YTPs;
+using LotsOfItems.CustomItems.Teleporters;
 
 namespace LotsOfItems.Plugin
 {
@@ -15,6 +17,7 @@ namespace LotsOfItems.Plugin
 	{
 		public static void StartBuilding()
 		{
+			// ---------- YTPS
 			var item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("squareYtp")
 				.SetGeneratorCost(20)
@@ -53,6 +56,21 @@ namespace LotsOfItems.Plugin
 			item.StoreAsNormal(appearsInStore: false, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("DancingYTP")
+				.SetGeneratorCost(15)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [])
+				.SetAsInstantUse()
+				.SetPickupSound(GetGenericYtpAudio(2))
+				.SetItemComponent<ITM_DancingYTP>()
+				.SetNameAndDescription("LtsOItems_DancingYtp_Name", "LtsOItems_DancingYtp_Desc")
+				.BuildAndSetup<ITM_DancingYTP>(out var ytp);
+			item.StoreAsNormal(appearsInStore: false, weight: 25, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			ytp.value = 65;
+
+			// ---------------- TELEPORTERS ---------------
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("CalibratedTeleporter")
 				.SetGeneratorCost(30)
 				.SetShopPrice(750)
@@ -62,6 +80,23 @@ namespace LotsOfItems.Plugin
 				.SetNameAndDescription("LtsOItems_CalibratedTp_Name", "LtsOItems_CalibratedTp_Desc")
 				.BuildAndSetup();
 			item.StoreAsNormal(goToFieldTrips:true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+
+			// ------------- EATABLES ---------------
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("chocolatePi")
+				.SetGeneratorCost(18)
+				.SetShopPrice(314)
+				.SetMeta(ItemFlags.None, ["food"])
+				.SetEnum("ChocolatePi")
+				.SetItemComponent<ITM_GenericZestyEatable>()
+				.SetNameAndDescription("LtsOItems_ChocolatePi_Name", "LtsOItems_ChocolatePi_Desc")
+				.BuildAndSetup<ITM_GenericZestyEatable>(out var genericZesty);
+			item.StoreAsNormal(appearsInStore: true, weight: 50, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			genericZesty.affectorTime = 31.4f;
+			genericZesty.staminaGain = 31.4f;
+			genericZesty.speedMultiplier = 1.314f;
 		}
 
 		static SoundObject GetYtpAudio(string name) 
@@ -104,7 +139,7 @@ namespace LotsOfItems.Plugin
 				return bld;
 			}
 
-			throw new System.IO.FileNotFoundException("Could not find a small or big icon of item: " + itemName);
+			throw new FileNotFoundException("Could not find a small or big icon of item: " + itemName);
 		}
 
 		static ItemObject BuildAndSetup(this ItemBuilder bld)
@@ -112,6 +147,15 @@ namespace LotsOfItems.Plugin
 			var itm = bld.Build();
 			if (itm.item is IItemPrefab pre)
 				pre.SetupPrefab(itm);
+			return itm;
+		}
+
+		static ItemObject BuildAndSetup<T>(this ItemBuilder bld, out T item) where T : Item
+		{
+			var itm = bld.Build();
+			if (itm.item is IItemPrefab pre)
+				pre.SetupPrefab(itm);
+			item = itm.item as T;
 			return itm;
 		}
 

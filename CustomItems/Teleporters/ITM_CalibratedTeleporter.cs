@@ -5,7 +5,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using PixelInternalAPI.Extensions;
 
-namespace LotsOfItems.CustomItems
+namespace LotsOfItems.CustomItems.Teleporters
 {
 	public class ITM_CalibratedTeleporter : Item, IItemPrefab
 	{

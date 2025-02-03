@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LotsOfItems.CustomItems
+namespace LotsOfItems.CustomItems.YTPs
 {
 	public class ITM_PiYTP : Item
 	{
