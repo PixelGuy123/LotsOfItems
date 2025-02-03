@@ -6,18 +6,18 @@ using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
+using UnityEngine;
 
 namespace LotsOfItems.Plugin
 {
-    [BepInPlugin(guid, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+	[BepInPlugin(guid, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 	[BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.levelloader", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
-    public class LotOfItemsPlugin : BaseUnityPlugin
-    {
+	public class LotOfItemsPlugin : BaseUnityPlugin
+	{
 		public const string guid = "pixelguy.pixelmodding.baldiplus.lotsOfItems", modPrefix = "lotOfItems";
 		public static string ModPath;
 		public static LotOfItemsPlugin plug;
@@ -34,7 +34,8 @@ namespace LotsOfItems.Plugin
 			Harmony h = new(guid);
 			h.PatchAllConditionals();
 
-			LoadingEvents.RegisterOnAssetsLoaded(Info, () => {
+			LoadingEvents.RegisterOnAssetsLoaded(Info, () =>
+			{
 				try
 				{
 					TheItemBuilder.StartBuilding();
@@ -55,7 +56,9 @@ namespace LotsOfItems.Plugin
 					Debug.LogException(e);
 					MTM101BaldiDevAPI.CauseCrash(Info, e);
 				}
-				}, false);
+			}, false);
+
+			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) => sco.levelObject.forcedItems.Clear()); // forced items screw up in F1 >:(
 
 			GeneratorManagement.Register(this, GenerationModType.Addend, (name, num, sco) =>
 			{
@@ -63,24 +66,18 @@ namespace LotsOfItems.Plugin
 					return;
 
 				bool levelObjectUsed = false;
-				
+
 				for (int i = 0; i < availableItems.Count; i++)
 				{
 					if (availableItems[i].acceptableFloors.Contains(name))
 					{
 						levelObjectUsed = true;
-						
-						if (!availableItems[i].ItemForcedToSpawn)
-						{
-							var weight = new WeightedItemObject() { selection = availableItems[i].itm, weight = availableItems[i].weight };
-							sco.levelObject.potentialItems = sco.levelObject.potentialItems.AddToArray(weight);
-							if (availableItems[i].appearsInStore)
-								sco.shopItems = sco.shopItems.AddToArray(weight);
-						}
-						else
-							sco.levelObject.forcedItems.Add(availableItems[i].itm);
 
-						
+						var weight = new WeightedItemObject() { selection = availableItems[i].itm, weight = availableItems[i].weight };
+						sco.levelObject.potentialItems = sco.levelObject.potentialItems.AddToArray(weight);
+						if (availableItems[i].appearsInStore)
+							sco.shopItems = sco.shopItems.AddToArray(weight);
+
 					}
 				}
 
@@ -93,8 +90,8 @@ namespace LotsOfItems.Plugin
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, PostLoad, true);
 
-			
-        }
+
+		}
 		void PostLoad()
 		{
 			try
@@ -111,5 +108,5 @@ namespace LotsOfItems.Plugin
 				MTM101BaldiDevAPI.CauseCrash(Info, e);
 			}
 		}
-    }
+	}
 }

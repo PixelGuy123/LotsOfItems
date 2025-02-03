@@ -48,7 +48,7 @@ namespace LotsOfItems.CustomItems.YTPs
 		internal float maxDistance = 2f, speed = 20f;
 
 		[SerializeField]
-		internal LayerMask layer = LayerMask.GetMask(LayerMask.LayerToName(1), "Windows");
+		internal LayerMask layer = LayerMask.GetMask("Default", "Windows");
 	}
 
 	[HarmonyPatch(typeof(Pickup))]

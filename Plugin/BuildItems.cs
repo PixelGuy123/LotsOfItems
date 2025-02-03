@@ -29,7 +29,6 @@ namespace LotsOfItems.Plugin
 				.SetNameAndDescription("LtsOItems_SquareYtp_Name", "LtsOItems_SquareYtp_Desc")
 				.Build();
 			item.StoreAsNormal(appearsInStore: false, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
-			item.StoreAsForced("F1");
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("squareRootYtp")
@@ -159,9 +158,6 @@ namespace LotsOfItems.Plugin
 			return itm;
 		}
 
-		static ItemObject StoreAsForced(this ItemObject itm, params string[] acceptableFloors) =>
-			itm.StoreAsNormal(weight:-1, acceptableFloors:acceptableFloors);
-
 		static ItemObject StoreAsNormal(this ItemObject itm, bool goToFieldTrips = false, bool appearsInStore = true, int weight = 100, params string[] acceptableFloors)
 		{
 			LotOfItemsPlugin.plug.availableItems.Add(new(itm, goToFieldTrips, appearsInStore, weight, acceptableFloors));
@@ -197,8 +193,7 @@ namespace LotsOfItems.Plugin
 		}
 		
 		readonly public ItemObject itm = itm;
-		readonly public int weight = weight;
-		readonly public bool ItemForcedToSpawn => weight <= 0;
+		readonly public int weight = Mathf.Max(1, weight);
 		readonly public IItemPrefab Prefab => itm.item is IItemPrefab pre ? pre : null;
 		readonly public HashSet<string> acceptableFloors = [.. acceptableFloors];
 		readonly public bool acceptFieldTrips = false, appearsInStore = true;
