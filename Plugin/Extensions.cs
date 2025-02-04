@@ -55,7 +55,12 @@ namespace LotsOfItems.Plugin
 	}
 	public static class ReusableExtensions
 	{
-		public static T CreateNewReusableInstance<T>(this T ogItem, ItemObject ogItmObj, string newNameKey, int count) where T : Item
+		public static void CreateNewReusableInstances<T>(this T ogItem, ItemObject ogItmObj, string nameKey, int count) where T : Item
+		{
+			for (; count > 0; count--)
+				ogItem = ogItem.Internal_CreateNewReusableInstance(ogItmObj, nameKey, count);
+		}
+		static T Internal_CreateNewReusableInstance<T>(this T ogItem, ItemObject ogItmObj, string newNameKey, int count) where T : Item
 		{
 			var newItmObj = UnityEngine.Object.Instantiate(ogItmObj);
 			newItmObj.nameKey = $"{newNameKey}_{count}";
@@ -69,8 +74,7 @@ namespace LotsOfItems.Plugin
 			newItm.name = $"ObjItmOb_{newItmObj.nameKey}";
 			newItm.gameObject.ConvertToPrefab(true);
 
-			if (count > 1)
-				AccessTools.Field(typeof(T), "nextItem").SetValue(ogItem, newItmObj); // Expects the field to have this name by default for every class that supports this
+			AccessTools.Field(typeof(T), "nextItem").SetValue(ogItem, count > 1 ? newItmObj : null); // Expects the field to have this name by default for every class that supports this
 			return newItm;
 		}
 	}

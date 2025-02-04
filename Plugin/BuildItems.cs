@@ -149,14 +149,11 @@ namespace LotsOfItems.Plugin
 				.BuildAndSetup<ITM_Reusable_GenericZestyEatable>(out var genericReusableZesty);
 			item.StoreAsNormal(appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
-			//genericReusableZesty.maxStaminaLimit = 200f;
+			genericReusableZesty.maxStaminaLimit = 300f;
 			genericReusableZesty.staminaMaxChanger = 50f;
 			genericReusableZesty.affectorTime = 30f;
 
-			genericReusableZesty = genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 4);
-			genericReusableZesty = genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 3);
-			genericReusableZesty = genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 2);
-			genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 1);
+			genericReusableZesty.CreateNewReusableInstances(item, "LtsOItems_Pickles_Name", 3);
 
 			// ---------------- TELEPORTERS ---------------
 
