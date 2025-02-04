@@ -74,7 +74,12 @@ namespace LotsOfItems.Plugin
 			newItm.name = $"ObjItmOb_{newItmObj.nameKey}";
 			newItm.gameObject.ConvertToPrefab(true);
 
-			AccessTools.Field(typeof(T), "nextItem").SetValue(ogItem, count > 1 ? newItmObj : null); // Expects the field to have this name by default for every class that supports this
+			var fldInfo = AccessTools.Field(typeof(T), "nextItem");
+			fldInfo.SetValue(ogItem, newItmObj); // Expects the field to have this name by default for every class that supports this
+
+			if (count <= 1)
+				fldInfo.SetValue(newItm, null);
+
 			return newItm;
 		}
 	}

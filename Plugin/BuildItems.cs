@@ -153,7 +153,7 @@ namespace LotsOfItems.Plugin
 			genericReusableZesty.staminaMaxChanger = 50f;
 			genericReusableZesty.affectorTime = 30f;
 
-			genericReusableZesty.CreateNewReusableInstances(item, "LtsOItems_Pickles_Name", 4);
+			genericReusableZesty.CreateNewReusableInstances(item, "LtsOItems_Pickles_Name", 3);
 
 			// ---------------- TELEPORTERS ---------------
 
