@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine;
 using HarmonyLib;
-using System.Collections.Generic;
 using PixelInternalAPI.Extensions;
 
 namespace LotsOfItems.CustomItems.Teleporters
@@ -12,20 +11,30 @@ namespace LotsOfItems.CustomItems.Teleporters
 		public void SetupPrefab(ItemObject itm)
 		{
 			audTeleport = GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport");
-			markerSprite = this.GetSprite("CalibratedTeleporter_MarkerIcon.png", 40f);
+			var sheet = this.GetSpriteSheet("CalibratedTeleporter_MarkerIcon.png", 2, 1, 40f);
+			markerSprite = sheet[0];
+			markerNotAllowedSprite = sheet[1];
 		}
 
 		public void SetupPrefabPost() { }
 
 		public override bool Use(PlayerManager pm)
 		{
-			if (activeTps.Count != 0 || Singleton<CoreGameManager>.Instance.MapOpen || Singleton<GlobalCam>.Instance.TransitionActive || !Singleton<CoreGameManager>.Instance.sceneObject.usesMap)
+			if (activeTps || Singleton<CoreGameManager>.Instance.MapOpen || Singleton<GlobalCam>.Instance.TransitionActive)
 			{
 				Destroy(gameObject);
 				return false;
 			}
 
-			activeTps.Add(this);
+			if (!Singleton<CoreGameManager>.Instance.sceneObject.usesMap)
+			{
+				pm.Teleport(pm.ec.RandomCell(false, false, true).FloorWorldPosition);
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audTeleport);
+				Destroy(gameObject);
+				return true;
+			}
+
+			activeTps = this;
 			this.pm = pm;
 
 			zoomItUsedToBe = pm.ec.map.zoom;
@@ -64,10 +73,7 @@ namespace LotsOfItems.CustomItems.Teleporters
 			yield return null;
 
 			if (setPoint)
-			{
-				transform.position = pm.transform.position;
 				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audTeleport);
-			}
 			else
 				pm.ec.map.EndMarkerPlacing();
 
@@ -75,16 +81,13 @@ namespace LotsOfItems.CustomItems.Teleporters
 			pm.ec.map.zoomSpeed = zoomSpeedItUsedToBe;
 			pm.ec.map.scrollSpeed = scrollSpeedUsedToBe;
 
-			activeTps.Remove(this);
-
-			while (Singleton<CoreGameManager>.Instance.audMan.AnyAudioIsPlaying)
-				yield return null;
+			activeTps = null;
 
 			Destroy(gameObject);
 		}
 
 		void OnDestroy() =>
-			activeTps.Remove(this);
+			activeTps = null;
 
 		bool setPoint = false;
 		float zoomItUsedToBe, zoomSpeedItUsedToBe, scrollSpeedUsedToBe;
@@ -94,12 +97,12 @@ namespace LotsOfItems.CustomItems.Teleporters
 		internal float defaultZoom = 20f;
 
 		[SerializeField]
-		internal Sprite markerSprite;
+		internal Sprite markerSprite, markerNotAllowedSprite;
 
 		[SerializeField]
 		internal SoundObject audTeleport;
 
-		internal readonly static List<ITM_CalibratedTeleporter> activeTps = [];
+		internal static ITM_CalibratedTeleporter activeTps = null;
 	}
 
 	[HarmonyPatch(typeof(Map))]
@@ -119,26 +122,25 @@ namespace LotsOfItems.CustomItems.Teleporters
 		[HarmonyPatch("ActivateMarkerMode")]
 		[HarmonyPrefix]
 		static bool AvoidThisWhenCalibratedTpActivated(ref bool ___placingMarker, int ___currentMarkerId) =>
-			!(___placingMarker && ___currentMarkerId == -1 && ITM_CalibratedTeleporter.activeTps.Count != 0); // If this returns "true", then don't called this method
+			!(___placingMarker && ___currentMarkerId == -1 && ITM_CalibratedTeleporter.activeTps); // If this returns "true", then don't called this method
 
 		[HarmonyPatch("TouchScreen")]
 		[HarmonyPrefix]
 		static bool AvoidMarkerAddition(Map __instance, ref bool ___placingMarker, int ___currentMarkerId)
 		{
-			if (___placingMarker && ___currentMarkerId == -1 && ITM_CalibratedTeleporter.activeTps.Count != 0)
+			if (___placingMarker && ___currentMarkerId == -1 && ITM_CalibratedTeleporter.activeTps)
 			{
 				var vector = __instance.cams[0].ScreenToWorldPoint(Singleton<GlobalCam>.Instance.CursorToRealScreenPosition());
 
 				var realPos = new Vector3(vector.x * 10f + 5f, 0f, vector.y * 10f + 5f);
 				var cell = __instance.Ec.CellFromPosition(realPos);
 
-				if (cell.offLimits || cell.Null || cell.hideFromMap || !__instance.foundTiles[cell.position.x, cell.position.z])
+				if (__instance.CheckCell(cell))
 					return false;
 
 				Singleton<InputManager>.Instance.StopFrame();
 
-				for (int i = 0; i < ITM_CalibratedTeleporter.activeTps.Count; i++)
-					ITM_CalibratedTeleporter.activeTps[i].MarkAsUsed();
+				ITM_CalibratedTeleporter.activeTps.MarkAsUsed();
 
 				Singleton<CoreGameManager>.Instance.GetPlayer(0).Teleport(cell.FloorWorldPosition);
 				Singleton<CoreGameManager>.Instance.Pause(false);
@@ -151,5 +153,23 @@ namespace LotsOfItems.CustomItems.Teleporters
 
 			return true;
 		}
+
+		[HarmonyPatch("UpdateMarkerCursorPosition")]
+		[HarmonyPostfix]
+		static void MakeSureMarkerIsInRightSpot(Map __instance, ref SpriteRenderer ___markerCursor, ref bool ___placingMarker, int ___currentMarkerId)
+		{
+			if (___placingMarker && ___currentMarkerId == -1 && ITM_CalibratedTeleporter.activeTps)
+			{
+				var vector = __instance.cams[0].ScreenToWorldPoint(Singleton<GlobalCam>.Instance.CursorToRealScreenPosition());
+
+				var realPos = new Vector3(vector.x * 10f + 5f, 0f, vector.y * 10f + 5f);
+				var cell = __instance.Ec.CellFromPosition(realPos);
+
+				___markerCursor.sprite = !__instance.CheckCell(cell) ? ITM_CalibratedTeleporter.activeTps.markerSprite : ITM_CalibratedTeleporter.activeTps.markerNotAllowedSprite;
+			}
+		}
+
+		static bool CheckCell(this Map map, Cell cell) =>
+			cell.offLimits || cell.Null || cell.hideFromMap || !map.foundTiles[cell.position.x, cell.position.z] || (cell.room.type == RoomType.Hall ? cell.HasAnyHardCoverage : !cell.room.eventSafeCells.Contains(cell.position));
 	}
 }

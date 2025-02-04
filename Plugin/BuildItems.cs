@@ -10,6 +10,7 @@ using PixelInternalAPI.Extensions;
 using LotsOfItems.CustomItems;
 using LotsOfItems.CustomItems.YTPs;
 using LotsOfItems.CustomItems.Teleporters;
+using LotsOfItems.CustomItems.Eatables;
 
 namespace LotsOfItems.Plugin
 {
@@ -63,22 +64,51 @@ namespace LotsOfItems.Plugin
 				.SetPickupSound(GetGenericYtpAudio(2))
 				.SetItemComponent<ITM_DancingYTP>()
 				.SetNameAndDescription("LtsOItems_DancingYtp_Name", "LtsOItems_DancingYtp_Desc")
-				.BuildAndSetup<ITM_DancingYTP>(out var ytp);
+				.BuildAndSetup<ITM_YTPs>(out var ytp);
 			item.StoreAsNormal(appearsInStore: false, weight: 25, acceptableFloors: ["F1", "F2", "F3", "END"]);
 			ytp.value = 65;
 
-			// ---------------- TELEPORTERS ---------------
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("greenFakeYtp")
+				.SetGeneratorCost(20)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [])
+				.SetAsInstantUse()
+				.SetPickupSound(GetYtpAudio("greenFakeYtp.wav"))
+				.SetItemComponent<ITM_YTPs>()
+				.SetNameAndDescription("LtsOItems_FakeGreenYtp_Name", "LtsOItems_FakeGreenYtp_Desc")
+				.BuildAndSetup(out ytp);
+
+			item.StoreAsNormal(appearsInStore: false, weight: 76, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			ytp.value = -25;
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
-				.AutoGetSprites("CalibratedTeleporter")
-				.SetGeneratorCost(30)
-				.SetShopPrice(750)
-				.SetMeta(ItemFlags.None, [])
-				.SetEnum("CalibratedTeleporter")
-				.SetItemComponent<ITM_CalibratedTeleporter>()
-				.SetNameAndDescription("LtsOItems_CalibratedTp_Name", "LtsOItems_CalibratedTp_Desc")
-				.BuildAndSetup();
-			item.StoreAsNormal(goToFieldTrips:true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+				.AutoGetSprites("silverFakeYtp")
+				.SetGeneratorCost(25)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [])
+				.SetAsInstantUse()
+				.SetPickupSound(GetYtpAudio("silverFakeYtp.wav"))
+				.SetItemComponent<ITM_YTPs>()
+				.SetNameAndDescription("LtsOItems_FakeSilverYtp_Name", "LtsOItems_FakeSilverYtp_Desc")
+				.BuildAndSetup(out ytp);
+
+			item.StoreAsNormal(appearsInStore: false, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
+			ytp.value = -50;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("goldenFakeYtp")
+				.SetGeneratorCost(28)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [])
+				.SetAsInstantUse()
+				.SetPickupSound(GetYtpAudio("goldenFakeYtp.wav"))
+				.SetItemComponent<ITM_YTPs>()
+				.SetNameAndDescription("LtsOItems_FakeGoldenYtp_Name", "LtsOItems_FakeGoldenYtp_Desc")
+				.BuildAndSetup(out ytp);
+
+			item.StoreAsNormal(appearsInStore: false, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
+			ytp.value = -100;
 
 			// ------------- EATABLES ---------------
 
@@ -96,6 +126,50 @@ namespace LotsOfItems.Plugin
 			genericZesty.affectorTime = 31.4f;
 			genericZesty.staminaGain = 31.4f;
 			genericZesty.speedMultiplier = 1.314f;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("Pizza")
+				.SetGeneratorCost(15)
+				.SetShopPrice(350)
+				.SetMeta(ItemFlags.None, ["food"])
+				.SetEnum("Pizza")
+				.SetItemComponent<ITM_GenericZestyEatable>()
+				.SetNameAndDescription("LtsOItems_Pizza_Name", "LtsOItems_Pizza_Desc")
+				.BuildAndSetup(out genericZesty);
+			item.StoreAsNormal(appearsInStore: true, weight: 60, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("pickles")
+				.SetGeneratorCost(25)
+				.SetShopPrice(575)
+				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, ["food"])
+				.SetEnum("JarOfPickles")
+				.SetItemComponent<ITM_Reusable_GenericZestyEatable>()
+				.SetNameAndDescription("LtsOItems_Pickles_Name", "LtsOItems_Pickles_Desc")
+				.BuildAndSetup<ITM_Reusable_GenericZestyEatable>(out var genericReusableZesty);
+			item.StoreAsNormal(appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			//genericReusableZesty.maxStaminaLimit = 200f;
+			genericReusableZesty.staminaMaxChanger = 50f;
+			genericReusableZesty.affectorTime = 30f;
+
+			genericReusableZesty = genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 4);
+			genericReusableZesty = genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 3);
+			genericReusableZesty = genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 2);
+			genericReusableZesty.CreateNewReusableInstance(item, "LtsOItems_Pickles_Name", 1);
+
+			// ---------------- TELEPORTERS ---------------
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("CalibratedTeleporter")
+				.SetGeneratorCost(30)
+				.SetShopPrice(750)
+				.SetMeta(ItemFlags.None, [])
+				.SetEnum("CalibratedTeleporter")
+				.SetItemComponent<ITM_CalibratedTeleporter>()
+				.SetNameAndDescription("LtsOItems_CalibratedTp_Name", "LtsOItems_CalibratedTp_Desc")
+				.BuildAndSetup();
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 		}
 
 		static SoundObject GetYtpAudio(string name) 
