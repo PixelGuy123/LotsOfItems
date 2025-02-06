@@ -1,15 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using LotsOfItems.ItemPrefabStructures;
+using PixelInternalAPI.Extensions;
 
 namespace LotsOfItems.CustomItems.Quarters
 {
-	public class ITM_QuarterOnAString : Item
+	public class ITM_QuarterOnAString : Item, IItemPrefab
 	{
 		[SerializeField]
 		internal Items quarterType = Items.Quarter;
 
 		[SerializeField]
 		internal ItemObject nextItem = null;
+
+		[SerializeField]
+		internal SoundObject audUse;
+
+		public void SetupPrefab(ItemObject itm) =>
+			audUse = GenericExtensions.FindResourceObjectByName<SoundObject>("CoinDrop");
+
+		public void SetupPrefabPost() { }
 
 		public override bool Use(PlayerManager pm)
 		{
@@ -23,6 +33,7 @@ namespace LotsOfItems.CustomItems.Quarters
 				IItemAcceptor component = hit.transform.GetComponent<IItemAcceptor>();
 				if (component != null && component.ItemFits(quarterType))
 				{
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
 					component.InsertItem(pm, pm.ec);
 					if (nextItem) // If the item field is not null, there are still uses left
 					{
