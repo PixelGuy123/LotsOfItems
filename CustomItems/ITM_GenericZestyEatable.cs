@@ -9,9 +9,13 @@ namespace LotsOfItems.CustomItems
 {
 	public class ITM_GenericZestyEatable : Item, IItemPrefab
 	{
-		public void SetupPrefab(ItemObject _) =>
+		public void SetupPrefab(ItemObject itm)
+		{
 			audEat = GenericExtensions.FindResourceObjectByName<SoundObject>("ChipCrunch");
+			VirtualSetupPrefab(itm);
+		}
 		public void SetupPrefabPost() { }
+		protected virtual void VirtualSetupPrefab(ItemObject itemObject) { }
 		public override bool Use(PlayerManager pm)
 		{
 			if (!CanBeUsed())
@@ -21,32 +25,40 @@ namespace LotsOfItems.CustomItems
 			}
 			this.pm = pm;
 
+			var statModifier = pm.GetMovementStatModifier();
+
 			if (affectorTime > 0f)
-				StartCoroutine(SpeedAffector());
-			else
+				StartCoroutine(SpeedAffector(statModifier));
+			else if (CanBeDestroyed())
 				Destroy(gameObject);
 
-			pm.plm.stamina = staminaSet != 0f ? staminaSet :
+			float staminaValue = staminaSet != 0f ? staminaSet :
 				staminaGain != 0f ? pm.plm.stamina + staminaGain :
-				pm.plm.staminaMax * maxMultiplier;
-			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audEat);
+				statModifier.baseStats["staminaMax"] * maxMultiplier;
 
-			
+			pm.plm.stamina = pm.plm.stamina > pm.plm.staminaMax ? Mathf.Abs(pm.plm.stamina - staminaValue) + pm.plm.stamina : staminaValue;
+
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audEat);
+			if (audSecondEatNoise)
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSecondEatNoise);
+
+
 
 			return true;
 		}
 
 		protected virtual bool CanBeUsed() => true; // To make sure some eatables just don't accumulate too much stats over time
 
-		IEnumerator SpeedAffector()
+		protected virtual bool CanBeDestroyed() => true;
+
+		IEnumerator SpeedAffector(PlayerMovementStatModifier stat)
 		{
 			ValueModifier mod = new(speedMultiplier, speedAddition),
-				staminaRiseMod = new(addend:staminaRiseChanger),
-				staminaDropMod = new(addend: staminaDropChanger),
+				staminaRiseMod = new(multiplier: staminaRiseChanger),
+				staminaDropMod = new(multiplier: staminaDropChanger),
 				staminaMaxMod = new(addend: staminaMaxChanger);
 
 
-			var stat = pm.GetMovementStatModifier();
 			if (speedAffectorAffectsRunSpeed)
 				stat.AddModifier("runSpeed", mod);
 			if (speedAffectorAffectsWalkSpeed)
@@ -73,12 +85,12 @@ namespace LotsOfItems.CustomItems
 
 		[SerializeField]
 		internal float staminaSet = 0f, staminaGain = 0f, maxMultiplier = 1f, speedMultiplier = 1f, speedAddition = 0f, affectorTime = 0f,
-			staminaDropChanger = 0f, staminaRiseChanger = 0f, staminaMaxChanger = 0f;
+			staminaDropChanger = 1f, staminaRiseChanger = 1f, staminaMaxChanger = 0f;
 
 		[SerializeField]
 		internal bool speedAffectorAffectsRunSpeed = true, speedAffectorAffectsWalkSpeed = true;
 
 		[SerializeField]
-		internal SoundObject audEat;
+		internal SoundObject audEat, audSecondEatNoise;
 	}
 }

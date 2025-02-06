@@ -49,6 +49,11 @@ namespace LotsOfItems.Plugin
 						fieldTrip.potentialItems = fieldTrip.potentialItems.AddToArray(new() { selection = itm.itm, weight = itm.weight });
 					}
 					fieldTrip.MarkAsNeverUnload();
+
+					SoundObject noEatRule = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "PRI_NoEating.wav")), "Vfx_PRI_NoEating", SoundType.Voice, new(0f, 0.117f, 0.482f));
+					foreach (var principal in GenericExtensions.FindResourceObjects<Principal>())
+						principal.audNoEating = noEatRule;
+					
 				}
 				catch (System.Exception e)
 				{

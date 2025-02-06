@@ -11,6 +11,7 @@ using LotsOfItems.CustomItems;
 using LotsOfItems.CustomItems.YTPs;
 using LotsOfItems.CustomItems.Teleporters;
 using LotsOfItems.CustomItems.Eatables;
+using LotsOfItems.CustomItems.Quarters;
 
 namespace LotsOfItems.Plugin
 {
@@ -110,13 +111,26 @@ namespace LotsOfItems.Plugin
 			item.StoreAsNormal(appearsInStore: false, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 			ytp.value = -100;
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("mysteryYtp")
+				.SetGeneratorCost(13)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [])
+				.SetAsInstantUse()
+				.SetPickupSound(GetGenericYtpAudio(1))
+				.SetItemComponent<ITM_MysteryYTP>()
+				.SetNameAndDescription("LtsOItems_MysteryYtp_Name", "LtsOItems_MysteryYtp_Desc")
+				.BuildAndSetup();
+
+			item.StoreAsNormal(appearsInStore: false, weight: 25, acceptableFloors: ["F2", "F3", "END"]);
+
 			// ------------- EATABLES ---------------
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("chocolatePi")
 				.SetGeneratorCost(18)
 				.SetShopPrice(314)
-				.SetMeta(ItemFlags.None, ["food"])
+				.SetMeta(ItemFlags.Persists, ["food"])
 				.SetEnum("ChocolatePi")
 				.SetItemComponent<ITM_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_ChocolatePi_Name", "LtsOItems_ChocolatePi_Desc")
@@ -130,7 +144,7 @@ namespace LotsOfItems.Plugin
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("Pizza")
 				.SetGeneratorCost(15)
-				.SetShopPrice(350)
+				.SetShopPrice(175)
 				.SetMeta(ItemFlags.None, ["food"])
 				.SetEnum("Pizza")
 				.SetItemComponent<ITM_GenericZestyEatable>()
@@ -155,6 +169,70 @@ namespace LotsOfItems.Plugin
 
 			genericReusableZesty.CreateNewReusableInstances(item, "LtsOItems_Pickles_Name", 3);
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("HotCrossBun")
+				.SetGeneratorCost(35)
+				.SetShopPrice(600)
+				.SetMeta(ItemFlags.Persists, ["food"])
+				.SetEnum("HotCrossBun")
+				.SetItemComponent<ITM_HotCrossBun>()
+				.SetNameAndDescription("LtsOItems_HotCrossBun_Name", "LtsOItems_HotCrossBun_Desc")
+				.BuildAndSetup<ITM_HotCrossBun>(out _);
+			item.StoreAsNormal(appearsInStore: true, weight: 30, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("orangeJuice")
+				.SetGeneratorCost(30)
+				.SetShopPrice(225)
+				.SetMeta(ItemFlags.Persists, ["food"])
+				.SetEnum("OrangeJuice")
+				.SetItemComponent<ITM_GenericZestyEatable>()
+				.SetNameAndDescription("LtsOItems_OrangeJuice_Name", "LtsOItems_OrangeJuice_Desc")
+				.BuildAndSetup(out genericZesty);
+			item.StoreAsNormal(appearsInStore: true, weight: 30, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			genericZesty.affectorTime = 15f;
+			genericZesty.staminaRiseChanger = 2f;
+			genericZesty.staminaDropChanger = 1.25f;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("chocolateQuarter")
+				.SetGeneratorCost(26)              
+				.SetShopPrice(350)                 
+				.SetMeta(ItemFlags.None, ["food"])
+				.SetEnum("ChocolateQuarter")
+				.SetItemComponent<ITM_ChocolateQuarter>()
+				.SetNameAndDescription("LtsOItems_ChocolateQuarter_Name", "LtsOItems_ChocolateQuarter_Desc")
+				.BuildAndSetup();
+			item.StoreAsNormal(appearsInStore: true, weight: 35, acceptableFloors: ["F1", "F2", "F3", "END" ]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("vanillaZestyBar")
+			.SetGeneratorCost(29)
+			.SetShopPrice(425)
+			.SetMeta(ItemFlags.Persists, ["food"])
+			.SetEnum("VanillaZestyBar")
+			.SetItemComponent<ITM_VanillaZestyBar>()
+			.SetNameAndDescription("LtsOItems_VanillaZestyBar_Name", "LtsOItems_VanillaZestyBar_Desc")
+			.BuildAndSetup(out genericZesty);
+			item.StoreAsNormal(appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
+			genericZesty.affectorTime = 10f;
+			genericZesty.speedMultiplier = 1.1f;
+			genericZesty.maxMultiplier = 3.5f;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("iceZestyBar")
+			.SetGeneratorCost(29)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists, ["food"])
+			.SetEnum("IceZestyBar")
+			.SetItemComponent<ITM_IceZestyBar>()
+			.SetNameAndDescription("LtsOItems_IceZestyBar_Name", "LtsOItems_IceZestyBar_Desc")
+			.BuildAndSetup(out genericZesty);
+			genericZesty.maxMultiplier = 1.5f;
+			item.StoreAsNormal(appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
+
+
 			// ---------------- TELEPORTERS ---------------
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -167,6 +245,21 @@ namespace LotsOfItems.Plugin
 				.SetNameAndDescription("LtsOItems_CalibratedTp_Name", "LtsOItems_CalibratedTp_Desc")
 				.BuildAndSetup();
 			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+
+			// ------------ QUARTERS -------------
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("quarterOnAString")
+			.SetGeneratorCost(35)
+			.SetShopPrice(675)
+			.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [])
+			.SetEnum("QuarterOnAString")
+			.SetItemComponent<ITM_QuarterOnAString>()
+			.SetNameAndDescription("LtsOItems_QuarterOnAString_Name", "LtsOItems_QuarterOnAString_Desc")
+			.BuildAndSetup<ITM_QuarterOnAString>(out var quarterOnAString);
+			item.StoreAsNormal(appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+
+			quarterOnAString.CreateNewReusableInstances(item, "LtsOItems_QuarterOnAString_Name", 2);
 		}
 
 		static SoundObject GetYtpAudio(string name) 
@@ -222,9 +315,7 @@ namespace LotsOfItems.Plugin
 
 		static ItemObject BuildAndSetup<T>(this ItemBuilder bld, out T item) where T : Item
 		{
-			var itm = bld.Build();
-			if (itm.item is IItemPrefab pre)
-				pre.SetupPrefab(itm);
+			var itm = bld.BuildAndSetup();
 			item = itm.item as T;
 			return itm;
 		}
