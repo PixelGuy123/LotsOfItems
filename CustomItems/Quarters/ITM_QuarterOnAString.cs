@@ -34,12 +34,15 @@ namespace LotsOfItems.CustomItems.Quarters
 				if (component != null && component.ItemFits(quarterType))
 				{
 					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
+					pm.RuleBreak("Bullying", 3.5f, 1f);
 					component.InsertItem(pm, pm.ec);
+
 					if (nextItem) // If the item field is not null, there are still uses left
 					{
+						this.pm = pm;
 						StartCoroutine(Delay()); // use a Delay() to wait for the next frame, to re-add the item back into the inventory
+						return false;
 					}
-					Destroy(gameObject);
 					return true;
 				}
 			}
@@ -54,6 +57,7 @@ namespace LotsOfItems.CustomItems.Quarters
 			yield return null; // Waits a frame/screen refresh
 
 			pm.itm.SetItem(nextItem, pm.itm.selectedItem); // Set item back
+			Destroy(gameObject);
 		}
 
 		

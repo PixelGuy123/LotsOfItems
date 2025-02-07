@@ -30,7 +30,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_SquareYTP>()
 				.SetNameAndDescription("LtsOItems_SquareYtp_Name", "LtsOItems_SquareYtp_Desc")
 				.Build();
-			item.StoreAsNormal(appearsInStore: false, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: false, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("squareRootYtp")
@@ -161,7 +161,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_Reusable_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_Pickles_Name", "LtsOItems_Pickles_Desc")
 				.BuildAndSetup<ITM_Reusable_GenericZestyEatable>(out var genericReusableZesty);
-			item.StoreAsNormal(appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericReusableZesty.maxStaminaLimit = 300f;
 			genericReusableZesty.staminaMaxChanger = 50f;
@@ -230,7 +230,35 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_IceZestyBar_Name", "LtsOItems_IceZestyBar_Desc")
 			.BuildAndSetup(out genericZesty);
 			genericZesty.maxMultiplier = 1.5f;
-			item.StoreAsNormal(appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
+			item.StoreAsNormal(goToFieldTrips: true,  appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("chocolateFlavouredZestyBar")
+			.SetGeneratorCost(25)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists, ["food"])
+			.SetEnum("ChocolateFlavouredZestyBar")
+			.SetItemComponent<ITM_ChocolateFlavouredZestyBar>()
+			.SetNameAndDescription("LtsOItems_ChocolateFlavouredZestyBar_Name", "LtsOItems_ChocolateFlavouredZestyBar_Desc")
+			.BuildAndSetup(out genericZesty);
+			genericZesty.staminaSet = 200;
+
+			item.StoreAsNormal(appearsInStore: true, weight: 35, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("dietFlavouredZestyBar")
+			.SetGeneratorCost(18)
+			.SetShopPrice(175)
+			.SetMeta(ItemFlags.None, ["food"])
+			.SetEnum("DietFlavouredZestyBar")
+			.SetItemComponent<ITM_GenericZestyEatable>()
+			.SetNameAndDescription("LtsOItems_DietFlavouredZestyBar_Name", "LtsOItems_DietFlavouredZestyBar_Desc")
+			.BuildAndSetup(out genericZesty);
+			item.StoreAsNormal(appearsInStore: true, weight: 135, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			genericZesty.staminaGain = 50;
+
+
 
 
 			// ---------------- TELEPORTERS ---------------
@@ -246,6 +274,23 @@ namespace LotsOfItems.Plugin
 				.BuildAndSetup();
 			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SaferTeleporter")
+			.SetGeneratorCost(37)
+			.SetShopPrice(1000)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetEnum("SaferTeleporter")
+			.SetItemComponent<ITM_SaferTeleporter>()
+			.SetNameAndDescription("LtsOItems_SaferTeleporter_Name", "LtsOItems_SaferTeleporter_Desc")
+			.BuildAndSetup<ITM_GenericTeleporter>(out var genericTp);
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 25, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericTp.minTeleports = 1;
+			genericTp.maxTeleports = 1;
+			genericTp.baseTime = 0.1f;
+
+
 			// ------------ QUARTERS -------------
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -257,7 +302,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_QuarterOnAString>()
 			.SetNameAndDescription("LtsOItems_QuarterOnAString_Name", "LtsOItems_QuarterOnAString_Desc")
 			.BuildAndSetup<ITM_QuarterOnAString>(out var quarterOnAString);
-			item.StoreAsNormal(appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
 			quarterOnAString.CreateNewReusableInstances(item, "LtsOItems_QuarterOnAString_Name", 2);
 		}

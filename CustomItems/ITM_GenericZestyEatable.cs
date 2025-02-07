@@ -80,7 +80,8 @@ namespace LotsOfItems.CustomItems
 			stat.RemoveModifier(staminaDropMod);
 			stat.RemoveModifier(staminaMaxMod);
 
-			Destroy(gameObject);
+			if (CanBeDestroyed())
+				Destroy(gameObject);
 		}
 
 		[SerializeField]
