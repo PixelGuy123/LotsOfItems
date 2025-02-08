@@ -41,6 +41,9 @@
 	<Reference Include="PlusLevelLoader">
 	  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\PlusLevelLoader.dll</HintPath>
 	</Reference>
+	<Reference Include="UnityEngine.UI">
+	  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\UnityEngine.UI.dll</HintPath>
+	</Reference>
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

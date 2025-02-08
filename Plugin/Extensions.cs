@@ -4,23 +4,27 @@ using System.Reflection;
 using System;
 using UnityEngine;
 using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
+using LotsOfItems.Components;
 
 namespace LotsOfItems.Plugin
 {
 	public static class Extensions
 	{
-		static bool IsInheritFromType<T, T2>() =>
-			typeof(T).IsSubclassOf(typeof(T2)) || typeof(T) == typeof(T2);
+		static bool IsInheritFromType(Type t1, Type t2) =>
+			t1.IsSubclassOf(t2) || t1 == t2;
 
 		public static T GetACopyFromFields<T, C>(this T original, C toCopyFrom) where T : MonoBehaviour where C : MonoBehaviour
 		{
-			if (!IsInheritFromType<T, C>())
+			var type = toCopyFrom.GetType();
+
+			if (!IsInheritFromType(typeof(T), type))
 			{
-				throw new ArgumentException($"Type T ({typeof(T).FullName}) does not inherit from type C ({typeof(C).FullName})");
+				throw new ArgumentException($"Type T ({typeof(T).FullName}) does not inherit from type C ({type.FullName})");
 			}
 
-			List<Type> typesToFollow = [typeof(C)];
-			Type t = typeof(C);
+			List<Type> typesToFollow = [type];
+			Type t = type;
 
 			while (true)
 			{
@@ -39,18 +43,90 @@ namespace LotsOfItems.Plugin
 				foreach (FieldInfo fieldInfo in AccessTools.GetDeclaredFields(ty))
 				{
 					fieldInfo.SetValue(original, fieldInfo.GetValue(toCopyFrom));
+					//Debug.Log("fieldname: " + fieldInfo.Name + " ToCopyFrom value: " + fieldInfo.GetValue(toCopyFrom));
 				}
 			}
 
 			return original;
 		}
 
-		public static T ReplaceComponent<T, C>(this C toReplace) where T : MonoBehaviour where C : MonoBehaviour
+		public static Texture2D ActualResize(this Texture2D original, int newWidth, int newHeight) // Apparently you work an average of WxH grid, not linear lol
 		{
-			var toExist = toReplace.gameObject.AddComponent<T>();
-			toExist.GetACopyFromFields(toReplace);
-			UnityEngine.Object.Destroy(toReplace);
-			return toExist;
+			int originalWidth = original.width;
+			int originalHeight = original.height;
+
+			// Calculate scaling factors.
+			int scaleX = originalWidth / newWidth;
+			int scaleY = originalHeight / newHeight;
+
+			Texture2D newTex = new(newWidth, newHeight, original.format, false)
+			{
+				filterMode = original.filterMode
+			};
+
+			// Get the original pixel data.
+			Color[] originalColors = original.GetPixels();
+			Color[] newColors = new Color[newWidth * newHeight];
+
+			// Loop over every pixel in the new texture.
+			for (int newY = 0; newY < newHeight; newY++)
+			{
+				for (int newX = 0; newX < newWidth; newX++)
+				{
+					Color colorSum = Color.black;
+					bool invalidAlpha = false;
+
+					// For each new pixel, average over the corresponding block in the original texture.
+					for (int offsetY = 0; offsetY < scaleY; offsetY++)
+					{
+						for (int offsetX = 0; offsetX < scaleX; offsetX++)
+						{
+							int origX = newX * scaleX + offsetX;
+							int origY = newY * scaleY + offsetY;
+							int index = origY * originalWidth + origX;
+
+							Color current = originalColors[index];
+							if (current.a < 1f)
+							{
+								invalidAlpha = true;
+							}
+							colorSum += current;
+						}
+					}
+
+					int pixelCount = scaleX * scaleY;
+					Color avgColor = colorSum / pixelCount;
+					avgColor.a = invalidAlpha ? 0f : 1f;
+
+					newColors[newY * newWidth + newX] = invalidAlpha ? Color.clear : avgColor;
+				}
+			}
+
+			// Apply the new colors and update the texture.
+			newTex.SetPixels(newColors);
+			newTex.Apply();
+
+			return newTex;
+		}
+
+		public static RaycastBlocker GetRawChalkParticleGenerator()
+		{
+			var chalk = GenericExtensions.FindResourceObject<ChalkEraser>();
+			chalk.gameObject.SetActive(false);
+			var chalkClone = UnityEngine.Object.Instantiate(chalk);
+			var chalkTransform = chalkClone.transform;
+
+			UnityEngine.Object.Destroy(chalkClone.GetComponent<RendererContainer>());
+			UnityEngine.Object.Destroy(chalkClone);
+
+			var blocker = chalkTransform.gameObject.AddComponent<RaycastBlocker>(); // Should make this work good
+			blocker.system = chalkTransform.GetComponent<ParticleSystem>();
+
+			chalk.gameObject.SetActive(true);
+			chalkTransform.gameObject.ConvertToPrefab(true);
+			chalkTransform.name = "RawChalkGenerator";
+
+			return blocker;
 		}
 	}
 	public static class ReusableExtensions

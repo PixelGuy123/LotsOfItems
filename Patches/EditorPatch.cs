@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
 using BaldiLevelEditor;
-using System.IO;
 using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
+using UnityEngine;
 using System.Collections.Generic;
 using LotsOfItems.Plugin;
 using PlusLevelLoader;
+using MTM101BaldAPI.AssetTools;
 
 namespace LotsOfItems.Patches
 {
@@ -48,12 +48,27 @@ namespace LotsOfItems.Patches
 		[HarmonyPostfix]
 		static void LevelEditorChangesHere()
 		{
-			string[] files = Directory.GetFiles(Path.Combine(LotOfItemsPlugin.ModPath, "EditorUI"));
-			for (int i = 0; i < files.Length; i++)
-				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
+			//string[] files = Directory.GetFiles(Path.Combine(LotOfItemsPlugin.ModPath, "EditorUI"));
+			//for (int i = 0; i < files.Length; i++)
+			//	BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
 
 			foreach (var item in itemsToAdd)
+			{
 				BaldiLevelEditorPlugin.itemObjects.Add(item.Key, item.Value);
+
+				Sprite icon = item.Value.itemSpriteSmall;
+				if (icon == item.Value.itemSpriteLarge)
+				{
+					var tex = icon.texture.ActualResize(32, 32);
+					tex.name = "Resized_" + icon.texture.name;
+
+					
+					icon = AssetLoader.SpriteFromTexture2D(tex, 40f);
+				}
+
+
+				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/ITM_" + item.Key, icon);
+			}
 			
 		}
 

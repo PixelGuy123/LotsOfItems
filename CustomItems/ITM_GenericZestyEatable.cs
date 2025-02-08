@@ -32,7 +32,7 @@ namespace LotsOfItems.CustomItems
 			else if (CanBeDestroyed())
 				Destroy(gameObject);
 
-			float staminaValue = staminaSet != 0f ? staminaSet :
+			float staminaValue = staminaSet != 0f ? (pm.plm.stamina < staminaSet ? staminaSet : pm.plm.stamina) :
 				staminaGain != 0f ? pm.plm.stamina + staminaGain :
 				statModifier.baseStats["staminaMax"] * maxMultiplier;
 

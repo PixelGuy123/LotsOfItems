@@ -1,10 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
+using LotsOfItems.ItemPrefabStructures;
+using PixelInternalAPI.Extensions;
 
 namespace LotsOfItems.CustomItems
 {
-	public class ITM_GenericTeleporter : Item
+	public class ITM_GenericTeleporter : Item, IItemPrefab
 	{
+		public void SetupPrefab(ItemObject _)
+		{
+			audTeleport = GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport");
+			VirtualSetupPrefab(_);
+		}
+		protected virtual void VirtualSetupPrefab(ItemObject itm) { }
+		public void SetupPrefabPost() { }
+
 		[SerializeField]
 		internal SoundObject audTeleport;
 

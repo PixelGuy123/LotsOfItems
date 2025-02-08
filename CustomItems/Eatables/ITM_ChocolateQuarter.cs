@@ -27,6 +27,7 @@ namespace LotsOfItems.CustomItems.Eatables
 			return base.Use(pm);
 		}
 
+
 		RaycastHit hit;
 
 		[SerializeField]

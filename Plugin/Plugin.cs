@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using LotsOfItems.Components;
 using LotsOfItems.Patches;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -53,6 +54,9 @@ namespace LotsOfItems.Plugin
 					SoundObject noEatRule = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "PRI_NoEating.wav")), "Vfx_PRI_NoEating", SoundType.Voice, new(0f, 0.117f, 0.482f));
 					foreach (var principal in GenericExtensions.FindResourceObjects<Principal>())
 						principal.audNoEating = noEatRule;
+
+					foreach (var player in GenericExtensions.FindResourceObjects<PlayerManager>()) // History position record thing
+						player.gameObject.AddComponent<PlayerPositionHistory>().pm = player;
 					
 				}
 				catch (System.Exception e)

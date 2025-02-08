@@ -12,6 +12,10 @@ using LotsOfItems.CustomItems.YTPs;
 using LotsOfItems.CustomItems.Teleporters;
 using LotsOfItems.CustomItems.Eatables;
 using LotsOfItems.CustomItems.Quarters;
+using LotsOfItems.CustomItems.PrincipalWhistles;
+using LotsOfItems.CustomItems.NanaPeels;
+using LotsOfItems.CustomItems.Nametags;
+using LotsOfItems.CustomItems.ChalkErasers;
 
 namespace LotsOfItems.Plugin
 {
@@ -278,7 +282,7 @@ namespace LotsOfItems.Plugin
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("SaferTeleporter")
 			.SetGeneratorCost(37)
-			.SetShopPrice(1000)
+			.SetShopPrice(850)
 			.SetMeta(ItemFlags.Persists, [])
 			.SetEnum("SaferTeleporter")
 			.SetItemComponent<ITM_SaferTeleporter>()
@@ -288,7 +292,64 @@ namespace LotsOfItems.Plugin
 
 			genericTp.minTeleports = 1;
 			genericTp.maxTeleports = 1;
-			genericTp.baseTime = 0.1f;
+			genericTp.baseTime = 0.035f;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ControlledTeleporter")
+			.SetGeneratorCost(40)
+			.SetShopPrice(1000)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetEnum("ControlledTeleporter")
+			.SetItemComponent<ITM_ControlledTeleporter>()
+			.SetNameAndDescription("LtsOItems_ControlledTeleporter_Name", "LtsOItems_ControlledTeleporter_Desc")
+			.BuildAndSetup(out genericTp);
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 30, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericTp.minTeleports = 1;
+			genericTp.maxTeleports = 1;
+			genericTp.baseTime = 0.035f;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BananaTeleporter")
+			.SetGeneratorCost(40)
+			.SetShopPrice(1300)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetEnum("BananaTeleporter")
+			.SetItemComponent<ITM_BananaTeleporter>()
+			.SetNameAndDescription("LtsOItems_BananaTeleporter_Name", "LtsOItems_BananaTeleporter_Desc")
+			.BuildAndSetup(out genericTp);
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 30, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericTp.minTeleports = 7;
+			genericTp.maxTeleports = 12;
+			genericTp.baseTime = 0.08f;
+			genericTp.increaseFactor = 1.26f;
+
+			// ---------- WHISTLES VARIANTS ----------
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PrincipalOEleporter")
+			.SetGeneratorCost(16)
+			.SetShopPrice(350)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetEnum("PrincipalOEleporter")
+			.SetItemComponent<ITM_PrincipalOEleporter>()
+			.SetNameAndDescription("LtsOItems_PrincipalOEleporter_Name", "LtsOItems_PrincipalOEleporter_Desc")
+			.BuildAndSetup();
+			item.StoreAsNormal(appearsInStore: true, weight: 25, acceptableFloors: ["F2", "F3", "END"]);
+
+
+			// ---------- Nanapeel VARIANTS ---------
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("TeleporterOWall")
+			.SetGeneratorCost(27)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+			.SetEnum("TeleporterOWall")
+			.SetItemComponent<ITM_TeleporterOWall>(Items.NanaPeel) // Makes a new exact copy of ITM_NanaPeel
+			.SetNameAndDescription("LtsOItems_TeleporterOWall_Name", "LtsOItems_TeleporterOWall_Desc")
+			.BuildAndSetup();
+			item.StoreAsNormal(appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 
 
 			// ------------ QUARTERS -------------
@@ -305,6 +366,33 @@ namespace LotsOfItems.Plugin
 			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
 			quarterOnAString.CreateNewReusableInstances(item, "LtsOItems_QuarterOnAString_Name", 2);
+
+			// ---------- NAME TAGS -----------
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("EnergyNametag")
+			.SetGeneratorCost(26)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetEnum("EnergyNametag")
+			.SetItemComponent<ITM_EnergyNametag>(Items.Nametag)
+			.SetNameAndDescription("LtsOItems_EnergyNametag_Name", "LtsOItems_EnergyNametag_Desc")
+			.BuildAndSetup();
+			item.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 34, acceptableFloors: ["F1", "F2", "F3"]);
+
+			// --------- Chalk Erasers ---------
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("FogMachine") // expects FogMachine_smallIcon.png and FogMachine_largeIcon.png
+			.SetGeneratorCost(34)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetEnum("FogMachine")
+			.SetItemComponent<ITM_FogMachine>()
+			.SetNameAndDescription("LtsOItems_FogMachine_Name", "LtsOItems_FogMachine_Desc")
+			.BuildAndSetup();
+			item.StoreAsNormal(appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
+
+
 		}
 
 		static SoundObject GetYtpAudio(string name) 
@@ -371,21 +459,23 @@ namespace LotsOfItems.Plugin
 			return itm;
 		}
 
-		static ItemBuilder SetItemComponent<T>(this ItemBuilder bld, Items item, bool needACopyOfFields = true) where T : Item
+		static ItemBuilder SetItemComponent<T>(this ItemBuilder bld, Items item) where T : Item
 		{
-			var itm = ItemMetaStorage.Instance.FindByEnum(item).value.item;
+			var ogItem = ItemMetaStorage.Instance.FindByEnum(item).value.item;
 
-			itm.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
-			itm = Object.Instantiate(itm);
+			ogItem.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
+			var itm = Object.Instantiate(ogItem);
 			itm.name = typeof(T).Name;
 
-			var newItm = itm.gameObject.AddComponent<T>();
-			if (needACopyOfFields)
-				itm.ReplaceComponent<T, Item>();
-			else
-				Object.Destroy(itm);
+			ogItem.gameObject.SetActive(true); // Forgot about this lol
+
+			var newItm = itm.gameObject.AddComponent<T>()
+				.GetACopyFromFields(itm);
+			Object.Destroy(itm);
 
 			newItm.gameObject.ConvertToPrefab(true);
+
+			bld.SetItemComponent(newItm); // To make sure it doesn't create a new one lol
 
 			return bld;
 		}
