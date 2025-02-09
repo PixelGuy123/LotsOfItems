@@ -20,6 +20,8 @@ using LotsOfItems.CustomItems.Key;
 using PixelInternalAPI;
 using LotsOfItems.CustomItems.Scissors;
 using LotsOfItems.CustomItems.SwingingDoorLocks;
+using LotsOfItems.CustomItems.Boots;
+using UnityEngine.UI;
 
 namespace LotsOfItems.Plugin
 {
@@ -171,7 +173,7 @@ namespace LotsOfItems.Plugin
 				.SetEnum("Pizza")
 				.SetItemComponent<ITM_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_Pizza_Name", "LtsOItems_Pizza_Desc")
-				.BuildAndSetup(out genericZesty)
+				.BuildAndSetup()
 				.StoreAsNormal(appearsInStore: true, weight: 115, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -464,6 +466,19 @@ namespace LotsOfItems.Plugin
 			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 			item.AddKeyTypeItem();
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SpecialKey")
+			.SetGeneratorCost(30)
+			.SetShopPrice(400)
+			.SetMeta(ItemFlags.Persists, [KEYVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("SpecialKey")
+			.SetItemComponent<ITM_SpecialKey>()
+			.SetNameAndDescription("LtsOItems_SpecialKey_Name", "LtsOItems_SpecialKey_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			item.AddKeyTypeItem();
+
+
 			// ------ Scissors ------
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("DangerousScissors")
@@ -471,7 +486,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(450)
 			.SetMeta(ItemFlags.Persists, [SCISSORSVARTAG, CRIMINALPACK_CONTRABAND])
 			.SetEnum("DangerousScissors")
-			.SetItemComponent<ITM_DangerousScissors>()
+			.SetItemComponent<ITM_DangerousScissors>(Items.Scissors)
 			.SetNameAndDescription("LtsOItems_DangerousScissors_Name", "LtsOItems_DangerousScissors_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
@@ -482,10 +497,29 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(400)
 			.SetMeta(ItemFlags.Persists, [SCISSORSVARTAG])
 			.SetEnum("MetalScissors")
-			.SetItemComponent<ITM_MetalScissors>()
+			.SetItemComponent<ITM_MetalScissors>(Items.Scissors)
 			.SetNameAndDescription("LtsOItems_MetalScissors_Name", "LtsOItems_MetalScissors_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("CardboardScissors")
+			.SetGeneratorCost(16)
+			.SetShopPrice(125)
+			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [SCISSORSVARTAG])
+			.SetEnum("CardboardScissors")
+			.SetItemComponent<ITM_CardboardScissors>(Items.Scissors)
+			.SetNameAndDescription("LtsOItems_CardboardScissors_Name", "LtsOItems_CardboardScissors_Desc")
+			.BuildAndSetup<ITM_CardboardScissors>(out var cardboardScissors)
+			.StoreAsNormal(appearsInStore: true, weight: 135, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			var newInstances = cardboardScissors.CreateNewReusableInstances(item, "LtsOItems_CardboardScissors_Name", 2);
+
+			newInstances[1].itemSpriteLarge = AssetLoader.SpriteFromFile(GetItemIcon("CardboardScissors_2", true), Vector2.one * 0.5f, 50f);
+			newInstances[1].itemSpriteSmall = AssetLoader.SpriteFromFile(GetItemIcon("CardboardScissors_2", false), Vector2.one * 0.5f, 50f);
+
+			newInstances[2].itemSpriteLarge = AssetLoader.SpriteFromFile(GetItemIcon("CardboardScissors_3", true), Vector2.one * 0.5f, 50f);
+			newInstances[2].itemSpriteSmall = AssetLoader.SpriteFromFile(GetItemIcon("CardboardScissors_3", false), Vector2.one * 0.5f, 50f);
 
 
 			// ----- Swinging door locks -----
@@ -507,12 +541,39 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(450)
 			.SetMeta(ItemFlags.Persists, [BOOTSVARTAG])
 			.SetEnum("ShinyCleanGloves")
-			.SetItemComponent<ITM_ShinyCleanGloves>()
+			.SetItemComponent<ITM_ShinyCleanGloves>(Items.Boots)
 			.SetNameAndDescription("LtsOItems_ShinyCleanGloves_Name", "LtsOItems_ShinyCleanGloves_Desc")
-			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 40, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.BuildAndSetup<ITM_Boots>(out var boots)
+			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
+			boots.setTime = 45f;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ReallyTallBoots")
+			.SetGeneratorCost(28)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists, [BOOTSVARTAG])
+			.SetEnum("ReallyTallBoots")
+			.SetItemComponent<ITM_ReallyTallBoots>(Items.Boots)
+			.SetNameAndDescription("LtsOItems_ReallyTallBoots_Name", "LtsOItems_ReallyTallBoots_Desc")
+			.BuildAndSetup(out boots)
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+
+			boots.setTime = 30f;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("RustyOldShoes")
+			.SetGeneratorCost(13)
+			.SetShopPrice(100)
+			.SetMeta(ItemFlags.Persists, [BOOTSVARTAG])
+			.SetEnum("RustyOldShoes")
+			.SetItemComponent<ITM_Boots>(Items.Boots)
+			.SetNameAndDescription("LtsOItems_RustyOldShoes_Name", "LtsOItems_RustyOldShoes_Desc")
+			.BuildAndSetup(out boots)
+			.StoreAsNormal(appearsInStore: true, weight: 175, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			boots.setTime = 15f;
+			boots.GetComponentInChildren<Image>().sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "RustyOldShoes_canvas.png"), Vector2.one * 0.5f);
 		}
 
 		static SoundObject GetYtpAudio(string name) 
@@ -525,10 +586,13 @@ namespace LotsOfItems.Plugin
 		static SoundObject GetGenericYtpAudio(int id) =>
 			GenericExtensions.FindResourceObjectByName<SoundObject>("YTPPickup_" + id);
 
+		static string GetItemIcon(string itemName, bool big) =>
+			Path.Combine(LotOfItemsPlugin.ModPath, $"{itemName}_{(big ? "largeIcon" : "smallIcon")}.png");
+
 		static ItemBuilder AutoGetSprites(this ItemBuilder bld, string itemName)
 		{
-			string smallPath = Path.Combine(LotOfItemsPlugin.ModPath, $"{itemName}_smallIcon.png"),
-				largePath = Path.Combine(LotOfItemsPlugin.ModPath, $"{itemName}_largeIcon.png");
+			string smallPath = GetItemIcon(itemName, false),
+				largePath = GetItemIcon(itemName, true);
 
 			Sprite bigIcon, smallIcon;
 			bool smallIconExists = File.Exists(smallPath), bigIconExists = File.Exists(largePath);

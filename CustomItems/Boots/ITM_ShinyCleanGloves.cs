@@ -1,9 +1,18 @@
 ﻿using System.Collections;
 using UnityEngine;
 using LotsOfItems.Components;
+using UnityEngine.UI;
+using LotsOfItems.ItemPrefabStructures;
 
-public class ITM_ShinyCleanGloves : ITM_Boots
+namespace LotsOfItems.CustomItems.Boots;
+public class ITM_ShinyCleanGloves : ITM_Boots, IItemPrefab
 {
+	public void SetupPrefab(ItemObject itm) =>
+		GetComponentInChildren<Image>().sprite = this.GetSprite("ShinyCleanGloves_canvas.png", 1f);
+	
+
+	public void SetupPrefabPost() { }
+
 	public override bool Use(PlayerManager pm)
 	{
 		this.pm = pm;

@@ -28,19 +28,19 @@ namespace LotsOfItems.Components
 
 		[HarmonyPatch(typeof(StandardDoor), "Clicked")]
 		[HarmonyPrefix]
-		static void MakeSureToBeSilentIfNeeded(int player, out bool __state, ref bool ___makeNoise)
+		static void MakeSureToBeSilentIfNeeded(int player, out bool __state, ref bool ___makesNoise)
 		{
-			__state = ___makeNoise;
+			__state = ___makesNoise;
 
 			var comp = Singleton<CoreGameManager>.Instance.GetPlayer(player).GetAttributes();
 			if (comp && comp.DoorOpeningIsSilent)
-				___makeNoise = false;
+				___makesNoise = false;
 		}
 
 		[HarmonyPatch(typeof(StandardDoor), "Clicked")]
 		[HarmonyPostfix]
-		static void CorrectNoiseAttributeAfterwards(bool __state, ref bool ___makeNoise) =>
-			___makeNoise = __state;
+		static void CorrectNoiseAttributeAfterwards(bool __state, ref bool ___makesNoise) =>
+			___makesNoise = __state;
 	}
 	
 }

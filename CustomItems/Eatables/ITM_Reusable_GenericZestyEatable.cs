@@ -26,6 +26,7 @@ namespace LotsOfItems.CustomItems.Eatables
 			yield return null;
 
 			pm.itm.SetItem(nextItem, pm.itm.selectedItem);
+			Destroy(gameObject);
 		}
 
 		[SerializeField]

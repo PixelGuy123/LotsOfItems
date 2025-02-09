@@ -137,14 +137,21 @@ namespace LotsOfItems.Plugin
 	}
 	public static class ReusableExtensions
 	{
-		public static void CreateNewReusableInstances<T>(this T ogItem, ItemObject ogItmObj, string nameKey, int count) where T : Item
+		public static ItemObject[] CreateNewReusableInstances<T>(this T ogItem, ItemObject ogItmObj, string nameKey, int count) where T : Item
 		{
+			var instances = new ItemObject[count + 1];
+			instances[0] = ogItmObj;
+
 			for (; count > 0; count--)
-				ogItem = ogItem.Internal_CreateNewReusableInstance(ogItmObj, nameKey, count);
+			{
+				ogItem = ogItem.Internal_CreateNewReusableInstance(ogItmObj, nameKey, count, out var itemObject);
+				instances[instances.Length - count] = itemObject;
+			}
+			return instances;
 		}
-		static T Internal_CreateNewReusableInstance<T>(this T ogItem, ItemObject ogItmObj, string newNameKey, int count) where T : Item
+		static T Internal_CreateNewReusableInstance<T>(this T ogItem, ItemObject ogItmObj, string newNameKey, int count, out ItemObject newItmObj) where T : Item
 		{
-			var newItmObj = UnityEngine.Object.Instantiate(ogItmObj);
+			newItmObj = UnityEngine.Object.Instantiate(ogItmObj);
 			newItmObj.nameKey = $"{newNameKey}_{count}";
 			newItmObj.name = $"ItmOb_{newItmObj.nameKey}";
 

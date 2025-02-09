@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using LotsOfItems.ItemPrefabStructures;
+﻿using LotsOfItems.ItemPrefabStructures;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.SwingingDoorLocks
 {
@@ -21,22 +21,20 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
 				Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward,
 				out hit, pm.pc.reach, pm.pc.ClickLayers))
 			{
+				StandardDoor door = hit.transform.GetComponent<StandardDoor>();
+				if (door != null && !door.locked)
+				{
+					door.Lock(false);
+					Destroy(gameObject);
+					return true;
+				}
+
 				IItemAcceptor acceptor = hit.transform.GetComponent<IItemAcceptor>();
 				if (acceptor != null && (acceptor.ItemFits(myItem) || acceptor.ItemFits(doorLockItem)))
 				{
-					StandardDoor door = hit.transform.GetComponent<StandardDoor>();
-					if (door != null)
-					{
-						door.Lock(false);
-						Destroy(gameObject);
-						return true;
-					}
-					else
-					{
-						acceptor.InsertItem(pm, pm.ec);
-						Destroy(gameObject);
-						return true;
-					}
+					acceptor.InsertItem(pm, pm.ec);
+					Destroy(gameObject);
+					return true;
 				}
 			}
 			return false;
