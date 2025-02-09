@@ -109,7 +109,7 @@ namespace LotsOfItems.Plugin
 			return newTex;
 		}
 
-		public static RaycastBlocker GetRawChalkParticleGenerator()
+		public static RaycastBlocker GetRawChalkParticleGenerator(bool visualOnly = false)
 		{
 			var chalk = GenericExtensions.FindResourceObject<ChalkEraser>();
 			chalk.gameObject.SetActive(false);
@@ -117,10 +117,16 @@ namespace LotsOfItems.Plugin
 			var chalkTransform = chalkClone.transform;
 
 			UnityEngine.Object.Destroy(chalkClone.GetComponent<RendererContainer>());
+			if (visualOnly)
+			{
+				foreach (var collider in chalkTransform.GetComponentsInChildren<Collider>())
+					UnityEngine.Object.Destroy(collider);
+			}
 			UnityEngine.Object.Destroy(chalkClone);
 
 			var blocker = chalkTransform.gameObject.AddComponent<RaycastBlocker>(); // Should make this work good
 			blocker.system = chalkTransform.GetComponent<ParticleSystem>();
+			blocker.colliders = visualOnly ? [] : chalkTransform.GetComponents<Collider>();
 
 			chalk.gameObject.SetActive(true);
 			chalkTransform.gameObject.ConvertToPrefab(true);

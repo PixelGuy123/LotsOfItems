@@ -8,6 +8,9 @@ namespace LotsOfItems.Components
 		[SerializeField]
 		public ParticleSystem system;
 
+		[SerializeField]
+		public Collider[] colliders;
+
 		bool isEnabled = false;
 
 
@@ -18,7 +21,7 @@ namespace LotsOfItems.Components
 		}
 		void OnTriggerEnter(Collider other)
 		{
-			if (isEnabled && other.isTrigger)
+			if (isEnabled && other.isTrigger && other.CompareTag("Player"))
 			{
 				var pm = other.GetComponent<PlayerManager>();
 				if (pm && !touchedPlayers.Contains(pm))
@@ -26,36 +29,18 @@ namespace LotsOfItems.Components
 					touchedPlayers.Add(pm);
 					pm.SetInvisible(true);
 				}
-				else
-				{
-					var entity = other.GetComponent<Entity>();
-					if (entity && !touchedEntities.Contains(entity))
-					{
-						touchedEntities.Add(entity);
-						entity.SetVisible(false);
-					}
-				}
 			}
 		}
 
 		void OnTriggerExit(Collider other)
 		{
-			if (isEnabled && other.isTrigger)
+			if (isEnabled && other.isTrigger && other.CompareTag("Player"))
 			{
 				var pm = other.GetComponent<PlayerManager>();
 				if (pm && touchedPlayers.Contains(pm))
 				{
 					touchedPlayers.Remove(pm);
 					pm.SetInvisible(false);
-				}
-				else
-				{
-					var entity = other.GetComponent<Entity>();
-					if (entity && touchedEntities.Contains(entity))
-					{
-						touchedEntities.Remove(entity);
-						entity.SetVisible(true);
-					}
 				}
 			}
 		}
@@ -66,17 +51,23 @@ namespace LotsOfItems.Components
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 
-			foreach (var e in touchedEntities)
-				e.SetVisible(true);
 			foreach (var player in touchedPlayers)
 				player.SetInvisible(false);
 
-			touchedEntities.Clear();
 			touchedPlayers.Clear();
+
+			for (int i = 0; i < colliders.Length; i++)
+				colliders[i].enabled = false;
+
+		}
+
+		void OnDestroy()
+		{
+			foreach (var player in touchedPlayers)
+				player.SetInvisible(false);
 		}
 
 
-		readonly HashSet<Entity> touchedEntities = [];
 		readonly HashSet<PlayerManager> touchedPlayers = [];
 	}
 }

@@ -23,6 +23,7 @@ namespace LotsOfItems.Plugin
 		public static string ModPath;
 		public static LotOfItemsPlugin plug;
 		internal List<ItemData> availableItems = [];
+		internal static AssetManager assetMan = new();
 
 #pragma warning disable IDE0051 // Remover membros privados não utilizados
 		private void Awake()
@@ -39,6 +40,8 @@ namespace LotsOfItems.Plugin
 			{
 				try
 				{
+					assetMan.Add("aud_explode", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "fogMachine_explode.wav")), "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white));
+
 					TheItemBuilder.StartBuilding();
 
 					var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();

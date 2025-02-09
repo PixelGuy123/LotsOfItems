@@ -4,6 +4,7 @@ using UnityEngine;
 using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Extensions;
 using LotsOfItems.Components;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.ChalkErasers
 {
@@ -11,10 +12,12 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 	{
 		[SerializeField]
 		internal RaycastBlocker fogParticlesPre;
+		[SerializeField]
+		internal Sprite[] explosionSheet;
 		[SerializeField] 
-		internal float minDuration = 28f, maxDuration = 31f, smallDelayBeforeDespawn = 5f;
+		internal float minDuration = 28f, maxDuration = 31f, smallDelayBeforeDespawn = 5f, explosionSpeed = 12f;
 		[SerializeField] 
-		internal int distance = 5; // Distance for DijkstraMap (10x10 area)
+		internal int distance = 5, minBreakParticles = 12, maxBreakParticles = 16; // Distance for DijkstraMap (10x10 area)
 		[SerializeField] 
 		internal Color initialFogColor = Color.white, finalFogColor = Color.red; // Final malfunction red color
 		[SerializeField]
@@ -22,7 +25,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
 		[SerializeField]
-		internal SoundObject audWorking, audStop;
+		internal SoundObject audWorking, audExplode;
 
 		private readonly List<RaycastBlocker> activeFogs = [];
 
@@ -30,16 +33,17 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 		{
 			audMan = gameObject.CreatePropagatedAudioManager(45f, 125f);
 			audWorking = this.GetSound("fogMachine_loop.wav", "LtsOItems_Vfx_FogMachine_Working", SoundType.Effect, Color.white);
-			audStop = this.GetSound("fogMachine_end.wav", "LtsOItems_Vfx_FogMachine_Stops", SoundType.Effect, Color.white);
+			audExplode = LotOfItemsPlugin.assetMan.Get<SoundObject>("aud_explode");
 
-			renderer = ObjectCreationExtensions.CreateSpriteBillboard(itm.itemSpriteLarge);
+			explosionSheet = this.GetSpriteSheet("FogMachine_world.png",3, 2, itm.itemSpriteLarge.pixelsPerUnit);
+
+			renderer = ObjectCreationExtensions.CreateSpriteBillboard(explosionSheet[0]);
 			renderer.transform.SetParent(transform);
 			renderer.transform.localPosition = Vector3.up * 1.32f;
-			renderer.transform.localScale = Vector3.one * 2f;
+			//renderer.transform.localScale = Vector3.one * 2f;
 			renderer.name = "FogMachineSprite";
 
 			fogParticlesPre = Plugin.Extensions.GetRawChalkParticleGenerator();
-
 		}
 		public void SetupPrefabPost() { }
 
@@ -86,10 +90,21 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 				fog.DisablePermanently(); // Should disable emission too
 
 			audMan.FlushQueue(true);
-			audMan.QueueAudio(audStop);
+			audMan.QueueAudio(audExplode);
+			float frame = 0f;
+			while (true)
+			{
+				frame += ec.EnvironmentTimeScale * Time.deltaTime * explosionSpeed;
+				if (frame >= explosionSheet.Length)
+					break;
+
+				renderer.sprite = explosionSheet[Mathf.FloorToInt(frame)];
+				yield return null;
+			}
+			renderer.enabled = false;
 
 			timer = smallDelayBeforeDespawn;
-			while (timer > 0f)
+			while (timer > 0f || audMan.QueuedAudioIsPlaying)
 			{
 				timer -= Time.deltaTime * ec.EnvironmentTimeScale;
 				yield return null;
