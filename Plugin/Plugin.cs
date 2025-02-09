@@ -59,7 +59,10 @@ namespace LotsOfItems.Plugin
 						principal.audNoEating = noEatRule;
 
 					foreach (var player in GenericExtensions.FindResourceObjects<PlayerManager>()) // History position record thing
+					{
 						player.gameObject.AddComponent<PlayerPositionHistory>().pm = player;
+						player.gameObject.AddComponent<PlayerCustomAttributes>();
+					}
 					
 				}
 				catch (System.Exception e)
