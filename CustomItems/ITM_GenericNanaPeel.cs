@@ -8,7 +8,7 @@ namespace LotsOfItems.CustomItems
 		internal virtual void AdditionalSpawnContribute() { }
 		internal virtual bool OnCollisionOverride(RaycastHit hit) => true;
 		internal virtual void OnFloorHit() { }
-		internal virtual bool EnableNanaPeelFunction => true;
+		internal virtual bool EntityTriggerStayOverride(Collider other) => true;
 	}
 
 	[HarmonyPatch(typeof(ITM_NanaPeel))]
@@ -33,10 +33,10 @@ namespace LotsOfItems.CustomItems
 
 		[HarmonyPatch("EntityTriggerStay")]
 		[HarmonyPrefix]
-		static bool ActuallyWorksAsNanaPeel(ITM_NanaPeel __instance)
+		static bool ActuallyWorksAsNanaPeel(ITM_NanaPeel __instance, Collider other)
 		{
 			if (__instance is ITM_GenericNanaPeel gen)
-				return gen.EnableNanaPeelFunction;
+				return gen.EntityTriggerStayOverride(other);
 			return true;
 		}
 

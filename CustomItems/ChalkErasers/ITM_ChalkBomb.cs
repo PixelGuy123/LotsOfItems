@@ -91,7 +91,8 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			Explode();
 		}
 
-		internal override bool EnableNanaPeelFunction => false;
+		internal override bool EntityTriggerStayOverride(Collider other) =>
+			false;
 
 		private void Explode()
 		{
