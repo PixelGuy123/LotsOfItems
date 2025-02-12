@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using HarmonyLib;
+using LotsOfItems.ItemPrefabStructures;
 
 namespace LotsOfItems.CustomItems
 {
-	public abstract class ITM_GenericNanaPeel : ITM_NanaPeel
+	public abstract class ITM_GenericNanaPeel : ITM_NanaPeel, IItemPrefab
 	{
+		public void SetupPrefab(ItemObject itm) =>
+			VirtualSetupPrefab(itm);
+		
+		public void SetupPrefabPost() { }
+		protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 		internal virtual void AdditionalSpawnContribute() { }
 		internal virtual bool OnCollisionOverride(RaycastHit hit) => true;
 		internal virtual void OnFloorHit() { }

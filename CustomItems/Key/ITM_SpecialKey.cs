@@ -30,6 +30,8 @@ namespace LotsOfItems.CustomItems.Key
 				if (swingingDoor && swingingDoor.locked)
 				{
 					swingingDoor.Unlock();
+					swingingDoor.GetComponent<CoinDoor>()?.InsertItem(pm, pm.ec);
+
 					Destroy(gameObject);
 					return true;
 				}

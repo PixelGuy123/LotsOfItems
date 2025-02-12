@@ -21,7 +21,9 @@ using PixelInternalAPI;
 using LotsOfItems.CustomItems.Scissors;
 using LotsOfItems.CustomItems.SwingingDoorLocks;
 using LotsOfItems.CustomItems.Boots;
+using LotsOfItems.CustomItems.AlarmClock;
 using UnityEngine.UI;
+using LotsOfItems.CustomItems.Tapes;
 
 namespace LotsOfItems.Plugin
 {
@@ -29,7 +31,7 @@ namespace LotsOfItems.Plugin
 	{
 		public static void StartBuilding()
 		{
-			const string 
+			const string
 				ZESTYVARTAG = "LtsOfItms_ZestyBar_Variant",
 				YTPVARTAG = "LtsOfItms_YTP_Variant",
 				DANGERTELEPORTERVARTAG = "LtsOfItms_DangerousTeleporter_Variant",
@@ -42,6 +44,8 @@ namespace LotsOfItems.Plugin
 				SCISSORSVARTAG = "LtsOfItms_SafetyScissors_Variant",
 				DOORLOCKVARTAG = "LtsOfItms_SwingingDoorLock_Variant",
 				BOOTSVARTAG = "LtsOfItms_Boots_Variant",
+				ALARMCLOCKVARTAG = "LtsOfItms_AlarmClock_Variant",
+				TAPEVARTAG = "LtsOfItms_Tape_Variant",
 				
 				PIRATE_CANN_HATE = "cann_hate",
 				CRIMINALPACK_CONTRABAND = "crmp_contraband";
@@ -401,6 +405,18 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("LandMine")
+			.SetGeneratorCost(25)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, CRIMINALPACK_CONTRABAND, PIRATE_CANN_HATE])
+			.SetEnum("LandMine")
+			.SetItemComponent<ITM_LandMine>()
+			.SetNameAndDescription("LtsOItems_LandMine_Name", "LtsOItems_LandMine_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 95, acceptableFloors: ["F2", "F3", "END" ]);
+
+
 
 			// ------------ QUARTERS -------------
 
@@ -574,6 +590,47 @@ namespace LotsOfItems.Plugin
 
 			boots.setTime = 15f;
 			boots.GetComponentInChildren<Image>().sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "RustyOldShoes_canvas.png"), Vector2.one * 0.5f);
+
+			// ---- Alarm Clock variant ----
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("TestClock")
+			.SetGeneratorCost(15)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("TestClock")
+			.SetItemComponent<ITM_TestClock>(Items.AlarmClock)
+			.SetNameAndDescription("LtsOItems_TestClock_Name", "LtsOItems_TestClock_Desc")
+			.BuildAndSetup<ITM_GenericAlarmClock>(out var genericClock)
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericClock.time = 15f;
+
+			// ---- tape -----
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BaldisMostFavoriteTape")
+			.SetGeneratorCost(36)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.None, [TAPEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("BaldisMostFavoriteTape")
+			.SetItemComponent<ITM_BaldisMostFavoriteTape>()
+			.SetNameAndDescription("LtsOItems_BaldisMostFavoriteTape_Name", "LtsOItems_BaldisMostFavoriteTape_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END" ]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PartyTape")
+			.SetGeneratorCost(31)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.None, [TAPEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("PartyTape")
+			.SetItemComponent<ITM_PartyTape>()
+			.SetNameAndDescription("LtsOItems_PartyTape_Name", "LtsOItems_PartyTape_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 60, acceptableFloors: ["F2", "F3", "END"]);
+
+
+			
 		}
 
 		static SoundObject GetYtpAudio(string name) 

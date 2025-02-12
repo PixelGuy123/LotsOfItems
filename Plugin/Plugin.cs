@@ -44,16 +44,6 @@ namespace LotsOfItems.Plugin
 
 					TheItemBuilder.StartBuilding();
 
-					var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();
-					for (int i = 0; i < availableItems.Count; i++)
-					{
-						var itm = availableItems[i];
-						if (!itm.acceptFieldTrips) continue;
-
-						fieldTrip.potentialItems = fieldTrip.potentialItems.AddToArray(new() { selection = itm.itm, weight = itm.weight });
-					}
-					fieldTrip.MarkAsNeverUnload();
-
 					SoundObject noEatRule = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "PRI_NoEating.wav")), "Vfx_PRI_NoEating", SoundType.Voice, new(0f, 0.117f, 0.482f));
 					foreach (var principal in GenericExtensions.FindResourceObjects<Principal>())
 						principal.audNoEating = noEatRule;
@@ -72,6 +62,18 @@ namespace LotsOfItems.Plugin
 					MTM101BaldiDevAPI.CauseCrash(Info, e);
 				}
 			}, false);
+
+			GeneratorManagement.RegisterFieldTripLootChange(this, (_, tripLoot) =>
+			{
+
+				for (int i = 0; i < availableItems.Count; i++)
+				{
+					var itm = availableItems[i];
+					if (!itm.acceptFieldTrips) continue; // No real check for tripType, idk why would I need to have specific selections
+
+					tripLoot.potentialItems.Add(new() { selection = itm.itm, weight = itm.weight });
+				}
+			});
 
 			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) => sco.levelObject.forcedItems.Clear()); // forced items screw up in F1 >:(
 

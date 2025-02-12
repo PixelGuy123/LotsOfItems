@@ -6,17 +6,16 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.NanaPeels
 {
-	public class ITM_TeleporterOWall : ITM_GenericNanaPeel, IItemPrefab
+	public class ITM_TeleporterOWall : ITM_GenericNanaPeel
 	{
-		public void SetupPrefab(ItemObject itm)
+
+		protected override void VirtualSetupPrefab(ItemObject itm)
 		{
 			audTeleport = GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport");
 			var rend = GetComponentInChildren<SpriteRenderer>();
 			rend.sprite = this.GetSprite("TeleporterOWall_world.png", rend.sprite.pixelsPerUnit);
 			endHeight = 1.35f;
 		}
-
-		public void SetupPrefabPost() { }
 
 		[SerializeField]
 		internal int maxHits = 5;

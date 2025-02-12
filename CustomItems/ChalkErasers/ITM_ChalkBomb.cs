@@ -4,11 +4,12 @@ using UnityEngine;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Components;
 using LotsOfItems.Plugin;
+using PixelInternalAPI.Classes;
 
 namespace LotsOfItems.CustomItems.ChalkErasers
 {
 	// Chalk Bomb inherits from ITM_GenericNanaPeel to reuse the throwing mechanics.
-	public class ITM_ChalkBomb : ITM_GenericNanaPeel, IItemPrefab
+	public class ITM_ChalkBomb : ITM_GenericNanaPeel
 	{
 
 		[SerializeField]
@@ -31,7 +32,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 
 		readonly List<RaycastBlocker> blockers = [];
 
-		public void SetupPrefab(ItemObject itm)
+		protected override void VirtualSetupPrefab(ItemObject itm)
 		{
 			audExplode = LotOfItemsPlugin.assetMan.Get<SoundObject>("aud_explode");
 
@@ -72,8 +73,6 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			col.type = ParticleSystemCollisionType.World;
 			col.enableDynamicColliders = false;
 		}
-		public void SetupPrefabPost() { }
-
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;
@@ -102,11 +101,20 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			renderer.enabled = false;
 			audioManager.FlushQueue(true);
 			audioManager.QueueAudio(audExplode);
-			// Push all NPCs away from the explosion center.
-			foreach (var entity in FindObjectsOfType<Entity>())
+			// Push all NPCs away from the explosion center
+			var colliders = Physics.OverlapSphere(transform.position, explosionDistance, LayerStorage.entityCollisionMask, QueryTriggerInteraction.Ignore);
+			for (int i = 0; i < colliders.Length; i++)
 			{
-				if (entity.InBounds && Vector3.Distance(entity.transform.position, transform.position) <= explosionForce)
-					entity.AddForce(new((entity.transform.position - transform.position).normalized, explosionForce, explosionAcceleration));
+				var entity = colliders[i].GetComponent<Entity>();
+				if (!entity || !entity.InBounds) continue;
+
+				Vector3 entityDirection = (entity.transform.position - transform.position).normalized;
+
+				ray.origin = transform.position;
+				ray.direction = entityDirection;
+
+				if (Physics.Raycast(ray, out hit, explosionForce, LayerStorage.principalLookerMask, QueryTriggerInteraction.Ignore) && hit.transform == entity.transform)
+					entity.AddForce(new(entityDirection, explosionForce, explosionAcceleration));
 			}
 
 			float dist = explosionForce * 2f;
@@ -177,9 +185,6 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			if (height > 10f)
 				height = 10f;
 		}
-
-
-
 		private void ApplyChalkEffect(Cell cell)
 		{
 			var fog = Instantiate(fogParticlesPre);
@@ -187,5 +192,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			fog.transform.position = cell.FloorWorldPosition + Vector3.up * transform.position.y;
 			blockers.Add(fog);
 		}
+		Ray ray = new();
+		RaycastHit hit;
 	}
 }
