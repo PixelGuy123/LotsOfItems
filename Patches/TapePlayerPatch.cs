@@ -11,10 +11,44 @@ namespace LotsOfItems.Patches
 	{
 		[HarmonyPatch("InsertItem")]
 		[HarmonyReversePatch]
-		public static void OverridenInsertItem(this TapePlayer instance, PlayerManager pm, EnvironmentController ec, IEnumerator newEnumerator = null, SoundObject[] newAudio = null)
+		static void OverridenInsertItem(this TapePlayer instance, PlayerManager pm, EnvironmentController ec)
 		{
 			IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> i) =>
 				new CodeMatcher(i)
+				.Start()
+				.InsertAndAdvance(
+					new(OpCodes.Ldarg_0),
+					Transpilers.EmitDelegate((TapePlayer tapePlayer) =>
+					{
+						//Debug.Log($"playing with: {newAudio} ref and enumerator ref: {newEnumerator}");
+
+						if (newAudio == null)
+							tapePlayer.time = tapePlayer.audInsert.soundClip.length; // Make sure it has a dynamic length to the environment muting thing
+						else
+						{
+							tapePlayer.time = 0f;
+							for (int i = 0; i < newAudio.Length; i++)
+								tapePlayer.time += newAudio[i].soundClip.length;
+						}
+						tapePlayer.StartCoroutine(newEnumerator ?? tapePlayer.Cooldown());
+
+						if (newAudio != null)
+						{
+							tapePlayer.audMan.FlushQueue(true);
+							for (int i = 0; i < newAudio.Length; i++)
+								tapePlayer.audMan.QueueAudio(newAudio[i]);
+							tapePlayer.audMan.PlaySingle(tapePlayer.audInsert);
+						}
+
+						newAudio = null;
+						newEnumerator = null;
+					})
+					)
+				.MatchForward(false, 
+				new(OpCodes.Ldarg_0),
+				new(CodeInstruction.LoadField(typeof(TapePlayer), "audMan"))
+				)
+				.RemoveInstructions(10) // Remove the audMan instructions
 				.MatchForward(false,
 				new(OpCodes.Ldarg_0),
 				new(OpCodes.Ldarg_0),
@@ -23,35 +57,24 @@ namespace LotsOfItems.Patches
 				new(OpCodes.Pop)
 				)
 				.RemoveInstructions(5) // remove this StartCoroutine
+
 				.InstructionEnumeration();
-
-#pragma warning disable CS8321
-			void Prefix()
-			{
-				if (newAudio == null)
-					instance.time = instance.audInsert.soundClip.length; // Make sure it has a dynamic length to the environment muting thing
-				else
-				{
-					instance.time = 0f;
-					for (int i = 0; i < newAudio.Length; i++)
-						instance.time += newAudio[i].soundClip.length;
-				}
-				instance.StartCoroutine(newEnumerator ?? instance.Cooldown());
-			}
-
-			void Postfix()
-			{
-				if (newAudio == null) return;
-				instance.audMan.FlushQueue(true);
-				for (int i = 0; i < newAudio.Length; i++)
-					instance.audMan.QueueAudio(newAudio[i]);
-				instance.audMan.PlaySingle(instance.beep);
-			}
-#pragma warning restore CS8321
 
 			var _ = Transpiler;
 
 			throw new System.NotImplementedException("stub");
 		}
+
+		static SoundObject[] newAudio = null;
+		static IEnumerator newEnumerator = null;
+
+		public static void CustomInsertItem(this TapePlayer tp, PlayerManager pm, EnvironmentController ec, IEnumerator newEnumerator = null, SoundObject[] newAudio = null)
+		{
+			TapePlayerPatch.newAudio = newAudio;
+			TapePlayerPatch.newEnumerator = newEnumerator;
+			tp.OverridenInsertItem(pm, ec);
+			
+		}
+		
 	}
 }

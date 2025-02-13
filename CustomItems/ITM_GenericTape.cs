@@ -5,7 +5,7 @@ using LotsOfItems.ItemPrefabStructures;
 
 namespace LotsOfItems.CustomItems
 {
-	public class ITM_GenericTape : Item, IItemPrefab
+	public abstract class ITM_GenericTape : Item, IItemPrefab
 	{
 		public void SetupPrefab(ItemObject itm) =>
 			VirtualSetupPrefab(itm);
@@ -23,7 +23,7 @@ namespace LotsOfItems.CustomItems
 				var component = hit.transform.GetComponent<TapePlayer>();
 				if (component != null && component.ItemFits(Items.Tape))
 				{	
-					component.OverridenInsertItem(pm, pm.ec, NewCooldown(component), audioToOverride);
+					component.CustomInsertItem(pm, pm.ec, NewCooldown(component), audioToOverride);
 					Destroy(gameObject);
 					return true;
 				}
