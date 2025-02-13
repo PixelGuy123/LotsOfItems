@@ -5,6 +5,7 @@ using LotsOfItems.Patches;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +25,7 @@ namespace LotsOfItems.Plugin
 		public static LotOfItemsPlugin plug;
 		internal List<ItemData> availableItems = [];
 		internal static AssetManager assetMan = new();
+		internal static LayerMask onlyNpcPlayerLayers = LayerMask.GetMask("NPCs", "Player", LayerMask.LayerToName(LayerStorage.standardEntities));
 
 #pragma warning disable IDE0051 // Remover membros privados não utilizados
 		private void Awake()
@@ -107,6 +109,27 @@ namespace LotsOfItems.Plugin
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, PostLoad, true);
 
+			// In case I need to know what layers are applied, I use this simple script
+			//DebugLayers(131072);
+			//DebugLayers(LayerStorage.principalLookerMask);
+			//DebugLayers(LayerStorage.standardEntities);
+
+
+			//static void DebugLayers(LayerMask layerMask)
+			//{
+			//	Debug.Log("Debugging layer: " + (int)layerMask);
+			//	for (int i = 0; i < 32; i++)
+			//	{
+			//		if ((layerMask & (1 << i)) != 0)
+			//		{
+			//			string layerName = LayerMask.LayerToName(i);
+			//			if (!string.IsNullOrEmpty(layerName))
+			//			{
+			//				Debug.Log($"\t({i}): {layerName}");
+			//			}
+			//		}
+			//	}
+			//}
 
 		}
 		void PostLoad()

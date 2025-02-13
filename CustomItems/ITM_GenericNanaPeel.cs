@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using HarmonyLib;
 using LotsOfItems.ItemPrefabStructures;
+using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems
 {
@@ -39,9 +40,9 @@ namespace LotsOfItems.CustomItems
 
 		[HarmonyPatch("EntityTriggerStay")]
 		[HarmonyPrefix]
-		static bool ActuallyWorksAsNanaPeel(ITM_NanaPeel __instance, Collider other)
+		static bool ActuallyWorksAsNanaPeel(ITM_NanaPeel __instance, Collider other, bool ___ready, bool ___slipping)
 		{
-			if (__instance is ITM_GenericNanaPeel gen)
+			if (__instance is ITM_GenericNanaPeel gen && ___ready && !___slipping)
 				return gen.EntityTriggerStayOverride(other);
 			return true;
 		}

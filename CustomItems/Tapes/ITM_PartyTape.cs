@@ -6,7 +6,7 @@ namespace LotsOfItems.CustomItems.Tapes;
 public class ITM_PartyTape : ITM_GenericTape
 {
 	protected override void VirtualSetupPrefab(ItemObject itm) =>
-		audioToOverride = [GenericExtensions.FindResourceObjectByName<SoundObject>("mus_party")];
+		audioToOverride = [GenericExtensions.FindResourceObjectByName<SoundObject>("Mus_Party")];
 	
 	public override bool Use(PlayerManager pm)
 	{

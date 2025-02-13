@@ -1,10 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Components;
 using LotsOfItems.Plugin;
-using PixelInternalAPI.Classes;
 
 namespace LotsOfItems.CustomItems.ChalkErasers
 {
@@ -29,6 +27,9 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 
 		[SerializeField]
 		internal ParticleSystem explodeParticles;
+
+		[SerializeField]
+		internal LayerMask collisionLayer = LotOfItemsPlugin.onlyNpcPlayerLayers;
 
 		readonly List<RaycastBlocker> blockers = [];
 
@@ -101,10 +102,12 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			renderer.enabled = false;
 			audioManager.FlushQueue(true);
 			audioManager.QueueAudio(audExplode);
-			// Push all NPCs away from the explosion center
-			var colliders = Physics.OverlapSphere(transform.position, explosionDistance, LayerStorage.entityCollisionMask, QueryTriggerInteraction.Ignore);
-			for (int i = 0; i < colliders.Length; i++)
+			Collider[] colliders = new Collider[16];
+			int num = Physics.OverlapSphereNonAlloc(transform.position, explosionDistance * 21f, colliders, collisionLayer);
+			for (int i = 0; i < num; i++)
 			{
+				if (colliders[i].transform == transform)
+					continue;
 				var entity = colliders[i].GetComponent<Entity>();
 				if (!entity || !entity.InBounds) continue;
 
@@ -113,7 +116,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 				ray.origin = transform.position;
 				ray.direction = entityDirection;
 
-				if (Physics.Raycast(ray, out hit, explosionForce, LayerStorage.principalLookerMask, QueryTriggerInteraction.Ignore) && hit.transform == entity.transform)
+				if (Physics.Raycast(ray, out hit, 9999f) && hit.transform == colliders[i].transform)
 					entity.AddForce(new(entityDirection, explosionForce, explosionAcceleration));
 			}
 

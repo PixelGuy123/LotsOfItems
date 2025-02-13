@@ -411,7 +411,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(650)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, CRIMINALPACK_CONTRABAND, PIRATE_CANN_HATE])
 			.SetEnum("LandMine")
-			.SetItemComponent<ITM_LandMine>()
+			.SetItemComponent<ITM_LandMine>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_LandMine_Name", "LtsOItems_LandMine_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 95, acceptableFloors: ["F2", "F3", "END" ]);
@@ -595,14 +595,27 @@ namespace LotsOfItems.Plugin
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("TestClock")
-			.SetGeneratorCost(15)
+			.SetGeneratorCost(25)
 			.SetShopPrice(650)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG, CRIMINALPACK_CONTRABAND])
 			.SetEnum("TestClock")
 			.SetItemComponent<ITM_TestClock>(Items.AlarmClock)
 			.SetNameAndDescription("LtsOItems_TestClock_Name", "LtsOItems_TestClock_Desc")
 			.BuildAndSetup<ITM_GenericAlarmClock>(out var genericClock)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericClock.time = 15f;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("WheelClock")
+			.SetGeneratorCost(20)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("WheelClock")
+			.SetItemComponent<ITM_WheelClock>(Items.AlarmClock)
+			.SetNameAndDescription("LtsOItems_WheelClock_Name", "LtsOItems_WheelClock_Desc")
+			.BuildAndSetup(out genericClock)
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericClock.time = 15f;
 
@@ -628,6 +641,7 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_PartyTape_Name", "LtsOItems_PartyTape_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 60, acceptableFloors: ["F2", "F3", "END"]);
+
 
 
 			

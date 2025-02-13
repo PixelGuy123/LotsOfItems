@@ -1,6 +1,6 @@
 ﻿using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
-using PixelInternalAPI.Classes;
+using LotsOfItems.Plugin;
 using System.Collections;
 using UnityEngine;
 
@@ -11,32 +11,43 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 	[SerializeField]
 	internal Sprite explosionSprite;
 	[SerializeField]
-	internal float explosionDistance = 5f, explosionForce = 50f, explosionAcceleration = -43.5f;
+	internal float explosionDistance = 45f, explosionForce = 50f, explosionAcceleration = -43.5f, bullyDelay = 5f;
 	[SerializeField]
 	internal SpriteRenderer renderer;
+	[SerializeField]
+	internal LayerMask collisionLayer = LotOfItemsPlugin.onlyNpcPlayerLayers;
 
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
 		base.VirtualSetupPrefab(itm);
 		renderer = GetComponentInChildren<SpriteRenderer>();
-		var sprs = this.GetSpriteSheet("LandMine_world.png", 2, 1, renderer.sprite.pixelsPerUnit);
+		var sprs = this.GetSpriteSheet("LandMine_world.png", 2, 1, renderer.sprite.pixelsPerUnit + 15f);
 		renderer.sprite = sprs[0];
 		explosionSprite = sprs[1];
 
 		activationSound = this.GetSound("landMine_Activate.wav", "LtsOItems_Vfx_Activated", SoundType.Effect, Color.white);
 		explosionSound = this.GetSound("landMine_explosion.wav", "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white);
+
+		endHeight = 1.35f;
+		throwSpeed *= 1.75f;
 	}
 
-	private bool hasExploded = false;
-	private bool activated = false;
+	bool canBeBully = true, hasExploded = false, activated = false;
 	Ray ray = new();
 	RaycastHit hit;
+
+	public override bool Use(PlayerManager pm)
+	{
+		this.pm = pm;
+		return base.Use(pm);
+	}
 
 	// Called when the mine hits the floor
 	internal override void OnFloorHit()
 	{
 		if (!activated)
 		{
+			StartCoroutine(CanBeBully());
 			audioManager.PlaySingle(activationSound);
 			activated = true;
 		}
@@ -56,17 +67,24 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 
 	private IEnumerator Explode()
 	{
+		if (canBeBully)
+			pm?.RuleBreak("Bullying", 1f);
 		hasExploded = true;
 		audioManager.PlaySingle(explosionSound);
 
-		// Create explosion sprite indicator
+
 		renderer.sprite = explosionSprite;
 		entity.SetFrozen(true);
 
-		// Push away entities within explosionDistance using provided snippet
-		Collider[] colliders = Physics.OverlapSphere(transform.position, explosionDistance, LayerStorage.entityCollisionMask, QueryTriggerInteraction.Ignore);
-		for (int i = 0; i < colliders.Length; i++)
+
+		Collider[] colliders = new Collider[16];
+		int num = Physics.OverlapSphereNonAlloc(transform.position, explosionDistance, colliders, collisionLayer);
+
+		for (int i = 0; i < num; i++)
 		{
+			if (colliders[i].transform == transform)
+				continue;
+
 			Entity entity = colliders[i].GetComponent<Entity>();
 			if (entity == null || !entity.InBounds)
 				continue;
@@ -75,7 +93,7 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 			ray.origin = transform.position;
 			ray.direction = entityDirection;
 
-			if (Physics.Raycast(ray, out hit, explosionForce, LayerStorage.principalLookerMask, QueryTriggerInteraction.Ignore) && hit.transform == entity.transform)
+			if (Physics.Raycast(ray, out hit, 9999f) && hit.transform == colliders[i].transform)
 				entity.AddForce(new Force(entityDirection, explosionForce, explosionAcceleration));
 		}
 
@@ -83,5 +101,16 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 			yield return null;
 
 		Destroy(gameObject);
+	}
+
+	IEnumerator CanBeBully()
+	{
+		float timer = bullyDelay;
+		while (timer > 0f)
+		{
+			timer -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+			yield return null;
+		}
+		canBeBully = false;
 	}
 }
