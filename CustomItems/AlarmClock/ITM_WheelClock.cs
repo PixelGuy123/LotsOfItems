@@ -5,7 +5,7 @@ namespace LotsOfItems.CustomItems.AlarmClock;
 public class ITM_WheelClock : ITM_GenericAlarmClock
 {
 	[SerializeField] 
-	private float speed = 16f; // movement speed
+	private float speed = 24f; // movement speed
 
 	private Vector3 direction; // current movement direction
 

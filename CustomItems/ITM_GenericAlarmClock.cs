@@ -41,7 +41,8 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 			ec.MakeNoise(transform.position, noiseVal);
 			audMan.FlushQueue(endCurrent: true);
 			audMan.PlaySingle(audRing);
-			spriteRenderer.sprite = clockSprite[3];
+			if (clockSprite.Length >= 4)
+				spriteRenderer.sprite = clockSprite[3];
 			OnClockRing();
 		}
 
