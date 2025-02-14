@@ -126,7 +126,7 @@ namespace LotsOfItems.Plugin
 
 			var blocker = chalkTransform.gameObject.AddComponent<RaycastBlocker>(); // Should make this work good
 			blocker.system = chalkTransform.GetComponent<ParticleSystem>();
-			blocker.colliders = visualOnly ? [] : chalkTransform.GetComponents<Collider>();
+			blocker.colliders = visualOnly ? [] : chalkTransform.GetComponentsInChildren<Collider>();
 
 			chalk.gameObject.SetActive(true);
 			chalkTransform.gameObject.ConvertToPrefab(true);

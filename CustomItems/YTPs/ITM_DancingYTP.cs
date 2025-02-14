@@ -15,7 +15,8 @@ namespace LotsOfItems.CustomItems.YTPs
 			this.pickup = pickup;
 			var vec = Random.insideUnitCircle.normalized;
 			dir = new(vec.x, 0f, vec.y);
-			room = ec.CellFromPosition(pickup.transform.position).room;
+			room = ec.CellFromPosition(pickup.transform.position).room.type == RoomType.Null ? 
+				GetComponentInParent<RoomController>() : ec.CellFromPosition(pickup.transform.position).room; // Usually pickups are children
 		}
 #pragma warning disable IDE0051 // Remover membros privados não utilizados
 		void Update()
@@ -58,15 +59,18 @@ namespace LotsOfItems.CustomItems.YTPs
 		[HarmonyPatch("AssignItem")]
 		static void Postfix(Pickup __instance)
 		{
-			if (__instance.item.item is ITM_DancingYTP)
-			{
-				if (!__instance.gameObject.GetComponent<DancingPickup>())
-					__instance.gameObject.AddComponent<DancingPickup>().AttachToPickup(__instance, Singleton<BaseGameManager>.Instance.Ec);
-				return;
-			}
 			var bounce = __instance.gameObject.GetComponent<DancingPickup>();
+
 			if (bounce)
 				Object.Destroy(bounce);
+
+			if (__instance.item.item is ITM_DancingYTP)
+			{
+				__instance.gameObject.AddComponent<DancingPickup>().AttachToPickup(__instance, Singleton<BaseGameManager>.Instance.Ec);
+				return;
+			}
+			
+			
 		}
 	}
 }
