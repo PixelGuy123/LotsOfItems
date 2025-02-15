@@ -11,6 +11,7 @@ namespace LotsOfItems.CustomItems
 		public void SetupPrefabPost() { }
 		protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 		public virtual void VirtualUpdate() { }
+		public virtual bool VirtualPreUpdate() => true;
 		public virtual bool OnWallHitOverride(RaycastHit hit) => true;
 		public virtual void VirtualEnd() { }
 
@@ -24,11 +25,12 @@ namespace LotsOfItems.CustomItems
 			initialDistance = (transform.position - pm.transform.position).magnitude;
 			
 		}
-		public void ForceStop(Vector3 crackRotation)
+		public void ForceStop(Vector3 crackRotation, bool motorAudio)
 		{
 			ForceStop();
 			audMan.PlaySingle(audClang);
-			motorAudio.Play();
+			if (motorAudio)
+				this.motorAudio.Play();
 			cracks.rotation = Quaternion.Euler(crackRotation);
 			cracks.gameObject.SetActive(true);
 		}
@@ -69,6 +71,15 @@ namespace LotsOfItems.CustomItems
 		{
 			if (__instance is ITM_GenericGrapplingHook genericHook)
 				genericHook.VirtualUpdate();
+		}
+
+		[HarmonyPatch("Update")]
+		[HarmonyPrefix]
+		static bool VirtualPreUpdateCall(ITM_GrapplingHook __instance)
+		{
+			if (__instance is ITM_GenericGrapplingHook genericHook)
+				return genericHook.VirtualPreUpdate();
+			return true;
 		}
 
 		[HarmonyPatch("End")]

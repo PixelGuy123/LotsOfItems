@@ -9,9 +9,23 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 		[SerializeField]
 		internal MovementModifier pushModifier = new(Vector3.zero, 0f, 1);
 
-		readonly private List<NPC> pushedNpcs = [];
+		readonly private List<KeyValuePair<NPC, float>> pushedNpcs = [];
 
 		bool touchedNPCs = false;
+		float limitDistance = -1f;
+
+		public override bool OnWallHitOverride(RaycastHit hit)
+		{
+			if (!touchedNPCs)
+				return true;
+
+			if (layerMask.Contains(hit.collider.gameObject.layer) && !locked)
+			{
+				ForceStop(-hit.normal, false);
+				limitDistance = Vector3.Distance(transform.position, pm.transform.position) * 1.75f;
+			}
+			return false;
+		}
 
 		protected override void VirtualSetupPrefab(ItemObject itm)
 		{
@@ -21,14 +35,35 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			uses = 0;
 		}
 
+		public override bool VirtualPreUpdate() =>
+				!locked || !touchedNPCs;
+		
+
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
-			pushModifier.movementAddend = transform.forward * speed * ec.EnvironmentTimeScale;
-			if (touchedNPCs)
+			pushModifier.movementAddend = (pm.transform.position - transform.position).normalized * speed * ec.EnvironmentTimeScale;
+			if (touchedNPCs && !snapped)
 			{
-				if ((transform.position - pm.transform.position).magnitude <= stopDistance)
-					End();
+				float distance;
+				for (int i = 0; i < pushedNpcs.Count; i++)
+				{
+					distance = Vector3.Distance(pushedNpcs[i].Key.transform.position, pm.transform.position);
+					if (distance >= pushedNpcs[i].Value || distance <= stopDistance)
+					{
+						pushedNpcs[i].Key?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+						pushedNpcs.RemoveAt(i--);
+					}
+				}
+				distance = (transform.position - pm.transform.position).magnitude;
+				bool outOfLimit = limitDistance != -1f && (distance > limitDistance || pushedNpcs.Count == 0);
+				if (distance <= stopDistance || outOfLimit)
+				{
+					if (outOfLimit)
+						ForceSnap();
+					else
+						End();
+				}
 			}
 		}
 
@@ -36,7 +71,7 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 		{
 			base.VirtualEnd();
 			foreach (var npc in pushedNpcs)
-				npc?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+				npc.Key?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
 		}
 
 		public override void EntityTriggerEnter(Collider other)
@@ -44,25 +79,14 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			if (!locked && other.isTrigger && other.CompareTag("NPC"))
 			{
 				// Try get component exists?? WOW
-				if (other.TryGetComponent(out NPC npc) && npc.Navigator.isActiveAndEnabled && !pushedNpcs.Contains(npc))
+				if (other.TryGetComponent(out NPC npc) && npc.Navigator.isActiveAndEnabled && !pushedNpcs.Exists(x => x.Key == npc))
 				{
 					if (!touchedNPCs)
-					{
-						speed = -speed;
 						touchedNPCs = true;
-					}
+					
 					npc.Navigator.Entity.ExternalActivity.moveMods.Add(pushModifier);
-					pushedNpcs.Add(npc);
+					pushedNpcs.Add(new(npc, Vector3.Distance(transform.position, pm.transform.position) * 1.15f));
 				}
-			}
-		}
-
-		public override void EntityTriggerExit(Collider other)
-		{
-			if (other.CompareTag("NPC") && other.TryGetComponent(out NPC npc) && pushedNpcs.Contains(npc))
-			{
-				npc.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
-				pushedNpcs.Remove(npc);
 			}
 		}
 	}
