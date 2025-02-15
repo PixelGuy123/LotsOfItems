@@ -39,7 +39,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 				if (targetNpc != null)
 				{
 					hasDetectedTarget = true;
-					momentumNav.Initialize(ec, false);
+					momentumNav.Initialize(ec);
 					StartCoroutine(UpdatePath());
 				}
 			}
@@ -67,6 +67,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 				return;
 			}
 
+			moveMod.movementAddend = transform.forward * speed * ec.EnvironmentTimeScale;
 			time -= Time.deltaTime * ec.EnvironmentTimeScale;
 
 			if (time <= 0f)
