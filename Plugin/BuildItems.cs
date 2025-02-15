@@ -26,6 +26,7 @@ using UnityEngine.UI;
 using LotsOfItems.CustomItems.Tapes;
 using LotsOfItems.CustomItems.GrapplingHooks;
 using LotsOfItems.CustomItems.PortalPosters;
+using LotsOfItems.CustomItems.BSODAs;
 
 namespace LotsOfItems.Plugin
 {
@@ -50,6 +51,7 @@ namespace LotsOfItems.Plugin
 				GRAPPLEVARTAG = "LtsOfItms_GrappleHook_Variant",
 				TAPEVARTAG = "LtsOfItms_Tape_Variant",
 				PORTALVARTAG = "LtsOfItms_Portal_Variant",
+				SODAVARTAG = "LtsOfItms_Bsoda_Variant",
 				
 				PIRATE_CANN_HATE = "cann_hate",
 				CRIMINALPACK_CONTRABAND = "crmp_contraband";
@@ -724,6 +726,33 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
 
+			// ----- Soda -----
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SadSoda")
+			.SetGeneratorCost(25)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("SadSoda")
+			.SetItemComponent<ITM_SadSoda>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_SadSoda_Name", "LtsOItems_SadSoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("RootBeer")
+			.SetGeneratorCost(30)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("RootBeer")
+			.SetItemComponent<ITM_RootBeer>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_RootBeer_Name", "LtsOItems_RootBeer_Desc")
+			.BuildAndSetup<ITM_RootBeer>(out var rootBeer)
+			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+
+			rootBeer.bsodaPrefab = GetVariantInstance<TemporaryBsoda>(Items.Bsoda);
+			rootBeer.time = 15f;
+			rootBeer.bsodaPrefab.spriteRenderer.sprite = AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud"), rootBeer.bsodaPrefab.spriteRenderer.sprite.pixelsPerUnit);
+
 		}
 
 		static SoundObject GetYtpAudio(string name) 
@@ -795,6 +824,13 @@ namespace LotsOfItems.Plugin
 
 		static ItemBuilder SetItemComponent<T>(this ItemBuilder bld, Items item) where T : Item
 		{
+			bld.SetItemComponent(GetVariantInstance<T>(item)); // To make sure it doesn't create a new one lol
+
+			return bld;
+		}
+
+		static T GetVariantInstance<T>(Items item) where T : Item
+		{
 			var ogItem = ItemMetaStorage.Instance.FindByEnum(item).value.item;
 
 			ogItem.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
@@ -809,9 +845,7 @@ namespace LotsOfItems.Plugin
 
 			newItm.gameObject.ConvertToPrefab(true);
 
-			bld.SetItemComponent(newItm); // To make sure it doesn't create a new one lol
-
-			return bld;
+			return newItm;
 		}
 	}
 

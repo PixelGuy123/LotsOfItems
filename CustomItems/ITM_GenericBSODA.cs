@@ -28,7 +28,6 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 		if (time <= 0f)
 		{
 			VirtualEnd();
-			hasEnded = true;
 		}
 	}
 
@@ -39,6 +38,7 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 	protected virtual void VirtualEnd()
 	{
 		// Cleanup logic
+		hasEnded = true;
 		foreach (ActivityModifier activityMod in activityMods)
 			activityMod.moveMods.Remove(moveMod);
 
