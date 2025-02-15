@@ -12,6 +12,7 @@ namespace LotsOfItems.CustomItems
 		protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 		public virtual void VirtualUpdate() { }
 		public virtual bool VirtualPreUpdate() => true;
+		public virtual bool VirtualPreLateUpdate() => true;
 		public virtual bool OnWallHitOverride(RaycastHit hit) => true;
 		public virtual void VirtualEnd() { }
 
@@ -78,7 +79,18 @@ namespace LotsOfItems.CustomItems
 		static bool VirtualPreUpdateCall(ITM_GrapplingHook __instance)
 		{
 			if (__instance is ITM_GenericGrapplingHook genericHook)
+			{
 				return genericHook.VirtualPreUpdate();
+			}
+			return true;
+		}
+
+		[HarmonyPatch("LateUpdate")]
+		[HarmonyPrefix]
+		static bool VirtualPreLateUpdateCall(ITM_GrapplingHook __instance)
+		{
+			if (__instance is ITM_GenericGrapplingHook genericHook)
+				return genericHook.VirtualPreLateUpdate();
 			return true;
 		}
 

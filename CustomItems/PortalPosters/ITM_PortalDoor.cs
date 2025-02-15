@@ -24,11 +24,18 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 	[SerializeField]
 	internal int usesBeforeDying = 3, noiseVal = 16;
 
+	[SerializeField]
+	internal ItemObject doorPre;
+
+	public ITM_PortalDoor Linkage { get; private set; }
+
+	public Direction PlacedDirection { get; private set; }
+
 	EnvironmentController ec;
 	int uses;
 	Coroutine closeCor;
 
-	public bool IsDead => uses <= 0;
+	public bool IsDead { get; private set; } = false;
 	public bool IsOpen => portalSprite.sprite == open;
 
 	public void SetupPrefab(ItemObject itm)
@@ -53,6 +60,29 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 		boxCollider.isTrigger = true;
 		boxCollider.size = new(4.5f, 5f, 0.7f);
 		boxCollider.center = Vector3.back * 0.35f;
+
+		doorPre = itm;
+	}
+
+	public void SetLinkage(ITM_PortalDoor link) 
+	{
+		if (link == Linkage)
+			return;
+
+		Linkage = link;
+		link.SetLinkage(this);
+	}
+
+	public void Spawn(EnvironmentController ec, Cell cell, Direction direction)
+	{
+		uses = usesBeforeDying;
+		this.ec = ec;
+
+		transform.position = cell.CenterWorldPosition + direction.ToVector3() * 4.98f;
+		transform.rotation = direction.ToRotation();
+		PlacedDirection = direction;
+
+		audman.PlaySingle(audClose);
 	}
 
 	public override bool Use(PlayerManager pm)
@@ -67,13 +97,20 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 		Cell cell = pm.ec.CellFromPosition(IntVector2.GetGridPosition(hit.transform.position - hit.transform.forward * 5f));
 		if (!cell.Null && cell.HasWallInDirection(direction) && !cell.WallHardCovered(direction))
 		{
-			uses = usesBeforeDying;
-			ec = pm.ec;
+			Spawn(pm.ec, cell, direction);
 
-			transform.position = cell.CenterWorldPosition + direction.ToVector3() * 4.98f; // temporary spawn
-			transform.rotation = direction.ToRotation();
+			var cells = ec.AllTilesNoGarbage(false, false);
+			cells.Remove(cell);
 
-			audman.PlaySingle(audClose);
+			if (cells.Count == 0)
+				return true; // Just not make a linkage if not possible
+
+			var linkCell = cells[Random.Range(0, cells.Count)];
+
+			var myLinkage = Instantiate((ITM_PortalDoor)doorPre.item);
+			myLinkage.SetLinkage(this);
+			myLinkage.Spawn(ec, linkCell, linkCell.RandomUncoveredDirection(new()));
+			myLinkage.name = name + "_Link";
 			return true;
 		}
 
@@ -98,8 +135,6 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 			t -= ec.EnvironmentTimeScale * Time.deltaTime;
 			yield return null;
 		}
-		audman.PlaySingle(audClose);
-		portalSprite.sprite = closed;
 	}
 
 	IEnumerator DieSequence()
@@ -118,17 +153,33 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 			t -= s * ec.EnvironmentTimeScale * Time.deltaTime;
 			if (t < 0f)
 			{
+				Destroy(gameObject);
 				yield break;
 			}
+			transform.localScale = Vector3.one * t;
 			yield return null;
 		}
 	}
 
 	void Open()
 	{
+		if (IsDead)
+			return;
+
 		if (closeCor != null)
 			StopCoroutine(closeCor);
 		closeCor = StartCoroutine(CloseEnum());
+	}
+
+	public void Close()
+	{
+		if (closeCor != null)
+			StopCoroutine(closeCor);
+		if (IsOpen)
+		{
+			audman.PlaySingle(audClose);
+			portalSprite.sprite = closed;
+		}
 	}
 
 	public void Clicked(int player)
@@ -140,10 +191,24 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 			ec.MakeNoise(transform.position, noiseVal);
 		Open();
 	}
-	public bool ClickableHidden() => false;
+	public bool ClickableHidden() => IsDead;
 	public bool ClickableRequiresNormalHeight() => false;
 	public void ClickableSighted(int player) { }
 	public void ClickableUnsighted(int player) { }
+
+	public void Die() 
+	{
+		if (IsDead)
+			return;
+		IsDead = true;
+		Close();
+		StartCoroutine(DieSequence());
+		Linkage?.Die();
+	}
+
+	public void Teleport() =>
+		audman.PlaySingle(audTeleport);
+	
 
 	void OnTriggerEnter(Collider other)
 	{
@@ -158,18 +223,30 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 			if (IsOpen && other.TryGetComponent<Entity>(out var entity))
 			{
 				if (--uses <= 0)
-					StartCoroutine(DieSequence());
-				Open();
+					Die();
+				else
+					Open();
+				
+				Teleport();
 
-				var cells = ec.AllTilesNoGarbage(false, false);
+				if (!Linkage)
+				{
+					var cells = ec.AllTilesNoGarbage(false, false);
 
-				if (cells.Count == 0)
-					throw new System.ArgumentOutOfRangeException("No available cell for the door (should be impossible).");
+					if (cells.Count == 0)
+						throw new System.ArgumentOutOfRangeException("No available cell for the door (should be impossible).");
 
-				var cell = cells[Random.Range(0, cells.Count)];
+					var cell = cells[Random.Range(0, cells.Count)];
 
-				entity.Teleport(cell.FloorWorldPosition);
-				audman.PlaySingle(audTeleport);
+					entity.Teleport(cell.FloorWorldPosition);
+					return;
+				}
+				Linkage.Teleport();
+				Linkage.Open();
+				var oppositeDirection = Linkage.PlacedDirection.GetOpposite();
+
+				entity.Teleport(Linkage.transform.position + oppositeDirection.ToVector3() * 4f);
+				entity.transform.rotation = oppositeDirection.ToRotation();
 			}
 		}
 

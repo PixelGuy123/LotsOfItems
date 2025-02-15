@@ -25,16 +25,30 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			{
 				ForceStop();
 				ForceSnap();
-				foreach (var npc in pushedNpcs)
-					npc?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+				for (int i = 0; i < pushedNpcs.Count; i++)
+				{
+					pushedNpcs[i]?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+					pushedNpcs.RemoveAt(i--);
+				}
 			}
 			return false;
 		}
 
-		public override void VirtualUpdate()
+		public override void VirtualEnd()
 		{
-			base.VirtualUpdate();
-			pushModifier.movementAddend = transform.forward * speed * ec.EnvironmentTimeScale;
+			base.VirtualEnd();
+			for (int i = 0; i < pushedNpcs.Count; i++)
+			{
+				pushedNpcs[i]?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+				pushedNpcs.RemoveAt(i--);
+			}
+		}
+
+		public override bool VirtualPreLateUpdate()
+		{
+			for (int i = 0; i < pushedNpcs.Count; i++)
+				pushedNpcs[i]?.Navigator.Entity.Teleport(transform.position);
+			return true;
 		}
 
 		public override void EntityTriggerEnter(Collider other)

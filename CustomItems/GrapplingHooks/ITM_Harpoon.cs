@@ -1,31 +1,12 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.GrapplingHooks
 {
 	public class ITM_Harpoon : ITM_GenericGrapplingHook
 	{
-		[SerializeField]
-		internal MovementModifier pushModifier = new(Vector3.zero, 0f, 1);
-
-		readonly private List<KeyValuePair<NPC, float>> pushedNpcs = [];
-
 		bool touchedNPCs = false;
-		float limitDistance = -1f;
-
-		public override bool OnWallHitOverride(RaycastHit hit)
-		{
-			if (!touchedNPCs)
-				return true;
-
-			if (layerMask.Contains(hit.collider.gameObject.layer) && !locked)
-			{
-				ForceStop(-hit.normal, false);
-				limitDistance = Vector3.Distance(transform.position, pm.transform.position) * 1.75f;
-			}
-			return false;
-		}
+		NPC npc = null;
 
 		protected override void VirtualSetupPrefab(ItemObject itm)
 		{
@@ -35,57 +16,66 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			uses = 0;
 		}
 
-		public override bool VirtualPreUpdate() =>
-				!locked || !touchedNPCs;
-		
-
-		public override void VirtualUpdate()
+		public override bool VirtualPreUpdate()
 		{
-			base.VirtualUpdate();
-			pushModifier.movementAddend = (pm.transform.position - transform.position).normalized * speed * ec.EnvironmentTimeScale;
-			if (touchedNPCs && !snapped)
+			if (touchedNPCs && locked)
 			{
-				float distance;
-				for (int i = 0; i < pushedNpcs.Count; i++)
+				if (!npc && !snapped)
 				{
-					distance = Vector3.Distance(pushedNpcs[i].Key.transform.position, pm.transform.position);
-					if (distance >= pushedNpcs[i].Value || distance <= stopDistance)
-					{
-						pushedNpcs[i].Key?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
-						pushedNpcs.RemoveAt(i--);
-					}
+					ForceSnap();
+					return false;
 				}
-				distance = (transform.position - pm.transform.position).magnitude;
-				bool outOfLimit = limitDistance != -1f && (distance > limitDistance || pushedNpcs.Count == 0);
-				if (distance <= stopDistance || outOfLimit)
+
+				entity.UpdateInternalMovement(Vector3.zero);
+				if ((transform.position - npc.transform.position).magnitude <= stopDistance)
 				{
-					if (outOfLimit)
-						ForceSnap();
-					else
-						End();
+					StartCoroutine(EndDelay());
 				}
+				moveMod.movementAddend = (transform.position - npc.transform.position).normalized * force;
+				if (!snapped)
+				{
+					motorAudio.pitch = (force - initialForce) / 100f + 1f;
+				}
+				force += forceIncrease * Time.deltaTime;
+				pressure = (transform.position - npc.transform.position).magnitude - (initialDistance - force);
+				if (pressure > maxPressure && !snapped)
+					ForceSnap();
+
+				return false;
 			}
+			return true;
+		}
+
+		public override bool VirtualPreLateUpdate()
+		{
+			if (touchedNPCs && npc)
+			{
+				positions[0] = transform.position;
+				positions[1] = npc.transform.position + Vector3.down * 1f;
+				lineRenderer.SetPositions(positions);
+				return false;
+			}
+			return true;
 		}
 
 		public override void VirtualEnd()
 		{
 			base.VirtualEnd();
-			foreach (var npc in pushedNpcs)
-				npc.Key?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+			if (touchedNPCs)
+				npc?.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
 		}
 
 		public override void EntityTriggerEnter(Collider other)
 		{
-			if (!locked && other.isTrigger && other.CompareTag("NPC"))
+			if (!touchedNPCs && !locked && other.isTrigger && other.CompareTag("NPC"))
 			{
 				// Try get component exists?? WOW
-				if (other.TryGetComponent(out NPC npc) && npc.Navigator.isActiveAndEnabled && !pushedNpcs.Exists(x => x.Key == npc))
+				if (other.TryGetComponent(out NPC npc) && npc.Navigator.isActiveAndEnabled)
 				{
-					if (!touchedNPCs)
-						touchedNPCs = true;
-					
-					npc.Navigator.Entity.ExternalActivity.moveMods.Add(pushModifier);
-					pushedNpcs.Add(new(npc, Vector3.Distance(transform.position, pm.transform.position) * 1.15f));
+					touchedNPCs = true;
+					npc.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
+					pm.Am.moveMods.Remove(moveMod);
+					this.npc = npc;
 				}
 			}
 		}
