@@ -44,11 +44,17 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			}
 		}
 
-		public override bool VirtualPreLateUpdate()
+		public override void VirtualUpdate()
 		{
 			for (int i = 0; i < pushedNpcs.Count; i++)
-				pushedNpcs[i]?.Navigator.Entity.Teleport(transform.position);
-			return true;
+			{
+				if (!pushedNpcs[i] || Vector3.Distance(transform.position, pushedNpcs[i].transform.position) > stopDistance)
+				{
+					pushedNpcs.RemoveAt(i--);
+					continue;
+				}
+				pushedNpcs[i].Navigator.Entity.Teleport(transform.position);
+			}
 		}
 
 		public override void EntityTriggerEnter(Collider other)
@@ -60,16 +66,8 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 				{
 					npc.Navigator.Entity.ExternalActivity.moveMods.Add(pushModifier);
 					pushedNpcs.Add(npc);
+					npc.Navigator.Entity.Teleport(transform.position);
 				}
-			}
-		}
-
-		public override void EntityTriggerExit(Collider other)
-		{
-			if (other.CompareTag("NPC") && other.TryGetComponent(out NPC npc) && pushedNpcs.Contains(npc))
-			{
-				npc.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
-				pushedNpcs.Remove(npc);
 			}
 		}
 	}

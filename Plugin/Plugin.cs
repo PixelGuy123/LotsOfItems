@@ -88,6 +88,14 @@ namespace LotsOfItems.Plugin
 
 				for (int i = 0; i < availableItems.Count; i++)
 				{
+					// This will allow you to disable items you want. The release build won't have it to force people to enjoy every single bit of this mod lol
+					//if (!Config.Bind("Item Settings", 
+					//	$"Disable {Singleton<LocalizationManager>.Instance.GetLocalizedText(availableItems[i].itm.nameKey)}", 
+					//	true, 
+					//	"If True, this item will spawn naturally in the game (in levels made by the Level Generator).")
+					//.Value)
+					//	continue;
+
 					if (availableItems[i].acceptableFloors.Contains(name))
 					{
 						levelObjectUsed = true;
