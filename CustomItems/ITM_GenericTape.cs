@@ -14,6 +14,9 @@ namespace LotsOfItems.CustomItems
 
 		[SerializeField]
 		internal SoundObject[] audioToOverride = null;
+
+		[SerializeField]
+		internal bool useOriginalTapePlayerFunction = false;
 		protected virtual IEnumerator NewCooldown(TapePlayer tapePlayer) => null;
 
 		public override bool Use(PlayerManager pm)
@@ -23,7 +26,7 @@ namespace LotsOfItems.CustomItems
 				var component = hit.transform.GetComponent<TapePlayer>();
 				if (component != null && component.ItemFits(Items.Tape))
 				{	
-					component.CustomInsertItem(pm, pm.ec, NewCooldown(component), audioToOverride);
+					component.CustomInsertItem(pm, pm.ec, NewCooldown(component), audioToOverride, useOriginalTapePlayerFunction);
 					Destroy(gameObject);
 					return true;
 				}

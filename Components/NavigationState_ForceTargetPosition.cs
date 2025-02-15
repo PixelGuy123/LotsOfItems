@@ -10,7 +10,7 @@ namespace LotsOfItems.Components
 		{
 			if (active && npc.ec.CellFromPosition(npc.transform.position) != cellToGo)
 				npc.Navigator.FindPath(destination);
-			else if (NoDestinEmpty)
+			else if (!NoDestinEmpty)
 				base.DestinationEmpty();
 		}
 

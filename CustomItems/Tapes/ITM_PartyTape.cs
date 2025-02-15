@@ -7,22 +7,16 @@ public class ITM_PartyTape : ITM_GenericTape
 {
 	protected override void VirtualSetupPrefab(ItemObject itm) =>
 		audioToOverride = [GenericExtensions.FindResourceObjectByName<SoundObject>("Mus_Party")];
-	
-	public override bool Use(PlayerManager pm)
-	{
-		this.pm = pm;
-		return base.Use(pm);
-	}
 
 	// Coroutine that drags Baldi to the player's position until the tape finishes playing.
 	protected override IEnumerator NewCooldown(TapePlayer tapePlayer)
 	{
 		List<NavigationState_PartyEvent> navigationStates = [];
-		foreach (NPC npc in pm.ec.Npcs)
+		foreach (NPC npc in tapePlayer.Ec.Npcs)
 		{
 			if (npc.Navigator.enabled)
 			{
-				NavigationState_PartyEvent navigationState_PartyEvent = new(npc, 31, pm.ec.CellFromPosition(tapePlayer.transform.position).room);
+				NavigationState_PartyEvent navigationState_PartyEvent = new(npc, 31, tapePlayer.Ec.CellFromPosition(tapePlayer.transform.position).room);
 				navigationStates.Add(navigationState_PartyEvent);
 				npc.navigationStateMachine.ChangeState(navigationState_PartyEvent);
 			}

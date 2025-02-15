@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace LotsOfItems.Patches
 {
@@ -30,7 +31,15 @@ namespace LotsOfItems.Patches
 							for (int i = 0; i < newAudio.Length; i++)
 								tapePlayer.time += newAudio[i].soundClip.length;
 						}
-						tapePlayer.StartCoroutine(newEnumerator ?? tapePlayer.Cooldown());
+
+						if (newEnumerator != null)
+						{
+							tapePlayer.StartCoroutine(newEnumerator);
+							if (activateOriginalEnumeratorToo)
+								tapePlayer.StartCoroutine(tapePlayer.Cooldown());
+						}
+						else
+							tapePlayer.StartCoroutine(tapePlayer.Cooldown());
 
 						if (newAudio != null)
 						{
@@ -42,6 +51,7 @@ namespace LotsOfItems.Patches
 
 						newAudio = null;
 						newEnumerator = null;
+						activateOriginalEnumeratorToo = false;
 					})
 					)
 				.MatchForward(false, 
@@ -67,11 +77,13 @@ namespace LotsOfItems.Patches
 
 		static SoundObject[] newAudio = null;
 		static IEnumerator newEnumerator = null;
+		static bool activateOriginalEnumeratorToo = false;
 
-		public static void CustomInsertItem(this TapePlayer tp, PlayerManager pm, EnvironmentController ec, IEnumerator newEnumerator = null, SoundObject[] newAudio = null)
+		public static void CustomInsertItem(this TapePlayer tp, PlayerManager pm, EnvironmentController ec, IEnumerator newEnumerator = null, SoundObject[] newAudio = null, bool activateOgEnumerator = false)
 		{
 			TapePlayerPatch.newAudio = newAudio;
 			TapePlayerPatch.newEnumerator = newEnumerator;
+			activateOriginalEnumeratorToo = activateOgEnumerator;
 			tp.OverridenInsertItem(pm, ec);
 			
 		}

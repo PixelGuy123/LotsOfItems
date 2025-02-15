@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using LotsOfItems.Components;
 using LotsOfItems.Plugin;
+using System;
+using PixelInternalAPI.Classes;
 
 namespace LotsOfItems.CustomItems.ChalkErasers
 {
@@ -102,22 +104,24 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			renderer.enabled = false;
 			audioManager.FlushQueue(true);
 			audioManager.QueueAudio(audExplode);
-			Collider[] colliders = new Collider[16];
-			int num = Physics.OverlapSphereNonAlloc(transform.position, explosionDistance * 21f, colliders, collisionLayer);
-			for (int i = 0; i < num; i++)
+			Collider[] colliders = Physics.OverlapSphere(transform.position, explosionDistance, collisionLayer, QueryTriggerInteraction.Ignore);
+
+			Ray ray = new();
+			for (int i = 0; i < colliders.Length; i++)
 			{
 				if (colliders[i].transform == transform)
 					continue;
-				var entity = colliders[i].GetComponent<Entity>();
-				if (!entity || !entity.InBounds) continue;
+
+				Entity entity = colliders[i].GetComponent<Entity>();
+				if (entity == null || !entity.InBounds)
+					continue;
 
 				Vector3 entityDirection = (entity.transform.position - transform.position).normalized;
-
 				ray.origin = transform.position;
 				ray.direction = entityDirection;
 
-				if (Physics.Raycast(ray, out hit, 9999f) && hit.transform == colliders[i].transform)
-					entity.AddForce(new(entityDirection, explosionForce, explosionAcceleration));
+				if (Physics.Raycast(ray, out var hit, 9999f, LayerStorage.principalLookerMask) && hit.transform == colliders[i].transform)
+					entity.AddForce(new Force(entityDirection, explosionForce, explosionAcceleration));
 			}
 
 			float dist = explosionForce * 2f;
@@ -195,7 +199,5 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			fog.transform.position = cell.FloorWorldPosition + Vector3.up * transform.position.y;
 			blockers.Add(fog);
 		}
-		Ray ray = new();
-		RaycastHit hit;
 	}
 }

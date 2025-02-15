@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using LotsOfItems.Components;
 using UnityEngine.UI;
 using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Classes;
@@ -44,9 +43,6 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 		}
 
 		overrider.SetHeight(9.5f);
-		foreach (var npc in pm.ec.Npcs)
-			
-
 		pm.plm.Entity.SetIgnoreAddend(true);
 		this.pm = pm;
 		canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;

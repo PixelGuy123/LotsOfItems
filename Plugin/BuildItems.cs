@@ -24,6 +24,8 @@ using LotsOfItems.CustomItems.Boots;
 using LotsOfItems.CustomItems.AlarmClock;
 using UnityEngine.UI;
 using LotsOfItems.CustomItems.Tapes;
+using LotsOfItems.CustomItems.GrapplingHooks;
+using LotsOfItems.CustomItems.PortalPosters;
 
 namespace LotsOfItems.Plugin
 {
@@ -45,13 +47,15 @@ namespace LotsOfItems.Plugin
 				DOORLOCKVARTAG = "LtsOfItms_SwingingDoorLock_Variant",
 				BOOTSVARTAG = "LtsOfItms_Boots_Variant",
 				ALARMCLOCKVARTAG = "LtsOfItms_AlarmClock_Variant",
+				GRAPPLEVARTAG = "LtsOfItms_GrappleHook_Variant",
 				TAPEVARTAG = "LtsOfItms_Tape_Variant",
+				PORTALVARTAG = "LtsOfItms_Portal_Variant",
 				
 				PIRATE_CANN_HATE = "cann_hate",
 				CRIMINALPACK_CONTRABAND = "crmp_contraband";
 
 			// ---------- YTPS
-			var item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("squareYtp")
 				.SetGeneratorCost(20)
 				.SetEnum(Items.Points)
@@ -98,7 +102,7 @@ namespace LotsOfItems.Plugin
 				.SetNameAndDescription("LtsOItems_DancingYtp_Name", "LtsOItems_DancingYtp_Desc")
 				.BuildAndSetup<ITM_YTPs>(out var ytp)
 				.StoreAsNormal(appearsInStore: false, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
-			ytp.value = 65;
+			ytp.value = 125;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("greenFakeYtp")
@@ -180,11 +184,11 @@ namespace LotsOfItems.Plugin
 				.BuildAndSetup()
 				.StoreAsNormal(appearsInStore: true, weight: 115, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
-			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			var item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("pickles")
 				.SetGeneratorCost(25)
 				.SetShopPrice(575)
-				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, ["food", ZESTYVARTAG, CRIMINALPACK_CONTRABAND])
+				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, ["food", ZESTYVARTAG])
 				.SetEnum("JarOfPickles")
 				.SetItemComponent<ITM_Reusable_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_Pickles_Name", "LtsOItems_Pickles_Desc")
@@ -604,7 +608,8 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup<ITM_GenericAlarmClock>(out var genericClock)
 			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
 
-			genericClock.time = 15f;
+			genericClock.setTime[0] = 15f;
+			genericClock.initSetTime = 0;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("WheelClock")
@@ -617,14 +622,44 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup(out genericClock)
 			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
-			genericClock.time = 15f;
+			genericClock.setTime[0] = 15f;
+			genericClock.initSetTime = 0;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("DynamiteClock")
+			.SetGeneratorCost(32)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG, CRIMINALPACK_CONTRABAND, PIRATE_CANN_HATE])
+			.SetEnum("DynamiteClock")
+			.SetItemComponent<ITM_DynamiteClock>(Items.AlarmClock)
+			.SetNameAndDescription("LtsOItems_DynamiteClock_Name", "LtsOItems_DynamiteClock_Desc")
+			.BuildAndSetup(out genericClock)
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericClock.setTime[0] = 15f;
+			genericClock.initSetTime = 0;
+			genericClock.noiseVal = 120;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("AncientClock")
+			.SetGeneratorCost(37)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG])
+			.SetEnum("AncientClock")
+			.SetItemComponent<ITM_AncientClock>(Items.AlarmClock)
+			.SetNameAndDescription("LtsOItems_AncientClock_Name", "LtsOItems_AncientClock_Desc")
+			.BuildAndSetup(out genericClock)
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericClock.setTime[0] = 30f;
+			genericClock.initSetTime = 0;
 
 			// ---- tape -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BaldisMostFavoriteTape")
 			.SetGeneratorCost(36)
 			.SetShopPrice(500)
-			.SetMeta(ItemFlags.None, [TAPEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.None, [TAPEVARTAG])
 			.SetEnum("BaldisMostFavoriteTape")
 			.SetItemComponent<ITM_BaldisMostFavoriteTape>()
 			.SetNameAndDescription("LtsOItems_BaldisMostFavoriteTape_Name", "LtsOItems_BaldisMostFavoriteTape_Desc")
@@ -635,16 +670,60 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("PartyTape")
 			.SetGeneratorCost(31)
 			.SetShopPrice(450)
-			.SetMeta(ItemFlags.None, [TAPEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.None, [TAPEVARTAG])
 			.SetEnum("PartyTape")
 			.SetItemComponent<ITM_PartyTape>()
 			.SetNameAndDescription("LtsOItems_PartyTape_Name", "LtsOItems_PartyTape_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 60, acceptableFloors: ["F2", "F3", "END"]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("LeastFavoriteTape")
+			.SetGeneratorCost(35)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists, [TAPEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("LeastFavoriteTape")
+			.SetItemComponent<ITM_LeastFavoriteTape>()
+			.SetNameAndDescription("LtsOItems_LeastFavoriteTape_Name", "LtsOItems_LeastFavoriteTape_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
+			// --- Grapples ---
 
-			
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PushingHook")
+			.SetGeneratorCost(35)
+			.SetShopPrice(850)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [GRAPPLEVARTAG])
+			.SetEnum("PushingHook")
+			.SetItemComponent<ITM_PushingHook>(Items.GrapplingHook)
+			.SetNameAndDescription("LtsOItems_PushingHook_Name", "LtsOItems_PushingHook_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("Harpoon")
+			.SetGeneratorCost(32)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [GRAPPLEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("Harpoon")
+			.SetItemComponent<ITM_Harpoon>(Items.GrapplingHook)
+			.SetNameAndDescription("LtsOItems_Harpoon_Name", "LtsOItems_Harpoon_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+
+			// ----- portal poster variant -----
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PortalDoor")
+			.SetGeneratorCost(45)
+			.SetShopPrice(1200)
+			.SetMeta(ItemFlags.Persists, [PORTALVARTAG])
+			.SetEnum("PortalDoor")
+			.SetItemComponent<ITM_PortalDoor>()
+			.SetNameAndDescription("LtsOItems_PortalDoor_Name", "LtsOItems_PortalDoor_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+
 		}
 
 		static SoundObject GetYtpAudio(string name) 

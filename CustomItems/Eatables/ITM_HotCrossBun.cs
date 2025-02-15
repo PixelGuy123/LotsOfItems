@@ -26,7 +26,7 @@ namespace LotsOfItems.CustomItems.Eatables
 
 			foreach (var npc in pm.ec.Npcs)
 			{
-				if (npc.Navigator.enabled && npc.Navigator.Entity.InBounds && map.Value(IntVector2.GetGridPosition(npc.transform.position)) <= minimumDistanceForCall)
+				if (npc.Navigator.enabled && map.Value(IntVector2.GetGridPosition(npc.transform.position)) <= minimumDistanceForCall)
 					npc.navigationStateMachine.ChangeState(new NavigationState_ForceTargetPosition(npc, 40, pm.transform.position));
 			}
 

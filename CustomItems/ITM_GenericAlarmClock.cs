@@ -15,6 +15,7 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 	protected virtual void OnClockRing() { }
 	public virtual bool AllowClickable() => true;
 	protected virtual void OnClockClicked() { }
+	protected virtual void Destroy() => Destroy(gameObject);
 
 	public IEnumerator OverrideTimer(float initTime)
 	{
@@ -41,15 +42,13 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 			ec.MakeNoise(transform.position, noiseVal);
 			audMan.FlushQueue(endCurrent: true);
 			audMan.PlaySingle(audRing);
-			if (clockSprite.Length >= 4)
-				spriteRenderer.sprite = clockSprite[3];
 			OnClockRing();
 		}
 
 		finished = true;
 		while (audMan.QueuedAudioIsPlaying)
 			yield return null;
-		Destroy(gameObject);
+		Destroy();
 	}
 
 	// Custom click handler with hook

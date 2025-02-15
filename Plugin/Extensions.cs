@@ -6,6 +6,7 @@ using UnityEngine;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using LotsOfItems.Components;
+using MTM101BaldAPI.Registers;
 
 namespace LotsOfItems.Plugin
 {
@@ -142,9 +143,14 @@ namespace LotsOfItems.Plugin
 			var instances = new ItemObject[count + 1];
 			instances[0] = ogItmObj;
 
+			var meta = ogItmObj.GetMeta();
+			meta.itemObjects = new ItemObject[count + 1];
+			meta.itemObjects[0] = ogItmObj;
+
 			for (; count > 0; count--)
 			{
 				ogItem = ogItem.Internal_CreateNewReusableInstance(ogItmObj, nameKey, count, out var itemObject);
+				meta.itemObjects[meta.itemObjects.Length - count] = itemObject;
 				instances[instances.Length - count] = itemObject;
 			}
 			return instances;

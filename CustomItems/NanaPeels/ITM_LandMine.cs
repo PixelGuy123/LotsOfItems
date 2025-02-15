@@ -1,6 +1,7 @@
 ﻿using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using PixelInternalAPI.Classes;
 using System.Collections;
 using UnityEngine;
 
@@ -33,8 +34,6 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 	}
 
 	bool canBeBully = true, hasExploded = false, activated = false;
-	Ray ray = new();
-	RaycastHit hit;
 
 	public override bool Use(PlayerManager pm)
 	{
@@ -77,10 +76,10 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 		entity.SetFrozen(true);
 
 
-		Collider[] colliders = new Collider[16];
-		int num = Physics.OverlapSphereNonAlloc(transform.position, explosionDistance, colliders, collisionLayer);
+		Collider[] colliders = Physics.OverlapSphere(transform.position, explosionDistance, collisionLayer, QueryTriggerInteraction.Ignore);
 
-		for (int i = 0; i < num; i++)
+		Ray ray = new();
+		for (int i = 0; i < colliders.Length; i++)
 		{
 			if (colliders[i].transform == transform)
 				continue;
@@ -93,7 +92,7 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 			ray.origin = transform.position;
 			ray.direction = entityDirection;
 
-			if (Physics.Raycast(ray, out hit, 9999f) && hit.transform == colliders[i].transform)
+			if (Physics.Raycast(ray, out var hit, 9999f, LayerStorage.principalLookerMask) && hit.transform == colliders[i].transform)
 				entity.AddForce(new Force(entityDirection, explosionForce, explosionAcceleration));
 		}
 
