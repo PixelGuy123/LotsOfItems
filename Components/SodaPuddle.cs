@@ -6,7 +6,7 @@ namespace LotsOfItems.Components;
 public class SodaPuddle : MonoBehaviour
 {
 	[SerializeField]
-	private MovementModifier speedDebuff = new(Vector3.zero, 0.6f);
+	internal MovementModifier speedDebuff = new(Vector3.zero, 0.6f);
 
 	[SerializeField]
 	internal float spawnSpeed = 10f;

@@ -15,7 +15,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 		private SoundObject audPressureSound, audExplode;
 
 		[SerializeField]
-		internal float explosionRadius = 65f, timerBeforeExploding = 15f, explosionForce = 85f, explosionAcceleration = -45f, shakingAnimationSpeed = 10f,
+		internal float explosionRadius = 65f, timerBeforeExploding = 7.5f, explosionForce = 85f, explosionAcceleration = -45f, shakingAnimationSpeed = 10f,
 			puddleLifeTime = 30f;
 
 		[SerializeField]

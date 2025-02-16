@@ -10,6 +10,7 @@ public class ITM_OSODA : ITM_GenericBSODA
 {
 	[SerializeField] 
 	private float puddleLifeTime = 30f;
+
 	[SerializeField] 
 	private SodaPuddle puddlePrefab;
 
@@ -19,9 +20,11 @@ public class ITM_OSODA : ITM_GenericBSODA
 		time = 10f;
 		speed *= 1.15f;
 		moveMod.movementMultiplier = 0.1f;
+		AddendMultiplier = 0.75f;
 
 		spriteRenderer.sprite = this.GetSprite("OSODA_Spray.png", spriteRenderer.sprite.pixelsPerUnit);
 		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 
 		var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(
 				spriteRenderer.sprite, // temp sprite
@@ -33,6 +36,7 @@ public class ITM_OSODA : ITM_GenericBSODA
 		puddlePrefab = puddleObject.gameObject.AddComponent<SodaPuddle>();
 		puddlePrefab.gameObject.ConvertToPrefab(true);
 		puddlePrefab.name = "SodaPuddle";
+		puddlePrefab.speedDebuff.movementMultiplier = moveMod.movementMultiplier;
 
 		var collider = puddlePrefab.gameObject.AddComponent<BoxCollider>();
 		collider.isTrigger = true;
@@ -55,7 +59,7 @@ public class ITM_OSODA : ITM_GenericBSODA
 		// Check if the current cell is inside the school (placeholder check)
 		if (ec.ContainsCoordinates(transform.position) && !ec.CellFromPosition(transform.position).Null)
 		{
-			Instantiate(puddlePrefab, transform.position.ZeroOutY(), Quaternion.identity)
+			Instantiate(puddlePrefab, ec.CellFromPosition(transform.position).FloorWorldPosition, Quaternion.identity)
 				.Initialize(puddleLifeTime, ec);
 		}
 		base.VirtualEnd();

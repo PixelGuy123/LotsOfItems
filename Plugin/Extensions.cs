@@ -168,6 +168,16 @@ namespace LotsOfItems.Plugin
 
 			return blocker;
 		}
+
+		// Cell Extensions
+		public static void UncoverSoftWall(this Cell cell, Direction dir)
+		{
+			CellCoverage mask = (CellCoverage)(1 << (int)dir);
+			if ((cell.softCoverage & mask) != CellCoverage.None)
+			{
+				cell.softCoverage &= ~mask;
+			}
+		}
 	}
 	public static class ReusableExtensions
 	{

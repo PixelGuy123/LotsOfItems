@@ -856,6 +856,82 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("LemonSoda")
+			.SetGeneratorCost(25)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("LemonSoda")
+			.SetItemComponent<ITM_LemonSoda>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_LemonSoda_Name", "LtsOItems_LemonSoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BSODAGun")
+			.SetGeneratorCost(23)
+			.SetShopPrice(350)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("BSODAGun")
+			.SetItemComponent<ITM_BSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_BSODAGun_Name", "LtsOItems_BSODAGun_Desc")
+			.BuildAndSetup<ITM_BSODA>(out var normalBsoda)
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			normalBsoda.speed *= 4f;
+			normalBsoda.time = 5f;
+			normalBsoda.sound = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "BsodaGun_Shoot.wav")), string.Empty, SoundType.Effect, Color.white);
+			normalBsoda.sound.subtitle = false;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("DietDietSoda")
+			.SetGeneratorCost(21)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("DietDietBSODA")
+			.SetItemComponent<ITM_BSODA>(Items.DietBsoda)
+			.SetNameAndDescription("LtsOItems_DietDietSoda_Name", "LtsOItems_DietDietSoda_Desc")
+			.BuildAndSetup(out normalBsoda)
+			.StoreAsNormal(appearsInStore: true, weight: 125, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			normalBsoda.speed = -normalBsoda.speed;
+			normalBsoda.time = 5f;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("DietDietDietSoda")
+			.SetGeneratorCost(21)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("DietDietDietBSODA")
+			.SetItemComponent<ITM_BSODA>(Items.DietBsoda)
+			.SetNameAndDescription("LtsOItems_DietDietDietSoda_Name", "LtsOItems_DietDietDietSoda_Desc")
+			.BuildAndSetup(out normalBsoda)
+			.StoreAsNormal(appearsInStore: true, weight: 100, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			normalBsoda.speed = 0f;
+			normalBsoda.time = 15f;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("FroginaCan")
+			.SetGeneratorCost(28)
+			.SetShopPrice(900)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, PIRATE_CANN_HATE])
+			.SetEnum("FroginaCan")
+			.SetItemComponent<ITM_FrogInACan>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_FrogInACan_Name", "LtsOItems_FrogInACan_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("Plunger")
+			.SetGeneratorCost(25)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, PIRATE_CANN_HATE])
+			.SetEnum("Plunger")
+			.SetItemComponent<ITM_Plunger>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_Plunger_Name", "LtsOItems_Plunger_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 		}
 

@@ -11,12 +11,23 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 	public void SetupPrefabPost() { }
 	protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 
+	[Range(0f, 1f)]
+	[SerializeField]
+	protected float AddendMultiplier = 1f;
+
+	Quaternion rotation;
+	internal void SetOriginalRotation(Quaternion rot)
+	{
+		rotation = rot;
+		hasOriginalRotationSet = true;
+	}
+	bool hasOriginalRotationSet = false;
+
 	public override bool Use(PlayerManager pm)
 	{
-		Quaternion myOgRot = transform.rotation;
-		bool val = base.Use(pm);
-		transform.rotation = myOgRot; // To avoid changing directions if not needed
-
+		var val = base.Use(pm);
+		if (hasOriginalRotationSet)
+			transform.rotation = rotation;
 		return val;
 	}
 
@@ -30,7 +41,7 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 		}
 
 		// Replicate base Update logic with extensibility points
-		moveMod.movementAddend = entity.ExternalActivity.Addend + transform.forward * speed * ec.EnvironmentTimeScale;
+		moveMod.movementAddend = entity.ExternalActivity.Addend + transform.forward * AddendMultiplier * speed * ec.EnvironmentTimeScale;
 		entity.UpdateInternalMovement(transform.forward * speed * ec.EnvironmentTimeScale);
 		time -= Time.deltaTime * ec.EnvironmentTimeScale;
 
@@ -42,7 +53,9 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 
 	public virtual bool VirtualEntityTriggerEnter(Collider other) =>
 		true;
-	
+	public virtual bool VirtualEntityTriggerExit(Collider other) =>
+		true;
+
 
 	protected virtual void VirtualEnd()
 	{
@@ -77,6 +90,17 @@ static class GenericBSODAPatches
 		if (__instance is ITM_GenericBSODA generic)
 		{
 			return generic.VirtualEntityTriggerEnter(other);
+		}
+		return true;
+	}
+
+	[HarmonyPatch("EntityTriggerExit")]
+	[HarmonyPrefix]
+	static bool EntityTriggerExitOverride(ITM_BSODA __instance, Collider other)
+	{
+		if (__instance is ITM_GenericBSODA generic)
+		{
+			return generic.VirtualEntityTriggerExit(other);
 		}
 		return true;
 	}

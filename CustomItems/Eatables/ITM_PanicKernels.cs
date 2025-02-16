@@ -55,6 +55,9 @@ namespace LotsOfItems.CustomItems.Eatables
 			// Duplicate BSODA entity
 			ITM_BSODA newProjectile = Object.Instantiate(original, position, rotation);
 
+			if (newProjectile is ITM_GenericBSODA generic)
+				generic.SetOriginalRotation(rotation);
+
 			newProjectile.Use(pm);
 			newProjectile.transform.rotation = rotation;
 		}

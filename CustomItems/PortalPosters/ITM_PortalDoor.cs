@@ -100,16 +100,22 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 			Spawn(pm.ec, cell, direction);
 
 			var cells = ec.AllTilesNoGarbage(false, false);
-			cells.Remove(cell);
+			for (int i = 0; i < cells.Count; i++)
+				if (cells[i] == cell || cells[i].HasAnyAllCoverage)
+					cells.RemoveAt(i--);
 
 			if (cells.Count == 0)
 				return true; // Just not make a linkage if not possible
 
 			var linkCell = cells[Random.Range(0, cells.Count)];
+			var directionToFollow = linkCell.RandomUncoveredDirection(new());
+
+			if (directionToFollow == Direction.Null)
+				return true; // Avoid making a linkage if the direction can't be found smh
 
 			var myLinkage = Instantiate((ITM_PortalDoor)doorPre.item);
 			myLinkage.SetLinkage(this);
-			myLinkage.Spawn(ec, linkCell, linkCell.RandomUncoveredDirection(new()));
+			myLinkage.Spawn(ec, linkCell, directionToFollow);
 			myLinkage.name = name + "_Link";
 			return true;
 		}

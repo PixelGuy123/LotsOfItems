@@ -12,7 +12,7 @@ public class ITM_EnergyFlavoredZestySoda : ITM_GenericBSODA
 		base.VirtualSetupPrefab(itm);
 		
 		speed *= 2.25f;
-		spriteRenderer.sprite = this.GetSprite("ShrinkRay_Soda.png", spriteRenderer.sprite.pixelsPerUnit);
+		spriteRenderer.sprite = this.GetSprite("EnergyFlavoredZestySoda_spray.png", spriteRenderer.sprite.pixelsPerUnit);
 		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
 	}
 
