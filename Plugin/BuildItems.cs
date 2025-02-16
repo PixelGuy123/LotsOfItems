@@ -103,7 +103,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_DancingYTP>()
 				.SetNameAndDescription("LtsOItems_DancingYtp_Name", "LtsOItems_DancingYtp_Desc")
 				.BuildAndSetup<ITM_YTPs>(out var ytp)
-				.StoreAsNormal(appearsInStore: false, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(goToFieldTrips: true, appearsInStore: false, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
 			ytp.value = 125;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -155,6 +155,18 @@ namespace LotsOfItems.Plugin
 				.SetPickupSound(GetGenericYtpAudio(1))
 				.SetItemComponent<ITM_MysteryYTP>()
 				.SetNameAndDescription("LtsOItems_MysteryYtp_Name", "LtsOItems_MysteryYtp_Desc")
+				.BuildAndSetup()
+				.StoreAsNormal(appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("approximetalyYtp")
+				.SetGeneratorCost(13)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [YTPVARTAG])
+				.SetAsInstantUse()
+				.SetPickupSound(GetGenericYtpAudio(2))
+				.SetItemComponent<ITM_MysteryYTP>()
+				.SetNameAndDescription("LtsOItems_ApproximetalyYtp_Name", "LtsOItems_ApproximetalyYtp_Desc")
 				.BuildAndSetup()
 				.StoreAsNormal(appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
@@ -305,8 +317,32 @@ namespace LotsOfItems.Plugin
 
 			genericZesty.maxMultiplier = 0.5f;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PanicKernels")
+			.SetGeneratorCost(35)
+			.SetShopPrice(950)
+			.SetMeta(ItemFlags.Persists, ["food", PIRATE_CANN_HATE, ZESTYVARTAG])
+			.SetEnum("PanicKernels")
+			.SetItemComponent<ITM_PanicKernels>()
+			.SetNameAndDescription("LtsOItems_PanicKernels_Name", "LtsOItems_PanicKernels_Desc")
+			.BuildAndSetup(out genericZesty)
+			.StoreAsNormal(appearsInStore: true, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
 
+			genericZesty.staminaGain = 50f;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ThornGlognut")
+			.SetGeneratorCost(45)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists, ["food", ZESTYVARTAG, PIRATE_CANN_HATE, CRIMINALPACK_CONTRABAND])
+			.SetEnum("ThornGlognut")
+			.SetItemComponent<ITM_ThornGlognut>()
+			.SetNameAndDescription("LtsOItems_ThornGlognut_Name", "LtsOItems_ThornGlognut_Desc")
+			.BuildAndSetup(out genericZesty)
+			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+
+			genericZesty.affectorTime = 0f;
+			genericZesty.staminaGain = 300f;
 
 
 			// ---------------- TELEPORTERS ---------------
@@ -597,6 +633,17 @@ namespace LotsOfItems.Plugin
 			boots.setTime = 15f;
 			boots.GetComponentInChildren<Image>().sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "RustyOldShoes_canvas.png"), Vector2.one * 0.5f);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BalletShoes")
+			.SetGeneratorCost(22)
+			.SetShopPrice(350)
+			.SetMeta(ItemFlags.Persists, [BOOTSVARTAG])
+			.SetEnum("BalletShoes")
+			.SetItemComponent<ITM_BalletShoes>(Items.Boots)
+			.SetNameAndDescription("LtsOItems_BalletShoes_Name", "LtsOItems_BalletShoes_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
 			// ---- Alarm Clock variant ----
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -712,7 +759,18 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_Harpoon>(Items.GrapplingHook)
 			.SetNameAndDescription("LtsOItems_Harpoon_Name", "LtsOItems_Harpoon_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BouncyGrapplingHook")
+			.SetGeneratorCost(30)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [GRAPPLEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("BouncyGrapplingHook")
+			.SetItemComponent<ITM_BouncyGrapplingHook>(Items.GrapplingHook)
+			.SetNameAndDescription("LtsOItems_BouncyGrapplingHook_Name", "LtsOItems_BouncyGrapplingHook_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 80, acceptableFloors: ["F2", "F3", "END"]);
 
 			// ----- portal poster variant -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -752,6 +810,40 @@ namespace LotsOfItems.Plugin
 			rootBeer.bsodaPrefab = GetVariantInstance<TemporaryBsoda>(Items.Bsoda);
 			rootBeer.time = 15f;
 			rootBeer.bsodaPrefab.spriteRenderer.sprite = AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud"), rootBeer.bsodaPrefab.spriteRenderer.sprite.pixelsPerUnit);
+			Object.Destroy(rootBeer.bsodaPrefab.GetComponentInChildren<ParticleSystem>().gameObject);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ShakenSoda")
+			.SetGeneratorCost(28)
+			.SetShopPrice(725)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND, PIRATE_CANN_HATE])
+			.SetEnum("ShakenSoda")
+			.SetItemComponent<ITM_ShakenSoda>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_ShakenSoda_Name", "LtsOItems_ShakenSoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ShrinkRay")
+			.SetGeneratorCost(25)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists, ["drink", SODAVARTAG])
+			.SetEnum("ShrinkRay")
+			.SetItemComponent<ITM_ShrinkRay>(Items.DietBsoda)
+			.SetNameAndDescription("LtsOItems_ShrinkRay_Name", "LtsOItems_ShrinkRay_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("EnergyFlavoredZestySoda")
+			.SetGeneratorCost(25)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.Persists, ["drink", "food", SODAVARTAG, PIRATE_CANN_HATE])
+			.SetEnum("EnergyFlavoredZestySoda")
+			.SetItemComponent<ITM_EnergyFlavoredZestySoda>(Items.DietBsoda)
+			.SetNameAndDescription("LtsOItems_EnergyFlavoredZestySoda_Name", "LtsOItems_EnergyFlavoredZestySoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 		}
 

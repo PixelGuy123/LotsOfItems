@@ -7,6 +7,7 @@ using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using LotsOfItems.Components;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 
 namespace LotsOfItems.Plugin
 {
@@ -108,6 +109,38 @@ namespace LotsOfItems.Plugin
 			newTex.Apply();
 
 			return newTex;
+		}
+
+		public static void Explode(this Item item, float explosionRadius, LayerMask collisionLayer, float explosionForce, float explosionAcceleration)
+		{
+			Vector3 position = item.transform.position;
+
+			Collider[] colliders = Physics.OverlapSphere(position, explosionRadius, collisionLayer, QueryTriggerInteraction.Ignore);
+			Ray ray = new();
+			for (int i = 0; i < colliders.Length; i++)
+			{
+				if (colliders[i].transform == item.transform)
+					continue;
+
+				Entity entity = colliders[i].GetComponent<Entity>();
+				if (entity == null || !entity.InBounds)
+					continue;
+
+				Vector3 entityDirection = (entity.transform.position - position).normalized;
+				ray.origin = position;
+				ray.direction = entityDirection;
+
+				var allCasts = Physics.RaycastAll(ray, 9999f, LayerStorage.principalLookerMask, QueryTriggerInteraction.Ignore);
+				for (int z = 0; z < allCasts.Length; z++)
+				{
+					var hit = allCasts[z];
+					if (hit.transform == colliders[i].transform)
+					{
+						entity.AddForce(new Force(entityDirection, explosionForce, explosionAcceleration));
+						break;
+					}
+				}
+			}
 		}
 
 		public static RaycastBlocker GetRawChalkParticleGenerator(bool visualOnly = false)

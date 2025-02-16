@@ -26,6 +26,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 			momentumNav.maxSpeed = speed;
 
 			spriteRenderer.sprite = this.GetSprite("SadSoda_drink.png", spriteRenderer.sprite.pixelsPerUnit);
+			Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
 		}
 
 		public override bool Use(PlayerManager pm)

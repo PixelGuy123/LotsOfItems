@@ -13,15 +13,18 @@ namespace LotsOfItems.CustomItems.BSODAs
 		{
 			base.VirtualSetupPrefab(itm);
 			spriteRenderer.sprite = this.GetSprite("RootBeer_soda.png", spriteRenderer.sprite.pixelsPerUnit);
+			Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
 		}
 
 		public override bool Use(PlayerManager pm)
 		{
-			// Create angled projectiles
-			CreateAngledProjectile(pm, 45f);
-			CreateAngledProjectile(pm, -45f);
+			base.Use(pm);
 
-			return base.Use(pm);
+			// Create angled projectiles
+			CreateAngledProjectile(pm, 30f);
+			CreateAngledProjectile(pm, -30f);
+
+			return true;
 		}
 
 		private void CreateAngledProjectile(PlayerManager pm, float angleOffset)
@@ -33,7 +36,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 			// Instantiate and configure projectile
 			var projectile = Instantiate(bsodaPrefab, spawnPos, Quaternion.identity);
 			projectile.Use(pm);
-			projectile.transform.rotation = Quaternion.LookRotation(rotation * pm.transform.forward);
+			projectile.transform.rotation = Quaternion.LookRotation(rotation * transform.forward);
 		}
 	}
 

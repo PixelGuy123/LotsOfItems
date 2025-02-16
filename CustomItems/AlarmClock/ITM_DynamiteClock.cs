@@ -38,24 +38,6 @@ public class ITM_DynamiteClock : ITM_GenericAlarmClock
 			audMan.PlaySingle(audExplode);
 
 
-		Collider[] colliders = Physics.OverlapSphere(transform.position, explosionDistance, collisionLayer, QueryTriggerInteraction.Ignore);
-
-		Ray ray = new();
-		for (int i = 0; i < colliders.Length; i++)
-		{
-			if (colliders[i].transform == transform)
-				continue;
-
-			Entity entity = colliders[i].GetComponent<Entity>();
-			if (entity == null || !entity.InBounds)
-				continue;
-
-			Vector3 entityDirection = (entity.transform.position - transform.position).normalized;
-			ray.origin = transform.position;
-			ray.direction = entityDirection;
-
-			if (Physics.Raycast(ray, out var hit, 9999f, LayerStorage.principalLookerMask) && hit.transform == colliders[i].transform)
-				entity.AddForce(new Force(entityDirection, explosionForce, explosionAcceleration));
-		}
+		this.Explode(explosionDistance, collisionLayer, explosionForce, explosionAcceleration);
 	}
 }

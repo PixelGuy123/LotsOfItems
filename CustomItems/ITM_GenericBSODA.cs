@@ -11,6 +11,15 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 	public void SetupPrefabPost() { }
 	protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 
+	public override bool Use(PlayerManager pm)
+	{
+		Quaternion myOgRot = transform.rotation;
+		bool val = base.Use(pm);
+		transform.rotation = myOgRot; // To avoid changing directions if not needed
+
+		return val;
+	}
+
 	public virtual void VirtualUpdate()
 	{
 		if (hasEnded)
