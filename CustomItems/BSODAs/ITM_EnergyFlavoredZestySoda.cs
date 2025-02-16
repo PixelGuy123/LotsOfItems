@@ -10,6 +10,7 @@ public class ITM_EnergyFlavoredZestySoda : ITM_GenericBSODA
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
 		base.VirtualSetupPrefab(itm);
+		
 		speed *= 2.25f;
 		spriteRenderer.sprite = this.GetSprite("ShrinkRay_Soda.png", spriteRenderer.sprite.pixelsPerUnit);
 		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);

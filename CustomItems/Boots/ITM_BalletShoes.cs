@@ -24,6 +24,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 
 	public void SetupPrefab(ItemObject itm)
 	{
+		setTime = 12.5f;
 		audWalk = GenericExtensions.FindResourceObjectByName<SoundObject>("CartoonKnock_Trimmed");
 		GetComponentInChildren<Image>().sprite = this.GetSprite("BalletShoes_canvas.png", 1f);
 	}

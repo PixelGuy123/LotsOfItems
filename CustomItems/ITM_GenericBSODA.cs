@@ -6,7 +6,7 @@ namespace LotsOfItems.CustomItems;
 
 public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 {
-	bool hasEnded = false;
+	protected bool hasEnded = false;
 	public void SetupPrefab(ItemObject itm) => VirtualSetupPrefab(itm);
 	public void SetupPrefabPost() { }
 	protected virtual void VirtualSetupPrefab(ItemObject itm) { }

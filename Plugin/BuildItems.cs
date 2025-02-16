@@ -827,7 +827,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("ShrinkRay")
 			.SetGeneratorCost(25)
 			.SetShopPrice(600)
-			.SetMeta(ItemFlags.Persists, ["drink", SODAVARTAG])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
 			.SetEnum("ShrinkRay")
 			.SetItemComponent<ITM_ShrinkRay>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_ShrinkRay_Name", "LtsOItems_ShrinkRay_Desc")
@@ -838,12 +838,24 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("EnergyFlavoredZestySoda")
 			.SetGeneratorCost(25)
 			.SetShopPrice(450)
-			.SetMeta(ItemFlags.Persists, ["drink", "food", SODAVARTAG, PIRATE_CANN_HATE])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", "food", SODAVARTAG, PIRATE_CANN_HATE])
 			.SetEnum("EnergyFlavoredZestySoda")
 			.SetItemComponent<ITM_EnergyFlavoredZestySoda>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_EnergyFlavoredZestySoda_Name", "LtsOItems_EnergyFlavoredZestySoda_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("OSODA")
+			.SetGeneratorCost(30)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("OSODA")
+			.SetItemComponent<ITM_OSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_OSODA_Name", "LtsOItems_OSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
 
 		}
 
