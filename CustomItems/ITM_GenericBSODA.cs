@@ -85,9 +85,9 @@ static class GenericBSODAPatches
 
 	[HarmonyPatch("EntityTriggerEnter")]
 	[HarmonyPrefix]
-	static bool EntityTriggerEnterOverride(ITM_BSODA __instance, Collider other)
+	static bool EntityTriggerEnterOverride(ITM_BSODA __instance, Collider other, bool ___launching)
 	{
-		if (__instance is ITM_GenericBSODA generic)
+		if ((!___launching || !other.CompareTag("Player")) && __instance is ITM_GenericBSODA generic)
 		{
 			return generic.VirtualEntityTriggerEnter(other);
 		}
@@ -96,11 +96,15 @@ static class GenericBSODAPatches
 
 	[HarmonyPatch("EntityTriggerExit")]
 	[HarmonyPrefix]
-	static bool EntityTriggerExitOverride(ITM_BSODA __instance, Collider other)
+	static bool EntityTriggerExitOverride(ITM_BSODA __instance, Collider other, ref bool ___launching)
 	{
 		if (__instance is ITM_GenericBSODA generic)
 		{
-			return generic.VirtualEntityTriggerExit(other);
+			bool flag = generic.VirtualEntityTriggerExit(other);
+			if (!flag && other.CompareTag("Player"))
+				___launching = false;
+				
+			return flag;
 		}
 		return true;
 	}

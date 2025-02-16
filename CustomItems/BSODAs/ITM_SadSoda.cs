@@ -15,7 +15,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 		private MomentumNavigator momentumNav;
 
 		[SerializeField]
-		private float detectionDistance = 9999f, nearbyNpcDistance = 12f;
+		private float detectionDistance = 9999f;
 
 		private bool hasDetectedTarget;
 		readonly HashSet<NPC> touchedNPCs = [];
@@ -63,14 +63,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 
 			if (targetNpc && targetNpc.gameObject.activeSelf)
 			{
-				if (Vector3.Distance(targetNpc.transform.position, transform.position) < nearbyNpcDistance)
-				{
-					hasDetectedTarget = false;
-					momentumNav.ClearDestination();
-					FindNearestNPCToTarget();
-				}
-				else
-					momentumNav.FindPath(targetNpc.transform.position);
+				momentumNav.FindPath(targetNpc.transform.position);
 			}
 			else
 			{
@@ -80,7 +73,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 			}
 
 
-			moveMod.movementAddend = transform.forward * speed * ec.EnvironmentTimeScale;
+			moveMod.movementAddend = momentumNav.Velocity.normalized * speed * ec.EnvironmentTimeScale;
 			time -= Time.deltaTime * ec.EnvironmentTimeScale;
 
 			if (time <= 0f)
@@ -121,16 +114,29 @@ namespace LotsOfItems.CustomItems.BSODAs
 
 		public override bool VirtualEntityTriggerEnter(Collider other)
 		{
-			if (other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+			if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+			{
 				touchedNPCs.Add(npc);
+				npc.Navigator.Entity.Teleport(transform.position);
+				if (npc == targetNpc)
+				{
+					hasDetectedTarget = false;
+					momentumNav.ClearDestination();
+					FindNearestNPCToTarget();
+				}
+			}
 			
 			return true;
 		}
 
 		public override bool VirtualEntityTriggerExit(Collider other)
 		{
-			if (other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+			if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+			{
 				touchedNPCs.Remove(npc);
+				momentumNav.ClearDestination();
+				targetNpc = npc;
+			}
 			return true;
 		}
 	}

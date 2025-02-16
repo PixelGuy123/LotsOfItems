@@ -1,5 +1,6 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI.Components;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -32,13 +33,16 @@ public class ITM_Plunger : ITM_GenericBSODA
 		speed *= 3f;
 		time = 20f;
 
-		var sprs = this.GetSpriteSheet("Plunger_Sheet.png", 4, 2, spriteRenderer.sprite.pixelsPerUnit);
+		var sprs = this.GetSpriteSheet("Plunger_Sheet.png", 4, 2, spriteRenderer.sprite.pixelsPerUnit + 35f);
 		spriteRenderer.sprite = sprs[0];
 		spriteRenderer.CreateAnimatedSpriteRotator(GenericExtensions.CreateRotationMap(8, sprs));
+		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
 
 		audMan = gameObject.CreatePropagatedAudioManager(65f, 75f);
 		audHit = this.GetSound("plunger_hit.wav", "LtsOItems_Vfx_Suction", SoundType.Effect, Color.white);
 		sound = this.GetSoundNoSub("Plunger_Throw.wav", SoundType.Effect);
+
+		entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 	}
 
 	public override bool Use(PlayerManager pm)
@@ -85,7 +89,6 @@ public class ITM_Plunger : ITM_GenericBSODA
 		if (stuckToEntity && stuckTarget != null)
 		{
 			transform.position = stuckTarget.transform.position;
-			transform.LookAt(stuckTarget.transform);
 		}
 		else if (stuckToWall)
 		{

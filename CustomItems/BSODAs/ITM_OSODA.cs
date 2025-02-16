@@ -27,7 +27,7 @@ public class ITM_OSODA : ITM_GenericBSODA
 		entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 
 		var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(
-				spriteRenderer.sprite, // temp sprite
+				spriteRenderer.sprite,
 				false
 			).AddSpriteHolder(out var puddleSprite, 0.05f, LayerStorage.ignoreRaycast);
 		puddleSprite.name = "Sprite";

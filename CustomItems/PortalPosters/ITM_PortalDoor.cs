@@ -2,6 +2,7 @@
 using PixelInternalAPI.Extensions;
 using LotsOfItems.ItemPrefabStructures;
 using System.Collections;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.PortalPosters;
 public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
@@ -34,6 +35,7 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 	EnvironmentController ec;
 	int uses;
 	Coroutine closeCor;
+	Cell spawnCell;
 
 	public bool IsDead { get; private set; } = false;
 	public bool IsOpen => portalSprite.sprite == open;
@@ -80,6 +82,8 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 
 		transform.position = cell.CenterWorldPosition + direction.ToVector3() * 4.98f;
 		transform.rotation = direction.ToRotation();
+		cell.SoftCoverWall(direction);
+		spawnCell = cell;
 		PlacedDirection = direction;
 
 		audman.PlaySingle(audClose);
@@ -127,6 +131,9 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 	}
 
 	public void SetupPrefabPost() { }
+
+	void OnDestroy() =>
+		spawnCell.UncoverSoftWall(PlacedDirection);
 
 	IEnumerator CloseEnum()
 	{

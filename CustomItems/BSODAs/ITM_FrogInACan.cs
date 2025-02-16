@@ -9,11 +9,13 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 	private bool isStuck = false;
 	private bool isDespawning = false;
 	private bool despawnLaunched = false;
-	private float shakeTime = 25f;
-	private readonly float launchOffSpeed = 5f;
-	private readonly float shakeForce = 2f;
-	private readonly float despawnYLevel = -5f;
-	private readonly float chanceForRibbiting = 0.25f;
+	[SerializeField]
+	private float shakeForce = 45f, launchOffSpeed = 30f, shakeTime = 25f, despawnYLevel = -5f;
+
+	[SerializeField]
+	[Range(0f, 1f)]
+	float chanceForRibbiting = 0.15f;
+
 	[SerializeField]
 	internal SoundObject audLaunchOff, audRibbit;
 
@@ -40,12 +42,15 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 
 	public override bool VirtualEntityTriggerEnter(Collider other)
 	{
-		Entity target = other.GetComponent<Entity>();
-		if (target != null && !isStuck)
+		if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
 		{
-			isStuck = true;
-			stuckTarget = target;
-			target.ExternalActivity.moveMods.Add(shakeMod);
+			Entity target = other.GetComponent<Entity>();
+			if (target != null && !isStuck)
+			{
+				isStuck = true;
+				stuckTarget = target;
+				target.ExternalActivity.moveMods.Add(shakeMod);
+			}
 		}
 
 		return false;
@@ -94,7 +99,8 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 				spriteRenderer.transform.parent = null; // Sets to null, so it can be thrown off lol
 
 				Rigidbody rb = spriteRenderer.gameObject.GetComponent<Rigidbody>() ?? spriteRenderer.gameObject.AddComponent<Rigidbody>();
-				rb.AddForce(Random.insideUnitSphere * launchOffSpeed, ForceMode.VelocityChange);
+				Vector2 throwSpeed = Random.insideUnitCircle;
+				rb.AddForce(new Vector3(throwSpeed.x, Random.Range(0.1f, 0.37f), throwSpeed.y) * launchOffSpeed, ForceMode.VelocityChange);
 
 				audMan.FlushQueue(true);
 				audMan.PlaySingle(audLaunchOff);
@@ -103,7 +109,7 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 			}
 
 			// When the launched sprite falls below y = -10, destroy the entire object.
-			if (spriteRenderer.transform.position.y < -despawnYLevel)
+			if (spriteRenderer.transform.position.y < despawnYLevel)
 			{
 				Destroy(spriteRenderer.gameObject);
 				Destroy(gameObject);

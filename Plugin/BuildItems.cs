@@ -27,6 +27,7 @@ using LotsOfItems.CustomItems.Tapes;
 using LotsOfItems.CustomItems.GrapplingHooks;
 using LotsOfItems.CustomItems.PortalPosters;
 using LotsOfItems.CustomItems.BSODAs;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace LotsOfItems.Plugin
 {
@@ -772,6 +773,26 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 80, acceptableFloors: ["F2", "F3", "END"]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("CheapGrapplingHook")
+			.SetGeneratorCost(25)
+			.SetShopPrice(350)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [GRAPPLEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("CheapGrapplingHook")
+			.SetItemComponent<ITM_GrapplingHook>(Items.GrapplingHook)
+			.SetNameAndDescription("LtsOItems_CheapGrapplingHook_Name", "LtsOItems_CheapGrapplingHook_Desc")
+			.BuildAndSetup(out ITM_GrapplingHook hook)
+			.StoreAsNormal(appearsInStore: true, weight: 145, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			hook.time = 59.6f;
+			hook.forceIncrease *= 0.45f;
+			hook.initialForce *= 0.85f;
+			hook.maxPressure *= 0.95f;
+
+			var hookRenderer = hook.GetComponentInChildren<SpriteRenderer>();
+			hookRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "CheapGrapplingHook_world.png"), Vector2.one * 0.5f, hookRenderer.sprite.pixelsPerUnit);
+			hook.uses = 0;
+
 			// ----- portal poster variant -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PortalDoor")
@@ -878,7 +899,7 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup<ITM_BSODA>(out var normalBsoda)
 			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
-			normalBsoda.speed *= 4f;
+			normalBsoda.speed *= 10f;
 			normalBsoda.time = 5f;
 			normalBsoda.sound = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "BsodaGun_Shoot.wav")), string.Empty, SoundType.Effect, Color.white);
 			normalBsoda.sound.subtitle = false;
@@ -897,6 +918,9 @@ namespace LotsOfItems.Plugin
 			normalBsoda.speed = -normalBsoda.speed;
 			normalBsoda.time = 5f;
 
+			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit), );
+			//Object.Destroy(normalBsoda.GetComponentInChildren<ParticleSystem>().gameObject);
+
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("DietDietDietSoda")
 			.SetGeneratorCost(21)
@@ -910,6 +934,9 @@ namespace LotsOfItems.Plugin
 
 			normalBsoda.speed = 0f;
 			normalBsoda.time = 15f;
+
+			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit), );
+			Object.Destroy(normalBsoda.GetComponentInChildren<ParticleSystem>().gameObject);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("FroginaCan")
@@ -932,6 +959,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_Plunger_Name", "LtsOItems_Plunger_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BloxyCola")
+			.SetGeneratorCost(32)
+			.SetShopPrice(725)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, "CRIMINALPACK_CONTRABAND"])
+			.SetEnum("BloxyCola")
+			.SetItemComponent<ITM_BloxyCola>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_BloxyCola_Name", "LtsOItems_BloxyCola_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 		}
 
