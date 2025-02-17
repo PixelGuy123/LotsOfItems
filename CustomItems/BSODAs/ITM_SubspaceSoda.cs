@@ -48,6 +48,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		tooWeakSprite = this.GetSprite("SubspaceSoda_Dead.png", itm.itemSpriteLarge.pixelsPerUnit);
 
 		// Load the audios; download them too lol
+		spriteRenderer.sprite = this.GetSprite("Rotatoda_Soda.png", spriteRenderer.sprite.pixelsPerUnit); // It's pink, so...
 		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
 		audFail = this.GetSound("Subspace_Bruh.wav", "LtsOItems_Vfx_Womp", SoundType.Effect, Color.white);
 		audExplode = this.GetSound("Subspace_Explosion.wav", "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white);
