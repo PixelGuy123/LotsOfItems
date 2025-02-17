@@ -37,7 +37,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
 		base.VirtualSetupPrefab(itm);
-		audMan = gameObject.CreatePropagatedAudioManager(75f, 100f);
+		audMan = gameObject.CreateAudioManager(75f, 100f);
 
 		spriteRenderer.enabled = false;
 

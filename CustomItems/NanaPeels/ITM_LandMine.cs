@@ -12,7 +12,7 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 	[SerializeField]
 	internal Sprite explosionSprite;
 	[SerializeField]
-	internal float explosionDistance = 45f, explosionForce = 50f, explosionAcceleration = -43.5f, bullyDelay = 5f;
+	internal float explosionDistance = 45f, explosionForce = 85f, explosionAcceleration = -43.5f, bullyDelay = 5f;
 	[SerializeField]
 	internal SpriteRenderer renderer;
 	[SerializeField]

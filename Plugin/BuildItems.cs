@@ -1,35 +1,35 @@
-﻿using MTM101BaldAPI;
+﻿using HarmonyLib;
+using LotsOfItems.Components;
+using LotsOfItems.CustomItems;
+using LotsOfItems.CustomItems.AlarmClock;
+using LotsOfItems.CustomItems.Boots;
+using LotsOfItems.CustomItems.BSODAs;
+using LotsOfItems.CustomItems.ChalkErasers;
+using LotsOfItems.CustomItems.Eatables;
+using LotsOfItems.CustomItems.GrapplingHooks;
+using LotsOfItems.CustomItems.Key;
+using LotsOfItems.CustomItems.Nametags;
+using LotsOfItems.CustomItems.NanaPeels;
+using LotsOfItems.CustomItems.PortalPosters;
+using LotsOfItems.CustomItems.PrincipalWhistles;
+using LotsOfItems.CustomItems.Quarters;
+using LotsOfItems.CustomItems.Scissors;
+using LotsOfItems.CustomItems.SwingingDoorLocks;
+using LotsOfItems.CustomItems.Tapes;
+using LotsOfItems.CustomItems.Teleporters;
+using LotsOfItems.CustomItems.YTPs;
+using LotsOfItems.ItemPrefabStructures;
+using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
-using UnityEngine;
-using System.IO;
-using System.Collections.Generic;
-using LotsOfItems.ItemPrefabStructures;
-using PixelInternalAPI.Extensions;
-using LotsOfItems.CustomItems;
-using LotsOfItems.CustomItems.YTPs;
-using LotsOfItems.CustomItems.Teleporters;
-using LotsOfItems.CustomItems.Eatables;
-using LotsOfItems.CustomItems.Quarters;
-using LotsOfItems.CustomItems.PrincipalWhistles;
-using LotsOfItems.CustomItems.NanaPeels;
-using LotsOfItems.CustomItems.Nametags;
-using LotsOfItems.CustomItems.ChalkErasers;
-using LotsOfItems.CustomItems.Key;
 using PixelInternalAPI;
-using LotsOfItems.CustomItems.Scissors;
-using LotsOfItems.CustomItems.SwingingDoorLocks;
-using LotsOfItems.CustomItems.Boots;
-using LotsOfItems.CustomItems.AlarmClock;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 using UnityEngine.UI;
-using LotsOfItems.CustomItems.Tapes;
-using LotsOfItems.CustomItems.GrapplingHooks;
-using LotsOfItems.CustomItems.PortalPosters;
-using LotsOfItems.CustomItems.BSODAs;
-using System;
-
-using Object = UnityEngine.Object;
 
 namespace LotsOfItems.Plugin
 {
@@ -71,7 +71,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_SquareYTP>()
 				.SetNameAndDescription("LtsOItems_SquareYtp_Name", "LtsOItems_SquareYtp_Desc")
 				.Build()
-				.StoreAsNormal(goToFieldTrips: true, appearsInStore: false, weight: 55, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, goToFieldTrips: true, appearsInStore: false, weight: 55, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("squareRootYtp")
@@ -83,7 +83,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_SquareRootYTP>()
 				.SetNameAndDescription("LtsOItems_SquareRootYtp_Name", "LtsOItems_SquareRootYtp_Desc")
 				.Build()
-				.StoreAsNormal(appearsInStore: false, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("piYtp")
@@ -95,7 +95,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_PiYTP>()
 				.SetNameAndDescription("LtsOItems_PiYtp_Name", "LtsOItems_PiYtp_Desc")
 				.Build()
-				.StoreAsNormal(appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("DancingYTP")
@@ -107,7 +107,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_DancingYTP>()
 				.SetNameAndDescription("LtsOItems_DancingYtp_Name", "LtsOItems_DancingYtp_Desc")
 				.BuildAndSetup<ITM_YTPs>(out var ytp)
-				.StoreAsNormal(goToFieldTrips: true, appearsInStore: false, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, goToFieldTrips: true, appearsInStore: false, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
 			ytp.value = 125;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -120,7 +120,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_YTPs>()
 				.SetNameAndDescription("LtsOItems_FakeGreenYtp_Name", "LtsOItems_FakeGreenYtp_Desc")
 				.BuildAndSetup(out ytp)
-				.StoreAsNormal(appearsInStore: false, weight: 155, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 155, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			ytp.value = -25;
 
@@ -134,7 +134,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_YTPs>()
 				.SetNameAndDescription("LtsOItems_FakeSilverYtp_Name", "LtsOItems_FakeSilverYtp_Desc")
 				.BuildAndSetup(out ytp)
-				.StoreAsNormal(appearsInStore: false, weight: 115, acceptableFloors: ["F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 115, acceptableFloors: ["F2", "F3", "END"]);
 			ytp.value = -50;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -147,7 +147,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_YTPs>()
 				.SetNameAndDescription("LtsOItems_FakeGoldenYtp_Name", "LtsOItems_FakeGoldenYtp_Desc")
 				.BuildAndSetup(out ytp)
-				.StoreAsNormal(appearsInStore: false, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
 			ytp.value = -100;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -160,7 +160,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_MysteryYTP>()
 				.SetNameAndDescription("LtsOItems_MysteryYtp_Name", "LtsOItems_MysteryYtp_Desc")
 				.BuildAndSetup()
-				.StoreAsNormal(appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("approximetalyYtp")
@@ -172,7 +172,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_MysteryYTP>()
 				.SetNameAndDescription("LtsOItems_ApproximetalyYtp_Name", "LtsOItems_ApproximetalyYtp_Desc")
 				.BuildAndSetup()
-				.StoreAsNormal(appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
 			// ------------- EATABLES ---------------
 
@@ -185,7 +185,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_ChocolatePi_Name", "LtsOItems_ChocolatePi_Desc")
 				.BuildAndSetup<ITM_GenericZestyEatable>(out var genericZesty)
-				.StoreAsNormal(appearsInStore: true, weight: 125, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 125, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericZesty.affectorTime = 31.4f;
 			genericZesty.staminaGain = 31.4f;
@@ -200,7 +200,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_Pizza_Name", "LtsOItems_Pizza_Desc")
 				.BuildAndSetup()
-				.StoreAsNormal(appearsInStore: true, weight: 115, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 115, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			var item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 				.AutoGetSprites("pickles")
@@ -211,7 +211,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_Reusable_GenericZestyEatable>()
 				.SetNameAndDescription("LtsOItems_Pickles_Name", "LtsOItems_Pickles_Desc")
 				.BuildAndSetup<ITM_Reusable_GenericZestyEatable>(out var genericReusableZesty)
-				.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.ZestyBar, goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericReusableZesty.maxStaminaLimit = 300f;
 			genericReusableZesty.staminaMaxChanger = 50f;
@@ -228,7 +228,7 @@ namespace LotsOfItems.Plugin
 				.SetItemComponent<ITM_HotCrossBun>()
 				.SetNameAndDescription("LtsOItems_HotCrossBun_Name", "LtsOItems_HotCrossBun_Desc")
 				.BuildAndSetup<ITM_HotCrossBun>(out _)
-				.StoreAsNormal(appearsInStore: true, weight: 86, acceptableFloors: ["F1", "F2", "F3", "END"]);
+				.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 86, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("orangeJuice")
@@ -239,7 +239,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_GenericZestyEatable>()
 			.SetNameAndDescription("LtsOItems_OrangeJuice_Name", "LtsOItems_OrangeJuice_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericZesty.affectorTime = 15f;
 			genericZesty.staminaRiseChanger = 2f;
@@ -254,7 +254,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ChocolateQuarter>()
 			.SetNameAndDescription("LtsOItems_ChocolateQuarter_Name", "LtsOItems_ChocolateQuarter_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("vanillaZestyBar")
@@ -265,7 +265,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_VanillaZestyBar>()
 			.SetNameAndDescription("LtsOItems_VanillaZestyBar_Name", "LtsOItems_VanillaZestyBar_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 86, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 86, acceptableFloors: ["F2", "F3", "END"]);
 			genericZesty.affectorTime = 10f;
 			genericZesty.speedMultiplier = 1.1f;
 			genericZesty.maxMultiplier = 3.5f;
@@ -279,7 +279,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_IceZestyBar>()
 			.SetNameAndDescription("LtsOItems_IceZestyBar_Name", "LtsOItems_IceZestyBar_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar, goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 			genericZesty.maxMultiplier = 1.5f;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -291,7 +291,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ChocolateFlavouredZestyBar>()
 			.SetNameAndDescription("LtsOItems_ChocolateFlavouredZestyBar_Name", "LtsOItems_ChocolateFlavouredZestyBar_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericZesty.staminaSet = 200;
 
@@ -304,7 +304,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_GenericZestyEatable>()
 			.SetNameAndDescription("LtsOItems_DietFlavouredZestyBar_Name", "LtsOItems_DietFlavouredZestyBar_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 175, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 175, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericZesty.staminaGain = 50;
 
@@ -317,7 +317,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_Chalk>()
 			.SetNameAndDescription("LtsOItems_Chalk_Name", "LtsOItems_Chalk_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 155, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 155, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericZesty.maxMultiplier = 0.5f;
 
@@ -330,7 +330,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_PanicKernels>()
 			.SetNameAndDescription("LtsOItems_PanicKernels_Name", "LtsOItems_PanicKernels_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericZesty.staminaGain = 50f;
 
@@ -343,7 +343,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ThornGlognut>()
 			.SetNameAndDescription("LtsOItems_ThornGlognut_Name", "LtsOItems_ThornGlognut_Desc")
 			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.ZestyBar,  appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericZesty.affectorTime = 0f;
 			genericZesty.staminaGain = 300f;
@@ -360,8 +360,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_CalibratedTeleporter>()
 			.SetNameAndDescription("LtsOItems_CalibratedTp_Name", "LtsOItems_CalibratedTp_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 76, acceptableFloors: ["F2", "F3", "END"]);
-
+			.StoreAsNormal(Items.Teleporter, goToFieldTrips: true, appearsInStore: true, weight: 76, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("SaferTeleporter")
@@ -372,7 +371,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_SaferTeleporter>()
 			.SetNameAndDescription("LtsOItems_SaferTeleporter_Name", "LtsOItems_SaferTeleporter_Desc")
 			.BuildAndSetup<ITM_GenericTeleporter>(out var genericTp)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Teleporter, goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericTp.minTeleports = 1;
 			genericTp.maxTeleports = 1;
@@ -387,7 +386,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ControlledTeleporter>()
 			.SetNameAndDescription("LtsOItems_ControlledTeleporter_Name", "LtsOItems_ControlledTeleporter_Desc")
 			.BuildAndSetup(out genericTp)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 23, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Teleporter, goToFieldTrips: true, appearsInStore: true, weight: 23, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericTp.minTeleports = 1;
 			genericTp.maxTeleports = 1;
@@ -402,7 +401,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BananaTeleporter>()
 			.SetNameAndDescription("LtsOItems_BananaTeleporter_Name", "LtsOItems_BananaTeleporter_Desc")
 			.BuildAndSetup(out genericTp)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 25, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Teleporter, goToFieldTrips: true, appearsInStore: true, weight: 25, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericTp.minTeleports = 7;
 			genericTp.maxTeleports = 12;
@@ -418,7 +417,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_DetentionTeleporter>()
 			.SetNameAndDescription("LtsOItems_DetentionTeleporter_Name", "LtsOItems_DetentionTeleporter_Desc")
 			.BuildAndSetup(out genericTp)
-			.StoreAsNormal(appearsInStore: true, weight: 100, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 100, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericTp.minTeleports = 1;
 			genericTp.maxTeleports = 1;
@@ -435,7 +434,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_PrincipalOEleporter>()
 			.SetNameAndDescription("LtsOItems_PrincipalOEleporter_Name", "LtsOItems_PrincipalOEleporter_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 96, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.PrincipalWhistle, appearsInStore: true, weight: 96, acceptableFloors: ["F2", "F3", "END"]);
 
 
 			// ---------- Nanapeel VARIANTS ---------
@@ -449,7 +448,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_TeleporterOWall>(Items.NanaPeel) // Makes a new exact copy of ITM_NanaPeel
 			.SetNameAndDescription("LtsOItems_TeleporterOWall_Name", "LtsOItems_TeleporterOWall_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("LandMine")
@@ -460,7 +459,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_LandMine>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_LandMine_Name", "LtsOItems_LandMine_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 95, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.NanaPeel, goToFieldTrips: true, appearsInStore: true, weight: 95, acceptableFloors: ["F2", "F3", "END"]);
 
 
 
@@ -475,7 +474,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_QuarterOnAString>()
 			.SetNameAndDescription("LtsOItems_QuarterOnAString_Name", "LtsOItems_QuarterOnAString_Desc")
 			.BuildAndSetup<ITM_QuarterOnAString>(out var quarterOnAString)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Quarter, goToFieldTrips: true, appearsInStore: true, weight: 55, acceptableFloors: ["F2", "F3", "END"]);
 
 			quarterOnAString.CreateNewReusableInstances(item, "LtsOItems_QuarterOnAString_Name", 2);
 
@@ -490,7 +489,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_EnergyNametag>(Items.Nametag)
 			.SetNameAndDescription("LtsOItems_EnergyNametag_Name", "LtsOItems_EnergyNametag_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3"]);
+			.StoreAsNormal(Items.Nametag, goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3"]);
 
 			// --------- Chalk Erasers ---------
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -502,7 +501,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_FogMachine>()
 			.SetNameAndDescription("LtsOItems_FogMachine_Name", "LtsOItems_FogMachine_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.ChalkEraser, appearsInStore: true, weight: 45, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ChalkBomb")
@@ -513,7 +512,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ChalkBomb>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_ChalkBomb_Name", "LtsOItems_ChalkBomb_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.ChalkEraser, appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			// ------ Key ------
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -525,7 +524,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_KillerKey>()
 			.SetNameAndDescription("LtsOItems_KillerKey_Name", "LtsOItems_KillerKey_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DetentionKey, appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 			item.AddKeyTypeItem();
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -537,7 +536,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_SpecialKey>()
 			.SetNameAndDescription("LtsOItems_SpecialKey_Name", "LtsOItems_SpecialKey_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DetentionKey, goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 			item.AddKeyTypeItem();
 
 
@@ -551,7 +550,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_DangerousScissors>(Items.Scissors)
 			.SetNameAndDescription("LtsOItems_DangerousScissors_Name", "LtsOItems_DangerousScissors_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Scissors, appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("MetalScissors")
@@ -562,7 +561,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_MetalScissors>(Items.Scissors)
 			.SetNameAndDescription("LtsOItems_MetalScissors_Name", "LtsOItems_MetalScissors_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Scissors, appearsInStore: true, weight: 95, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("CardboardScissors")
@@ -573,7 +572,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_CardboardScissors>(Items.Scissors)
 			.SetNameAndDescription("LtsOItems_CardboardScissors_Name", "LtsOItems_CardboardScissors_Desc")
 			.BuildAndSetup<ITM_CardboardScissors>(out var cardboardScissors)
-			.StoreAsNormal(appearsInStore: true, weight: 135, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Scissors, appearsInStore: true, weight: 135, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			var newInstances = cardboardScissors.CreateNewReusableInstances(item, "LtsOItems_CardboardScissors_Name", 2);
 
@@ -594,7 +593,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_UniversalLock>()
 			.SetNameAndDescription("LtsOItems_UniversalLock_Name", "LtsOItems_UniversalLock_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 100, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 100, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			// ---- boots ----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -606,7 +605,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ShinyCleanGloves>(Items.Boots)
 			.SetNameAndDescription("LtsOItems_ShinyCleanGloves_Name", "LtsOItems_ShinyCleanGloves_Desc")
 			.BuildAndSetup<ITM_Boots>(out var boots)
-			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			boots.setTime = 45f;
 
@@ -619,7 +618,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ReallyTallBoots>(Items.Boots)
 			.SetNameAndDescription("LtsOItems_ReallyTallBoots_Name", "LtsOItems_ReallyTallBoots_Desc")
 			.BuildAndSetup(out boots)
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
 
 			boots.setTime = 30f;
 
@@ -632,8 +631,8 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_Boots>(Items.Boots)
 			.SetNameAndDescription("LtsOItems_RustyOldShoes_Name", "LtsOItems_RustyOldShoes_Desc")
 			.BuildAndSetup(out boots)
-			.StoreAsNormal(appearsInStore: true, weight: 175, acceptableFloors: ["F1", "F2", "F3", "END"]);
-
+			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 175, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			
 			boots.setTime = 15f;
 			boots.GetComponentInChildren<Image>().sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "RustyOldShoes_canvas.png"), Vector2.one * 0.5f);
 
@@ -646,7 +645,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BalletShoes>(Items.Boots)
 			.SetNameAndDescription("LtsOItems_BalletShoes_Name", "LtsOItems_BalletShoes_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			// ---- Alarm Clock variant ----
 
@@ -659,7 +658,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_TestClock>(Items.AlarmClock)
 			.SetNameAndDescription("LtsOItems_TestClock_Name", "LtsOItems_TestClock_Desc")
 			.BuildAndSetup<ITM_GenericAlarmClock>(out var genericClock)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.AlarmClock, goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericClock.setTime[0] = 15f;
 			genericClock.initSetTime = 0;
@@ -673,7 +672,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_WheelClock>(Items.AlarmClock)
 			.SetNameAndDescription("LtsOItems_WheelClock_Name", "LtsOItems_WheelClock_Desc")
 			.BuildAndSetup(out genericClock)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.AlarmClock, goToFieldTrips: true, appearsInStore: true, weight: 85, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			genericClock.setTime[0] = 15f;
 			genericClock.initSetTime = 0;
@@ -687,7 +686,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_DynamiteClock>(Items.AlarmClock)
 			.SetNameAndDescription("LtsOItems_DynamiteClock_Name", "LtsOItems_DynamiteClock_Desc")
 			.BuildAndSetup(out genericClock)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.AlarmClock, goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericClock.setTime[0] = 15f;
 			genericClock.initSetTime = 0;
@@ -702,7 +701,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_AncientClock>(Items.AlarmClock)
 			.SetNameAndDescription("LtsOItems_AncientClock_Name", "LtsOItems_AncientClock_Desc")
 			.BuildAndSetup(out genericClock)
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.AlarmClock, goToFieldTrips: true, appearsInStore: true, weight: 50, acceptableFloors: ["F2", "F3", "END"]);
 
 			genericClock.setTime[0] = 30f;
 			genericClock.initSetTime = 0;
@@ -717,7 +716,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BaldisMostFavoriteTape>()
 			.SetNameAndDescription("LtsOItems_BaldisMostFavoriteTape_Name", "LtsOItems_BaldisMostFavoriteTape_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Tape, goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PartyTape")
@@ -728,7 +727,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_PartyTape>()
 			.SetNameAndDescription("LtsOItems_PartyTape_Name", "LtsOItems_PartyTape_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 60, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Tape, appearsInStore: true, weight: 60, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("LeastFavoriteTape")
@@ -739,7 +738,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_LeastFavoriteTape>()
 			.SetNameAndDescription("LtsOItems_LeastFavoriteTape_Name", "LtsOItems_LeastFavoriteTape_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Tape, goToFieldTrips: true, appearsInStore: true, weight: 35, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			// --- Grapples ---
 
@@ -752,7 +751,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_PushingHook>(Items.GrapplingHook)
 			.SetNameAndDescription("LtsOItems_PushingHook_Name", "LtsOItems_PushingHook_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.GrapplingHook, goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("Harpoon")
@@ -763,7 +762,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_Harpoon>(Items.GrapplingHook)
 			.SetNameAndDescription("LtsOItems_Harpoon_Name", "LtsOItems_Harpoon_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.GrapplingHook, goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BouncyGrapplingHook")
@@ -774,7 +773,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BouncyGrapplingHook>(Items.GrapplingHook)
 			.SetNameAndDescription("LtsOItems_BouncyGrapplingHook_Name", "LtsOItems_BouncyGrapplingHook_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 80, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.GrapplingHook, appearsInStore: true, weight: 80, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("CheapGrapplingHook")
@@ -785,7 +784,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_GrapplingHook>(Items.GrapplingHook)
 			.SetNameAndDescription("LtsOItems_CheapGrapplingHook_Name", "LtsOItems_CheapGrapplingHook_Desc")
 			.BuildAndSetup(out ITM_GrapplingHook hook)
-			.StoreAsNormal(appearsInStore: true, weight: 145, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.GrapplingHook, appearsInStore: true, weight: 145, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			hook.time = 59.6f;
 			hook.forceIncrease *= 0.45f;
@@ -806,7 +805,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_PortalDoor>()
 			.SetNameAndDescription("LtsOItems_PortalDoor_Name", "LtsOItems_PortalDoor_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.PortalPoster, appearsInStore: true, weight: 35, acceptableFloors: ["F2", "F3", "END"]);
 
 			// ----- Soda -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -818,7 +817,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_SadSoda>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_SadSoda_Name", "LtsOItems_SadSoda_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("RootBeer")
@@ -829,12 +828,15 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_RootBeer>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_RootBeer_Name", "LtsOItems_RootBeer_Desc")
 			.BuildAndSetup<ITM_RootBeer>(out var rootBeer)
-			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
 
 			rootBeer.bsodaPrefab = GetVariantInstance<TemporaryBsoda>(Items.Bsoda);
-			rootBeer.time = 15f;
+			rootBeer.bsodaPrefab.time = 7.5f;
+			rootBeer.bsodaPrefab.speed *= 1.2f;
 			rootBeer.bsodaPrefab.spriteRenderer.sprite = AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud"), rootBeer.bsodaPrefab.spriteRenderer.sprite.pixelsPerUnit);
 			Object.Destroy(rootBeer.bsodaPrefab.GetComponentInChildren<ParticleSystem>().gameObject);
+
+			rootBeer.speed = rootBeer.bsodaPrefab.speed;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ShakenSoda")
@@ -845,7 +847,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ShakenSoda>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_ShakenSoda_Name", "LtsOItems_ShakenSoda_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ShrinkRay")
@@ -856,7 +858,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_ShrinkRay>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_ShrinkRay_Name", "LtsOItems_ShrinkRay_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DietBsoda, goToFieldTrips: true, appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("EnergyFlavoredZestySoda")
@@ -867,7 +869,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_EnergyFlavoredZestySoda>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_EnergyFlavoredZestySoda_Name", "LtsOItems_EnergyFlavoredZestySoda_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DietBsoda, goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("OSODA")
@@ -878,7 +880,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_OSODA>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_OSODA_Name", "LtsOItems_OSODA_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("LemonSoda")
@@ -889,7 +891,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_LemonSoda>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_LemonSoda_Name", "LtsOItems_LemonSoda_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 65, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BSODAGun")
@@ -900,7 +902,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BSODA>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_BSODAGun_Name", "LtsOItems_BSODAGun_Desc")
 			.BuildAndSetup<ITM_BSODA>(out var normalBsoda)
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			normalBsoda.speed *= 10f;
 			normalBsoda.time = 5f;
@@ -916,7 +918,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BSODA>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_DietDietSoda_Name", "LtsOItems_DietDietSoda_Desc")
 			.BuildAndSetup(out normalBsoda)
-			.StoreAsNormal(appearsInStore: true, weight: 125, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DietBsoda, appearsInStore: true, weight: 125, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			normalBsoda.speed = -normalBsoda.speed;
 			normalBsoda.time = 5f;
@@ -933,7 +935,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BSODA>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_DietDietDietSoda_Name", "LtsOItems_DietDietDietSoda_Desc")
 			.BuildAndSetup(out normalBsoda)
-			.StoreAsNormal(appearsInStore: true, weight: 100, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.DietBsoda, appearsInStore: true, weight: 100, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			normalBsoda.speed = 0f;
 			normalBsoda.time = 15f;
@@ -950,7 +952,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_FrogInACan>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_FrogInACan_Name", "LtsOItems_FrogInACan_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, goToFieldTrips: true, appearsInStore: true, weight: 45, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("Plunger")
@@ -961,7 +963,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_Plunger>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_Plunger_Name", "LtsOItems_Plunger_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BloxyCola")
@@ -972,7 +974,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BloxyCola>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_BloxyCola_Name", "LtsOItems_BloxyCola_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, goToFieldTrips: true, appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("Rotatoda")
@@ -983,7 +985,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_Rotatoda>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_Rotatoda_Name", "LtsOItems_Rotatoda_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("SpillingBSODA")
@@ -994,7 +996,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_SpillingBSODA>()
 			.SetNameAndDescription("LtsOItems_SpillingBSODA_Name", "LtsOItems_SpillingBSODA_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("SubspaceSoda")
@@ -1005,7 +1007,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_SubspaceSoda>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_SubspaceSoda_Name", "LtsOItems_SubspaceSoda_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
 
 			// ------ Apple Variants ------
 
@@ -1018,8 +1020,8 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<Item>()
 			.SetNameAndDescription("LtsOItems_HairSpray_Name", "LtsOItems_HairSpray_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 15, acceptableFloors: ["F2", "F3", "END"])
-			.AddItemAsApple((baldi) => 
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 15, acceptableFloors: ["F2", "F3", "END"])
+			.AddItemAsApple((baldi) =>
 			{
 				var nextState = new Baldi_CustomAppleState(baldi,
 					baldi.behaviorStateMachine.CurrentState,
@@ -1035,9 +1037,52 @@ namespace LotsOfItems.Plugin
 					thanksAudio: ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green));
 				return mainState;
 			});
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("GreenApple")
+			.SetGeneratorCost(30)
+			.SetShopPrice(850)
+			.SetMeta(ItemFlags.NoUses, ["food", APPLEVARTAG])
+			.SetEnum("GreenApple")
+			.SetItemComponent<ITM_Acceptable>()
+			.SetNameAndDescription("LtsOItems_GreenApple_Name", "LtsOItems_GreenApple_Desc")
+			.BuildAndSetup(out ITM_Acceptable itmAcceptable)
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 85, acceptableFloors: ["F2", "F3", "END"])
+			.AddItemAsApple((baldi) =>
+					new Baldi_CustomAppleState(baldi,
+					baldi.behaviorStateMachine.CurrentState,
+					TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png"),
+					eatTime: 5f));
+
+			GrowItemAcceptor.RegisterExchangingItem(item.itemType, ItemMetaStorage.Instance.FindByEnum(Items.Apple).value, 45f);
+			itmAcceptable.item = item.itemType;
+			itmAcceptable.audUse = GenericExtensions.FindResourceObjectByName<SoundObject>("ItemPickup");
+
+			GenericExtensions.FindResourceObjects<RendererContainer>().DoIf(x => x.name.StartsWith("Plant"), plant =>
+			{
+				var acceptor = new GameObject("Plant_GreenAppleAcceptor").AddComponent<GrowItemAcceptor>();
+				acceptor.transform.SetParent(plant.transform);
+				acceptor.transform.localPosition = Vector3.zero;
+				acceptor.gameObject.layer = LayerStorage.iClickableLayer;
+
+				var collider = acceptor.gameObject.AddComponent<BoxCollider>();
+				collider.center = Vector3.up * 5f;
+				collider.size = new(1.5f, 5f, 1.5f);
+				collider.isTrigger = true;
+
+				acceptor.renderer = ObjectCreationExtensions.CreateSpriteBillboard(null);
+				acceptor.renderer.name = "GrowRenderer";
+				acceptor.renderer.transform.SetParent(acceptor.transform);
+				acceptor.renderer.transform.localPosition = Vector3.right * 1.5f;
+
+				acceptor.gameObject.AddComponent<BillboardUpdater>();
+
+				acceptor.audMan = acceptor.gameObject.CreatePropagatedAudioManager(65f, 75f);
+				acceptor.audEnd = GenericExtensions.FindResourceObjectByName<SoundObject>("Boink");
+			});
 		}
 
-		static SoundObject GetYtpAudio(string name) 
+		static SoundObject GetYtpAudio(string name)
 		{
 			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, name)), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
@@ -1098,9 +1143,9 @@ namespace LotsOfItems.Plugin
 			return itm;
 		}
 
-		static ItemObject StoreAsNormal(this ItemObject itm, bool goToFieldTrips = false, bool appearsInStore = true, int weight = 100, params string[] acceptableFloors)
+		static ItemObject StoreAsNormal(this ItemObject itm, Items replacingItem, bool goToFieldTrips = false, bool appearsInStore = true, int weight = 100, params string[] acceptableFloors)
 		{
-			LotOfItemsPlugin.plug.availableItems.Add(new(itm, goToFieldTrips, appearsInStore, weight, acceptableFloors));
+			LotOfItemsPlugin.plug.availableItems.Add(new(itm, replacingItem, goToFieldTrips, appearsInStore, weight, acceptableFloors));
 			return itm;
 		}
 
@@ -1131,14 +1176,15 @@ namespace LotsOfItems.Plugin
 		}
 	}
 
-	internal readonly struct ItemData(ItemObject itm, int weight = 100, params string[] acceptableFloors)
+	internal readonly struct ItemData(ItemObject itm, Items itemItIsReplacing, int weight = 100, params string[] acceptableFloors)
 	{
-		internal ItemData(ItemObject itm, bool acceptFieldTrips, bool appearsInStore, int weight = 100, params string[] acceptableFloors) : this(itm, weight, acceptableFloors)
+		internal ItemData(ItemObject itm, Items itemItIsReplacing, bool acceptFieldTrips, bool appearsInStore, int weight = 100, params string[] acceptableFloors) : this(itm, itemItIsReplacing, weight, acceptableFloors)
 		{
 			this.acceptFieldTrips = acceptFieldTrips;
 			this.appearsInStore = appearsInStore;
 		}
-		
+
+		readonly public Items replacingItem = itemItIsReplacing;
 		readonly public ItemObject itm = itm;
 		readonly public int weight = Mathf.Max(1, weight);
 		readonly public IItemPrefab Prefab => itm.item is IItemPrefab pre ? pre : null;

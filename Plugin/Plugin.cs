@@ -55,7 +55,6 @@ namespace LotsOfItems.Plugin
 						player.gameObject.AddComponent<PlayerPositionHistory>().pm = player;
 						player.gameObject.AddComponent<PlayerCustomAttributes>();
 					}
-					
 				}
 				catch (System.Exception e)
 				{
@@ -67,14 +66,25 @@ namespace LotsOfItems.Plugin
 
 			GeneratorManagement.RegisterFieldTripLootChange(this, (_, tripLoot) =>
 			{
-
+				Dictionary<ItemObject, ItemData> objectDataPair = [];
 				for (int i = 0; i < availableItems.Count; i++)
 				{
+					// This will allow you to disable items you want. The release build won't have it to force people to enjoy every single bit of this mod lol
+					//if (!Config.Bind("Item Settings", 
+					//	$"Disable {Singleton<LocalizationManager>.Instance.GetLocalizedText(availableItems[i].itm.nameKey)}", 
+					//	true, 
+					//	"If True, this item will spawn naturally in the game (in levels made by the Level Generator).")
+					//.Value)
+					//	continue;
+					
 					var itm = availableItems[i];
 					if (!itm.acceptFieldTrips) continue; // No real check for tripType, idk why would I need to have specific selections
 
 					tripLoot.potentialItems.Add(new() { selection = itm.itm, weight = itm.weight });
+					objectDataPair.Add(availableItems[i].itm, availableItems[i]);
 				}
+
+				BalanceOutListWeights(objectDataPair, tripLoot.potentialItems);
 			});
 
 			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) => sco.levelObject.forcedItems.Clear()); // forced items screw up in F1 >:(
@@ -85,6 +95,8 @@ namespace LotsOfItems.Plugin
 					return;
 
 				bool levelObjectUsed = false;
+
+				Dictionary<ItemObject, ItemData> objectDataPair = [];
 
 				for (int i = 0; i < availableItems.Count; i++)
 				{
@@ -105,6 +117,7 @@ namespace LotsOfItems.Plugin
 						if (availableItems[i].appearsInStore)
 							sco.shopItems = sco.shopItems.AddToArray(weight);
 
+						objectDataPair.Add(availableItems[i].itm, availableItems[i]);
 					}
 				}
 
@@ -113,6 +126,11 @@ namespace LotsOfItems.Plugin
 					sco.levelObject.maxItemValue += 125; // To make more items spawn :)
 					sco.levelObject.MarkAsNeverUnload();
 				}
+
+				BalanceOutWeights(objectDataPair, ref sco.levelObject.potentialItems);
+				BalanceOutWeights(objectDataPair, ref sco.shopItems);
+
+				
 			});
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, PostLoad, true);
@@ -154,6 +172,70 @@ namespace LotsOfItems.Plugin
 				Debug.LogWarning("A CRASH HAPPENED IN THE POST LOAD EVENT");
 				Debug.LogException(e);
 				MTM101BaldiDevAPI.CauseCrash(Info, e);
+			}
+		}
+
+		void BalanceOutListWeights(Dictionary<ItemObject, ItemData> objectDataPair, List<WeightedItemObject> weights)
+		{
+			//Debug.Log("------ new weight iteration coming -------");
+
+			for (int i = 0; i < weights.Count; i++)
+			{
+				if (!objectDataPair.TryGetValue(weights[i].selection, out var data))
+					continue;
+
+				int valueToBalance = 0, includedItems = 0;
+				for (int z = 0; z < weights.Count; z++)
+				{
+					if (z == i)
+						continue;
+
+					if (weights[i].selection.itemType == data.replacingItem || (objectDataPair.TryGetValue(weights[z].selection, out var newData) && newData.replacingItem != data.replacingItem))
+					{
+						valueToBalance += weights[i].weight;
+						includedItems++;
+					}
+				}
+
+				if (includedItems == 0)
+					continue;
+
+				weights[i].weight = Mathf.FloorToInt((valueToBalance + weights[i].weight) / (float)includedItems); // Mathf to avoid 0 division
+				weights[i].weight = Mathf.Max(1, weights[i].weight); // Make sure to not go below 1
+
+				//Debug.Log($"New weight for {Singleton<LocalizationManager>.Instance.GetLocalizedText(weights[i].selection.nameKey)} is {weights[i].weight}");
+			}
+		}
+
+		void BalanceOutWeights(Dictionary<ItemObject, ItemData> objectDataPair, ref WeightedItemObject[] weights)
+		{
+			//Debug.Log("------ new weight iteration coming -------");
+
+			for (int i = 0; i < weights.Length; i++)
+			{
+				if (!objectDataPair.TryGetValue(weights[i].selection, out var data))
+					continue;
+
+				int valueToBalance = 0, includedItems = 0;
+				for (int z = 0; z < weights.Length; z++)
+				{
+					if (z == i)
+						continue;
+
+					if (weights[i].selection.itemType == data.replacingItem || (objectDataPair.TryGetValue(weights[z].selection, out var newData) && newData.replacingItem != data.replacingItem))
+					{
+						valueToBalance += weights[i].weight;
+						includedItems++;
+					}
+				}
+
+				if (includedItems == 0)
+					continue;
+
+				weights[i].weight = Mathf.FloorToInt((valueToBalance + weights[i].weight) / (float)includedItems); // Mathf to avoid 0 division
+				weights[i].weight = Mathf.Max(1, weights[i].weight); // Make sure to not go below 1
+
+				//Debug.Log($"New weight for {Singleton<LocalizationManager>.Instance.GetLocalizedText(weights[i].selection.nameKey)} is {weights[i].weight}");
 			}
 		}
 	}

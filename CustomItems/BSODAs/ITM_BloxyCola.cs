@@ -37,7 +37,7 @@ public class ITM_BloxyCola : ITM_GenericBSODA
 
 		var collider = stainPre.gameObject.AddComponent<BoxCollider>();
 		collider.isTrigger = true;
-		collider.size = new Vector3(4.85f, 1f, 4.85f);
+		collider.size = new Vector3(4.96f, 1f, 4.96f);
 		collider.center = Vector3.up * 2f;
 
 		stainEffectorPre = new GameObject("StainEffector").AddComponent<StainEffector>();
@@ -58,7 +58,6 @@ public class ITM_BloxyCola : ITM_GenericBSODA
 	{
 		bool val = base.Use(pm);
 		stainController = new GameObject("StainController").AddComponent<StainController>();
-		stainController.transform.SetParent(transform);
 		stainController.Initialize(this);
 		lastRecordedCell = ec.CellFromPosition(transform.position);
 		return val;
@@ -87,7 +86,6 @@ public class StainController : MonoBehaviour
 {
 	internal ITM_BloxyCola owner;
 	readonly internal HashSet<Cell> stainedCells = [];
-	readonly private List<Stain> activeStains = [];
 	readonly internal HashSet<Entity> affectedEntities = [];
 
 	public void Initialize(ITM_BloxyCola soda) =>
@@ -98,10 +96,9 @@ public class StainController : MonoBehaviour
 	{
 		if (stainedCells.Contains(cell)) return;
 
-		var stain = Instantiate(owner.stainPre);
+		var stain = Instantiate(owner.stainPre, transform);
 		stain.transform.position = cell.FloorWorldPosition;
 		stain.Initialize(this);
-		activeStains.Add(stain);
 		stainedCells.Add(cell);
 	}
 
@@ -114,12 +111,6 @@ public class StainController : MonoBehaviour
 		effector.transform.position = target.transform.position;
 		effector.Initialize(this, target);
 		affectedEntities.Add(target);
-	}
-
-	void OnDestroy()
-	{
-		foreach (Stain stain in activeStains)
-			if (stain != null) Object.Destroy(stain.gameObject);
 	}
 }
 public class Stain : MonoBehaviour
@@ -161,7 +152,7 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 	internal Entity entity;
 
 	[SerializeField]
-	internal float speed = 15f, slipStartForce = 8.5f, speedLimit = 50f;
+	internal float speed = 15f, speedLimit = 50f;
 
 	[SerializeField]
 	internal AudioManager audMan;
@@ -187,9 +178,6 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 		};
 
 		audMan.PlaySingle(audStartSlip);
-
-		entity.AddForce(new(slipDirection, slipStartForce, -slipStartForce * 0.85f));
-		targetEntity.AddForce(new(slipDirection, slipStartForce, -slipStartForce * 0.85f));
 	}
 
 	void Update()
@@ -214,7 +202,7 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 	void DestroyEffector()
 	{
 		targetEntity?.ExternalActivity.moveMods.Remove(slipMod);
-		controller.affectedEntities.RemoveWhere(x => !x || x == targetEntity);
+		controller?.affectedEntities.RemoveWhere(x => !x || x == targetEntity);
 		Destroy(gameObject);
 	}
 

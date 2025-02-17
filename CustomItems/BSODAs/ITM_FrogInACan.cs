@@ -30,7 +30,7 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
 		base.VirtualSetupPrefab(itm);
-		audMan = gameObject.CreatePropagatedAudioManager(100f, 125f);
+		audMan = gameObject.CreateAudioManager(100f, 125f);
 		audLaunchOff = GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip");
 		audRibbit = this.GetSound("frogInCan_croak.wav", "LtsOItems_Vfx_Ribbit", SoundType.Effect, Color.white);
 		sound = audRibbit;

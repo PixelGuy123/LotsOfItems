@@ -19,10 +19,10 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 		internal RaycastBlocker fogParticlesPre;
 
 		[SerializeField]
-		internal int explosionDistance = 2; // Defines a 5x5 area (radius 2)
+		internal int explosionDistance = 45; // Defines a 5x5 area (radius 2)
 
 		[SerializeField]
-		internal float explosionForce = 50f, explosionAcceleration = -43.5f, explosionDuration = 5f, chalkGoAwayDelay = 7.5f, gravityIncrease = 9.25f;
+		internal float explosionForce = 85f, explosionAcceleration = -67.5f, explosionDuration = 5f, chalkGoAwayDelay = 7.5f, gravityIncrease = 9.25f;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
