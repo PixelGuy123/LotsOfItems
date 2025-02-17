@@ -27,7 +27,9 @@ using LotsOfItems.CustomItems.Tapes;
 using LotsOfItems.CustomItems.GrapplingHooks;
 using LotsOfItems.CustomItems.PortalPosters;
 using LotsOfItems.CustomItems.BSODAs;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
+using System;
+
+using Object = UnityEngine.Object;
 
 namespace LotsOfItems.Plugin
 {
@@ -53,7 +55,8 @@ namespace LotsOfItems.Plugin
 				TAPEVARTAG = "LtsOfItms_Tape_Variant",
 				PORTALVARTAG = "LtsOfItms_Portal_Variant",
 				SODAVARTAG = "LtsOfItms_Bsoda_Variant",
-				
+				APPLEVARTAG = "LtsOfItms_Apple_Variant",
+
 				PIRATE_CANN_HATE = "cann_hate",
 				CRIMINALPACK_CONTRABAND = "crmp_contraband";
 
@@ -244,14 +247,14 @@ namespace LotsOfItems.Plugin
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("chocolateQuarter")
-			.SetGeneratorCost(26)              
-			.SetShopPrice(350)                 
+			.SetGeneratorCost(26)
+			.SetShopPrice(350)
 			.SetMeta(ItemFlags.None, ["food", ZESTYVARTAG, QUARTERVARTAG, "currency", PIRATE_CANN_HATE])
 			.SetEnum("ChocolateQuarter")
 			.SetItemComponent<ITM_ChocolateQuarter>()
 			.SetNameAndDescription("LtsOItems_ChocolateQuarter_Name", "LtsOItems_ChocolateQuarter_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END" ]);
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("vanillaZestyBar")
@@ -457,7 +460,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_LandMine>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_LandMine_Name", "LtsOItems_LandMine_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 95, acceptableFloors: ["F2", "F3", "END" ]);
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 95, acceptableFloors: ["F2", "F3", "END"]);
 
 
 
@@ -714,7 +717,7 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_BaldisMostFavoriteTape>()
 			.SetNameAndDescription("LtsOItems_BaldisMostFavoriteTape_Name", "LtsOItems_BaldisMostFavoriteTape_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END" ]);
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PartyTape")
@@ -918,7 +921,7 @@ namespace LotsOfItems.Plugin
 			normalBsoda.speed = -normalBsoda.speed;
 			normalBsoda.time = 5f;
 
-			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit), );
+			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit);
 			//Object.Destroy(normalBsoda.GetComponentInChildren<ParticleSystem>().gameObject);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -935,14 +938,14 @@ namespace LotsOfItems.Plugin
 			normalBsoda.speed = 0f;
 			normalBsoda.time = 15f;
 
-			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit), );
+			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit);
 			Object.Destroy(normalBsoda.GetComponentInChildren<ParticleSystem>().gameObject);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("FroginaCan")
 			.SetGeneratorCost(28)
 			.SetShopPrice(900)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, PIRATE_CANN_HATE])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG, PIRATE_CANN_HATE])
 			.SetEnum("FroginaCan")
 			.SetItemComponent<ITM_FrogInACan>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_FrogInACan_Name", "LtsOItems_FrogInACan_Desc")
@@ -953,7 +956,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("Plunger")
 			.SetGeneratorCost(25)
 			.SetShopPrice(500)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, PIRATE_CANN_HATE])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG, PIRATE_CANN_HATE])
 			.SetEnum("Plunger")
 			.SetItemComponent<ITM_Plunger>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_Plunger_Name", "LtsOItems_Plunger_Desc")
@@ -964,13 +967,74 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("BloxyCola")
 			.SetGeneratorCost(32)
 			.SetShopPrice(725)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, "CRIMINALPACK_CONTRABAND"])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
 			.SetEnum("BloxyCola")
 			.SetItemComponent<ITM_BloxyCola>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_BloxyCola_Name", "LtsOItems_BloxyCola_Desc")
 			.BuildAndSetup()
+			.StoreAsNormal(goToFieldTrips: true, appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("Rotatoda")
+			.SetGeneratorCost(26)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
+			.SetEnum("Rotatoda")
+			.SetItemComponent<ITM_Rotatoda>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_Rotatoda_Name", "LtsOItems_Rotatoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F1", "F2", "F3", "END"]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SpillingBSODA")
+			.SetGeneratorCost(22)
+			.SetShopPrice(400)
+			.SetMeta(ItemFlags.Persists, ["drink", SODAVARTAG])
+			.SetEnum("SpillingBSODA")
+			.SetItemComponent<ITM_SpillingBSODA>()
+			.SetNameAndDescription("LtsOItems_SpillingBSODA_Name", "LtsOItems_SpillingBSODA_Desc")
+			.BuildAndSetup()
 			.StoreAsNormal(appearsInStore: true, weight: 90, acceptableFloors: ["F1", "F2", "F3", "END"]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SubspaceSoda")
+			.SetGeneratorCost(35)
+			.SetShopPrice(850)
+			.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, ["drink", SODAVARTAG])
+			.SetEnum("SubspaceSoda")
+			.SetItemComponent<ITM_SubspaceSoda>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_SubspaceSoda_Name", "LtsOItems_SubspaceSoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 75, acceptableFloors: ["F2", "F3", "END"]);
+
+			// ------ Apple Variants ------
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("HairSpray")
+			.SetGeneratorCost(35)
+			.SetShopPrice(1250)
+			.SetMeta(ItemFlags.NoUses, ["food", APPLEVARTAG])
+			.SetEnum("HairSpray")
+			.SetItemComponent<Item>()
+			.SetNameAndDescription("LtsOItems_HairSpray_Name", "LtsOItems_HairSpray_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(appearsInStore: true, weight: 15, acceptableFloors: ["F2", "F3", "END"])
+			.AddItemAsApple((baldi) => 
+			{
+				var nextState = new Baldi_CustomAppleState(baldi,
+					baldi.behaviorStateMachine.CurrentState,
+					TextureExtensions.LoadSpriteSheet(3, 1, 30.5f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiHaired.png"),
+					eatTime: 65f,
+					eatSounds: [new() { selection = GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"), weight = 100 }],
+					thanksAudio: GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"));
+
+				var mainState = new Baldi_CustomAppleState(baldi,
+					nextState,
+					TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png"),
+					eatTime: 15f,
+					thanksAudio: ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green));
+				return mainState;
+			});
 		}
 
 		static SoundObject GetYtpAudio(string name) 

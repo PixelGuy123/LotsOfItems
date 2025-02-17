@@ -178,6 +178,19 @@ namespace LotsOfItems.Plugin
 				cell.softCoverage &= ~mask;
 			}
 		}
+
+		public static void BlockAll(this Cell cell, EnvironmentController ec, bool block)
+		{
+			for (int i = 0; i < Directions.Count; i++)
+			{
+				Direction dir = (Direction)i;
+				if (!cell.HasWallInDirection(dir))
+				{
+					cell.Block(dir, block);
+					ec.CellFromPosition(cell.position + dir.ToIntVector2()).Block(dir.GetOpposite(), block);
+				}
+			}
+		}
 	}
 	public static class ReusableExtensions
 	{

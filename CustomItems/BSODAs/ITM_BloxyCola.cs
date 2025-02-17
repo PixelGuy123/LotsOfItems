@@ -37,7 +37,7 @@ public class ITM_BloxyCola : ITM_GenericBSODA
 
 		var collider = stainPre.gameObject.AddComponent<BoxCollider>();
 		collider.isTrigger = true;
-		collider.size = new Vector3(4.5f, 1f, 4.5f);
+		collider.size = new Vector3(4.85f, 1f, 4.85f);
 		collider.center = Vector3.up * 2f;
 
 		stainEffectorPre = new GameObject("StainEffector").AddComponent<StainEffector>();
@@ -126,12 +126,25 @@ public class Stain : MonoBehaviour
 {
 	private StainController controller;
 
-	public void Initialize(StainController controller) =>
+	float spawnDelay = 0.1f;
+
+	public void Initialize(StainController controller)
+	{
 		this.controller = controller;
+	}
+
+	void Update()
+	{
+		if (spawnDelay > 0f)
+			spawnDelay -= Time.deltaTime;
+	}
 	
 
 	void OnTriggerEnter(Collider other)
 	{
+		if (spawnDelay > 0f)
+			return;
+
 		Entity entity = other.GetComponent<Entity>();
 		if (entity != null && entity.Grounded)
 			controller.CreateEffector(entity);
@@ -148,7 +161,7 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 	internal Entity entity;
 
 	[SerializeField]
-	internal float speed = 15f, slipStartForce = 8.5f;
+	internal float speed = 15f, slipStartForce = 8.5f, speedLimit = 50f;
 
 	[SerializeField]
 	internal AudioManager audMan;
@@ -161,7 +174,9 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 		this.controller = controller;
 		targetEntity = target;
 		targetEntity.ExternalActivity.moveMods.Add(slipMod);
-		speed += targetEntity.Velocity.magnitude;
+		speed += targetEntity.Velocity.magnitude * 22.5f;
+		if (speed > speedLimit)
+			speed = speedLimit;
 		slipDirection = targetEntity.Velocity.normalized;
 
 		entity.Initialize(controller.owner.ec, target.transform.position);
