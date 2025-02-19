@@ -1,5 +1,6 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_EnergyFlavoredZestySoda : ITM_GenericBSODA
@@ -13,7 +14,7 @@ public class ITM_EnergyFlavoredZestySoda : ITM_GenericBSODA
 		
 		speed *= 2.25f;
 		spriteRenderer.sprite = this.GetSprite("EnergyFlavoredZestySoda_spray.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 	}
 
 	public override bool Use(PlayerManager pm)

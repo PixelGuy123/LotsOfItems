@@ -5,6 +5,7 @@ using LotsOfItems.Patches;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
+using MTM101BaldAPI.SaveSystem;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
@@ -34,6 +35,8 @@ namespace LotsOfItems.Plugin
 			plug = this;
 			ModPath = AssetLoader.GetModPath(this);
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
+
+			ModdedSaveGame.AddSaveHandler(Info);
 
 			Harmony h = new(guid);
 			h.PatchAllConditionals();
@@ -87,7 +90,7 @@ namespace LotsOfItems.Plugin
 				BalanceOutListWeights(objectDataPair, tripLoot.potentialItems);
 			});
 
-			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) => sco.levelObject.forcedItems.Clear()); // forced items screw up in F1 >:(
+			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) => sco.levelObject.forcedItems.RemoveAll(x => x.itemType != Items.BusPass)); // forced items screw up in F1 >:(
 
 			GeneratorManagement.Register(this, GenerationModType.Addend, (name, num, sco) =>
 			{

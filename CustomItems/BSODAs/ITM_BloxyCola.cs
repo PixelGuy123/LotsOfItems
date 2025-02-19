@@ -5,6 +5,7 @@ using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
 using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI.Registers;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_BloxyCola : ITM_GenericBSODA
@@ -22,7 +23,7 @@ public class ITM_BloxyCola : ITM_GenericBSODA
 	{
 		base.VirtualSetupPrefab(itm);
 		spriteRenderer.sprite = this.GetSprite("BloxyCola_soda.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 
 		var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(
 				this.GetSprite("BloxyCola_stain.png", 10f),

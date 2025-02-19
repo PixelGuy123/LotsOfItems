@@ -1,6 +1,7 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
@@ -36,7 +37,7 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 		sound = audRibbit;
 
 		spriteRenderer.sprite = this.GetSprite("FroginaCan_frog.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 	}
 
 

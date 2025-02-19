@@ -632,7 +632,7 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_RustyOldShoes_Name", "LtsOItems_RustyOldShoes_Desc")
 			.BuildAndSetup(out boots)
 			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 175, acceptableFloors: ["F1", "F2", "F3", "END"]);
-			
+
 			boots.setTime = 15f;
 			boots.GetComponentInChildren<Image>().sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "RustyOldShoes_canvas.png"), Vector2.one * 0.5f);
 
@@ -799,7 +799,7 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PortalDoor")
 			.SetGeneratorCost(45)
-			.SetShopPrice(1200)
+			.SetShopPrice(650)
 			.SetMeta(ItemFlags.Persists, [PORTALVARTAG])
 			.SetEnum("PortalDoor")
 			.SetItemComponent<ITM_PortalDoor>()
@@ -811,7 +811,7 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("SadSoda")
 			.SetGeneratorCost(25)
-			.SetShopPrice(750)
+			.SetShopPrice(500)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
 			.SetEnum("SadSoda")
 			.SetItemComponent<ITM_SadSoda>(Items.Bsoda)
@@ -822,7 +822,7 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("RootBeer")
 			.SetGeneratorCost(30)
-			.SetShopPrice(800)
+			.SetShopPrice(500)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
 			.SetEnum("RootBeer")
 			.SetItemComponent<ITM_RootBeer>(Items.Bsoda)
@@ -834,14 +834,14 @@ namespace LotsOfItems.Plugin
 			rootBeer.bsodaPrefab.time = 7.5f;
 			rootBeer.bsodaPrefab.speed *= 1.2f;
 			rootBeer.bsodaPrefab.spriteRenderer.sprite = AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud"), rootBeer.bsodaPrefab.spriteRenderer.sprite.pixelsPerUnit);
-			Object.Destroy(rootBeer.bsodaPrefab.GetComponentInChildren<ParticleSystem>().gameObject);
+			rootBeer.bsodaPrefab.DestroyParticleIfItHasOne();
 
 			rootBeer.speed = rootBeer.bsodaPrefab.speed;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ShakenSoda")
 			.SetGeneratorCost(28)
-			.SetShopPrice(725)
+			.SetShopPrice(650)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND, PIRATE_CANN_HATE])
 			.SetEnum("ShakenSoda")
 			.SetItemComponent<ITM_ShakenSoda>(Items.NanaPeel)
@@ -852,7 +852,7 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ShrinkRay")
 			.SetGeneratorCost(25)
-			.SetShopPrice(600)
+			.SetShopPrice(450)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["drink", SODAVARTAG])
 			.SetEnum("ShrinkRay")
 			.SetItemComponent<ITM_ShrinkRay>(Items.DietBsoda)
@@ -941,7 +941,7 @@ namespace LotsOfItems.Plugin
 			normalBsoda.time = 15f;
 
 			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit);
-			Object.Destroy(normalBsoda.GetComponentInChildren<ParticleSystem>().gameObject);
+			normalBsoda.DestroyParticleIfItHasOne();
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("FroginaCan")
@@ -1145,6 +1145,7 @@ namespace LotsOfItems.Plugin
 
 		static ItemObject StoreAsNormal(this ItemObject itm, Items replacingItem, bool goToFieldTrips = false, bool appearsInStore = true, int weight = 100, params string[] acceptableFloors)
 		{
+			itm.item.name = "ITM_" + Singleton<LocalizationManager>.Instance.GetLocalizedText(itm.nameKey);
 			LotOfItemsPlugin.plug.availableItems.Add(new(itm, replacingItem, goToFieldTrips, appearsInStore, weight, acceptableFloors));
 			return itm;
 		}

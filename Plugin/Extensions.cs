@@ -191,6 +191,18 @@ namespace LotsOfItems.Plugin
 				}
 			}
 		}
+
+		public static void DestroyParticleIfItHasOne(this ITM_BSODA bsoda)
+		{
+			var parts = bsoda.GetComponentInChildren<ParticleSystem>(true);
+			if (parts)
+			{
+				if (parts.GetComponent<ITM_BSODA>())
+					UnityEngine.Object.Destroy(parts);
+				else
+					UnityEngine.Object.Destroy(parts.gameObject);
+			}
+		}
 	}
 	public static class ReusableExtensions
 	{

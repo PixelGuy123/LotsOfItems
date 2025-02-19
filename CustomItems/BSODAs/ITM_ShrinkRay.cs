@@ -1,6 +1,7 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
 using System.Collections.Generic;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_ShrinkRay : ITM_GenericBSODA
@@ -17,7 +18,7 @@ public class ITM_ShrinkRay : ITM_GenericBSODA
 		sound = this.GetSoundNoSub("ShrinkRay_shoot.wav", SoundType.Effect);
 		speed *= 1.5f;
 		spriteRenderer.sprite = this.GetSprite("ShrinkRay_Soda.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 	}
 
 	public override bool VirtualEntityTriggerEnter(Collider other)

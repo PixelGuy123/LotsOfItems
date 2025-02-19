@@ -21,14 +21,14 @@ namespace LotsOfItems.CustomItems.NanaPeels
 		internal int maxHits = 5;
 
 		[SerializeField]
-		internal float teleportWallOffset = 5.5f;
+		internal float teleportWallOffset = 4.5f;
 
 		[SerializeField]
 		internal SoundObject audTeleport;
 
 		private int hitsLeft;
 
-		readonly private List<Vector3> candidatePositions = [];
+		readonly private List<Cell> candidatePositions = [], filteredPositions = [];
 
 		bool waitingHitDelay = false;
 
@@ -38,32 +38,17 @@ namespace LotsOfItems.CustomItems.NanaPeels
 			hitsLeft = maxHits;
 
 			GetPositions(ec);
-
-			entity.OnTeleport += OnTeleport;
 		}
-
-		void OnTeleport(Vector3 pos) =>
-			slippingEntitity?.Teleport(pos);
 
 		private void GetPositions(EnvironmentController ec) // Spots that the teleporter can go to
 		{
 			candidatePositions.Clear();
 			foreach (var cell in ec.AllTilesNoGarbage(false, false))
 			{
-				List<Direction> closedDirs = Directions.ClosedDirectionsFromBin(cell.ConstBin);
-
-				if (closedDirs.Count == 0)
+				if (cell.shape == TileShapeMask.Open)
 					continue;
 
-
-				foreach (Direction dir in closedDirs)
-				{
-					Direction exitDir = dir.GetOpposite();
-					Vector3 exitPosition = cell.FloorWorldPosition + (exitDir.ToVector3() * teleportWallOffset);
-
-					candidatePositions.Add(exitPosition);
-				}
-
+				candidatePositions.Add(cell);
 			}
 		}
 
@@ -71,16 +56,32 @@ namespace LotsOfItems.CustomItems.NanaPeels
 		{
 			if (!waitingHitDelay && slipping && !dying)
 			{
+				direction = Vector3.Reflect(direction, hit.normal);
 				if (candidatePositions.Count == 0)
 				{
 					// If somehow no candidate exists, die :)
 					End();
 					return false;
 				}
-				waitingHitDelay = true;
-				StartCoroutine(TeleportDelay(candidatePositions[Random.Range(0, candidatePositions.Count)])); // For some reason, entity.Teleport doesn't work in a collision call, so I'm using a delay for it
 
-				direction = Vector3.Reflect(direction, hit.normal);
+				filteredPositions.Clear();
+				var dirToGo = Directions.DirFromVector3(direction, 45f).GetOpposite();
+				
+				
+				for (int i = 0; i < candidatePositions.Count; i++)
+				{
+					if (candidatePositions[i].HasWallInDirection(dirToGo))
+						filteredPositions.Add(candidatePositions[i]);
+				}
+
+				if (filteredPositions.Count == 0)
+				{
+					End();
+					return false;
+				}
+
+				waitingHitDelay = true;
+				StartCoroutine(TeleportDelay(filteredPositions[Random.Range(0, filteredPositions.Count)].FloorWorldPosition + (dirToGo.ToVector3() * teleportWallOffset))); // For some reason, entity.Teleport doesn't work in a collision call, so I'm using a delay for it
 			}
 			return false;
 		}
@@ -90,11 +91,12 @@ namespace LotsOfItems.CustomItems.NanaPeels
 			yield return null;
 
 			entity.Teleport(posToGo);
+			slippingEntitity?.Teleport(posToGo);
 			audioManager.PlaySingle(audTeleport);
 
 			if (--hitsLeft <= 0)
 				End();
-			
+
 			waitingHitDelay = false;
 
 		}

@@ -3,6 +3,7 @@ using System.Collections;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
@@ -16,7 +17,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 
 	[SerializeField]
 	[Range(0f, 1f)]
-	private float chanceToFailExplosion = 0.15f;
+	private float chanceToFailExplosion = 0.15f, chanceToFailExplosionSteppedOn = 0.75f;
 
 	[SerializeField] 
 	private SoundObject audFail, audExplode, audActivate;
@@ -49,7 +50,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 
 		// Load the audios; download them too lol
 		spriteRenderer.sprite = this.GetSprite("Rotatoda_Soda.png", spriteRenderer.sprite.pixelsPerUnit); // It's pink, so...
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 		audFail = this.GetSound("Subspace_Bruh.wav", "LtsOItems_Vfx_Womp", SoundType.Effect, Color.white);
 		audExplode = this.GetSound("Subspace_Explosion.wav", "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white);
 		audActivate = this.GetSound("Subspace_Activation.wav", "LtsOItems_Vfx_Activated", SoundType.Effect, Color.white);
@@ -74,7 +75,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 	{
 		yield return new WaitForSecondsEnvironmentTimescale(ec, activationDelay);
 
-		TryExplode();
+		TryExplode(false);
 	}
 
 	private IEnumerator FailExplosion()
@@ -87,14 +88,14 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		yield break;
 	}
 
-	void TryExplode()
+	void TryExplode(bool steppedOn)
 	{
 		if (triggered)
 			return;
 
 		audMan.FlushQueue(true);
 		triggered = true;
-		if (Random.value <= chanceToFailExplosion) // 15% failure chance
+		if (Random.value <= (steppedOn ? chanceToFailExplosionSteppedOn : chanceToFailExplosion)) // 15% failure chance
 		{
 			StartCoroutine(FailExplosion());
 			return;
@@ -121,7 +122,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		if (!triggered && other.isTrigger && other.GetComponent<Entity>())
 		{
 			StopCoroutine(detonationCor);
-			TryExplode();
+			TryExplode(true);
 			return true;
 		}
 		return false;

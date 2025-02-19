@@ -3,6 +3,7 @@ using MTM101BaldAPI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_LemonSoda : ITM_GenericBSODA
@@ -22,7 +23,7 @@ public class ITM_LemonSoda : ITM_GenericBSODA
 		speed *= 4f;
 
 		spriteRenderer.sprite = this.GetSprite("LemonSoda_soda.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 	}
 	public override bool VirtualEntityTriggerEnter(Collider other)
 	{

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using PixelInternalAPI.Classes;
 using LotsOfItems.ItemPrefabStructures;
 using System.Collections.Generic;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
@@ -28,7 +28,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 			momentumNav.maxSpeed = speed;
 
 			spriteRenderer.sprite = this.GetSprite("SadSoda_drink.png", spriteRenderer.sprite.pixelsPerUnit);
-			Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+			this.DestroyParticleIfItHasOne();
 		}
 
 		public override bool Use(PlayerManager pm)

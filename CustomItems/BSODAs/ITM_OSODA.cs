@@ -4,6 +4,7 @@ using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_OSODA : ITM_GenericBSODA
@@ -23,7 +24,7 @@ public class ITM_OSODA : ITM_GenericBSODA
 		AddendMultiplier = 0.75f;
 
 		spriteRenderer.sprite = this.GetSprite("OSODA_Spray.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 		entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 
 		var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(

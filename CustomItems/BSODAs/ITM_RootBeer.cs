@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
@@ -13,7 +14,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 		{
 			base.VirtualSetupPrefab(itm);
 			spriteRenderer.sprite = this.GetSprite("RootBeer_soda.png", spriteRenderer.sprite.pixelsPerUnit);
-			Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+			this.DestroyParticleIfItHasOne();
 		}
 
 		public override bool Use(PlayerManager pm)

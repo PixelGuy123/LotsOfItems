@@ -3,6 +3,7 @@ using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_Plunger : ITM_GenericBSODA
@@ -36,7 +37,7 @@ public class ITM_Plunger : ITM_GenericBSODA
 		var sprs = this.GetSpriteSheet("Plunger_Sheet.png", 4, 2, spriteRenderer.sprite.pixelsPerUnit + 35f);
 		spriteRenderer.sprite = sprs[0];
 		spriteRenderer.CreateAnimatedSpriteRotator(GenericExtensions.CreateRotationMap(8, sprs));
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 
 		audMan = gameObject.CreatePropagatedAudioManager(65f, 75f);
 		audHit = this.GetSound("plunger_hit.wav", "LtsOItems_Vfx_Suction", SoundType.Effect, Color.white);

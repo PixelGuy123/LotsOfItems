@@ -1,6 +1,7 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Classes;
 using UnityEngine;
+using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_Rotatoda : ITM_GenericBSODA
@@ -16,7 +17,7 @@ public class ITM_Rotatoda : ITM_GenericBSODA
 		entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 
 		spriteRenderer.sprite = this.GetSprite("Rotatoda_Soda.png", spriteRenderer.sprite.pixelsPerUnit);
-		Destroy(GetComponentInChildren<ParticleSystem>().gameObject);
+		this.DestroyParticleIfItHasOne();
 
 		time = 54f;
 	}

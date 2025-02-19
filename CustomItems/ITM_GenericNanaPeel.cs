@@ -16,6 +16,7 @@ namespace LotsOfItems.CustomItems
 		internal virtual bool OnCollisionOverride(RaycastHit hit) => true;
 		internal virtual void OnFloorHit() { }
 		internal virtual bool EntityTriggerStayOverride(Collider other) => true;
+		internal virtual bool VirtualEnd() => true;
 	}
 
 	[HarmonyPatch(typeof(ITM_NanaPeel))]
@@ -35,6 +36,15 @@ namespace LotsOfItems.CustomItems
 		{
 			if (__instance is ITM_GenericNanaPeel gen)
 				return gen.OnCollisionOverride(hit);
+			return true;
+		}
+
+		[HarmonyPatch("End")]
+		[HarmonyPrefix]
+		static bool EndOverride(ITM_NanaPeel __instance)
+		{
+			if (__instance is ITM_GenericNanaPeel gen)
+				return gen.VirtualEnd();
 			return true;
 		}
 
