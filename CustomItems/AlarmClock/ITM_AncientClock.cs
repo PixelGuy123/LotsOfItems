@@ -33,8 +33,8 @@ public class ITM_AncientClock : ITM_GenericAlarmClock
 	{
 		foreach (var npc in ec.Npcs)
 		{
-			if (npc.Navigator.enabled)
-				npc.navigationStateMachine.ChangeState(new NavigationState_ForceTargetPosition(npc, 40, transform.position));
+			if (npc.Navigator.isActiveAndEnabled)
+				npc.navigationStateMachine.ChangeState(new NavigationState_ForceTargetPosition(npc, 24, transform.position));
 		}
 	}
 

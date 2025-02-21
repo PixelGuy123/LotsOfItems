@@ -1145,6 +1145,9 @@ namespace LotsOfItems.Plugin
 
 		static ItemObject StoreAsNormal(this ItemObject itm, Items replacingItem, bool goToFieldTrips = false, bool appearsInStore = true, int weight = 100, params string[] acceptableFloors)
 		{
+			if (replacingItem == Items.Points)
+				weight += 125; // Lazy approach, but should help balancing out ytp weights
+
 			itm.item.name = "ITM_" + Singleton<LocalizationManager>.Instance.GetLocalizedText(itm.nameKey);
 			LotOfItemsPlugin.plug.availableItems.Add(new(itm, replacingItem, goToFieldTrips, appearsInStore, weight, acceptableFloors));
 			return itm;

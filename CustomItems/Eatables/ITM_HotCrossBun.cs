@@ -1,6 +1,6 @@
-﻿using LotsOfItems.Components;
-using UnityEngine;
+﻿using UnityEngine;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Components;
 
 namespace LotsOfItems.CustomItems.Eatables
 {
@@ -27,7 +27,7 @@ namespace LotsOfItems.CustomItems.Eatables
 			foreach (var npc in pm.ec.Npcs)
 			{
 				if (npc.Navigator.enabled && map.Value(IntVector2.GetGridPosition(npc.transform.position)) <= minimumDistanceForCall)
-					npc.navigationStateMachine.ChangeState(new NavigationState_ForceTargetPosition(npc, 40, pm.transform.position));
+					npc.navigationStateMachine.ChangeState(new NavigationState_ForceTargetPosition(npc, 12, pm.transform.position));
 			}
 
 			pm.RuleBreak("Eating", 3f, 0.5f);

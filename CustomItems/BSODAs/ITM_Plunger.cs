@@ -59,7 +59,10 @@ public class ITM_Plunger : ITM_GenericBSODA
 			}
 
 		};
-		return base.Use(pm);
+		bool val = base.Use(pm);
+		spriteRenderer.SetSpriteRotation(0); // Set the right rotation for this plunger
+
+		return val;
 	}
 
 	public override bool VirtualEntityTriggerEnter(Collider other)

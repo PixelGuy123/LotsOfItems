@@ -2,21 +2,20 @@
 
 namespace LotsOfItems.Components
 {
-	public class NavigationState_ForceTargetPosition(NPC npc, int priority, Vector3 pos, bool noDestinationEmpty = false) : NavigationState_TargetPosition(npc, priority, pos)
+	public class NavigationState_ForceTargetPosition(NPC npc, int priority, Vector3 pos) : NavigationState_TargetPosition(npc, priority, pos)
 	{
-		readonly Cell cellToGo = npc.ec.CellFromPosition(pos);
-		public bool NoDestinEmpty = noDestinationEmpty;
+		bool exited = false;
 		public override void DestinationEmpty()
 		{
-			if (active && npc.ec.CellFromPosition(npc.transform.position) != cellToGo)
-				npc.Navigator.FindPath(destination);
-			else if (!NoDestinEmpty)
-				base.DestinationEmpty();
+			End();
 		}
 
-		public override void Exit()
+		public void End()
 		{
-			base.Exit();
+			if (exited)
+				return;
+			exited = true;
+			npc.behaviorStateMachine.RestoreNavigationState();
 			priority = 0;
 		}
 	}

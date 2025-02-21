@@ -40,7 +40,6 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			for (int i = 0; i < pushedNpcs.Count; i++)
 			{
 				pushedNpcs[i]?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
-				pushedNpcs.RemoveAt(i--);
 			}
 		}
 
