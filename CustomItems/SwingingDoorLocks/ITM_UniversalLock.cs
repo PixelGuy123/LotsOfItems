@@ -50,15 +50,6 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
 
 	internal class DoorActuallyBlockedMarker : MonoBehaviour { }
 
-	[HarmonyPatch(typeof(StandardDoor))]
-	internal static class DoorNoTouchingPatch
-	{
-		[HarmonyPrefix]
-		[HarmonyPatch("OnTriggerEnter")]
-		static bool ShouldTouchAnybody(Door __instance) =>
-			!__instance.GetComponent<DoorActuallyBlockedMarker>();
-	}
-
 	[HarmonyPatch(typeof(Door))]
 	internal static class DoorActualLockPatch
 	{
