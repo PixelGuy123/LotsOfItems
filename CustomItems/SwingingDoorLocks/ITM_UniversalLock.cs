@@ -1,6 +1,6 @@
-﻿using LotsOfItems.ItemPrefabStructures;
+﻿using HarmonyLib;
+using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
-using HarmonyLib;
 
 namespace LotsOfItems.CustomItems.SwingingDoorLocks
 {
@@ -50,6 +50,15 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
 
 	internal class DoorActuallyBlockedMarker : MonoBehaviour { }
 
+	[HarmonyPatch(typeof(StandardDoor))]
+	internal static class DoorNoTouchingPatch
+	{
+		[HarmonyPrefix]
+		[HarmonyPatch("OnTriggerEnter")]
+		static bool ShouldTouchAnybody(Door __instance) =>
+			!__instance.GetComponent<DoorActuallyBlockedMarker>();
+	}
+
 	[HarmonyPatch(typeof(Door))]
 	internal static class DoorActualLockPatch
 	{
@@ -76,7 +85,7 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
 				___lockBlocks = __state;
 			}
 
-			
+
 		}
 	}
 }

@@ -99,6 +99,7 @@ public class ITM_TestClock : ITM_GenericAlarmClock
 		if (slideUpCoroutine != null)
 			StopCoroutine(slideUpCoroutine);
 		slideUpCoroutine = StartCoroutine(SlideTimeScaleUp());
+		gauge.Deactivate();
 		ec.FlickerLights(false);
 		// RemoveTimeScale will be called after fade out, so don't remove here
 		return false;
