@@ -1,10 +1,10 @@
-﻿using LotsOfItems.Components;
+﻿using System.Collections;
+using System.Collections.Generic;
+using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Eatables
@@ -46,6 +46,7 @@ namespace LotsOfItems.CustomItems.Eatables
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 			StartCoroutine(ActiveItem());
 
 			return base.Use(pm);
@@ -67,9 +68,10 @@ namespace LotsOfItems.CustomItems.Eatables
 					slip.SetAnOwner(pm.gameObject);
 				}
 				time -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(lifeTime, time);
 				yield return null;
 			}
-
+			gauge.Deactivate();
 			Destroy(gameObject); // Should go with the slipObjPre too
 		}
 	}

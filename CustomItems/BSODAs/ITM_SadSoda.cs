@@ -35,7 +35,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 		{
 			base.Use(pm);
 
-			map = new(ec, PathType.Nav, [transform]);
+			map = new(ec, PathType.Nav, int.MaxValue, [transform]);
 
 			// NPC detection logic
 			if (Physics.Raycast(pm.transform.position, pm.transform.forward, out var hit, detectionDistance, LayerStorage.principalLookerMask))
@@ -125,7 +125,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 					FindNearestNPCToTarget();
 				}
 			}
-			
+
 			return true;
 		}
 

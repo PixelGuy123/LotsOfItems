@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using PixelInternalAPI.Extensions;
-using MTM101BaldAPI;
+﻿using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
@@ -19,7 +19,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 	[Range(0f, 1f)]
 	private float chanceToFailExplosion = 0.15f, chanceToFailExplosionSteppedOn = 0.75f;
 
-	[SerializeField] 
+	[SerializeField]
 	private SoundObject audFail, audExplode, audActivate;
 
 	[SerializeField]
@@ -97,6 +97,8 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		triggered = true;
 		if (Random.value <= (steppedOn ? chanceToFailExplosionSteppedOn : chanceToFailExplosion)) // 15% failure chance
 		{
+			foreach (var ac in activityMods)
+				ac?.moveMods.Remove(moveMod);
 			StartCoroutine(FailExplosion());
 			return;
 		}

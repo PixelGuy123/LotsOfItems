@@ -12,6 +12,7 @@ namespace LotsOfItems.CustomItems
 		public void SetupPrefab(ItemObject itm)
 		{
 			audEat = GenericExtensions.FindResourceObjectByName<SoundObject>("ChipCrunch");
+			gaugeSprite = itm.itemSpriteLarge;
 			VirtualSetupPrefab(itm);
 		}
 		public void SetupPrefabPost() { }
@@ -28,7 +29,10 @@ namespace LotsOfItems.CustomItems
 			var statModifier = pm.GetMovementStatModifier();
 
 			if (affectorTime > 0f)
+			{
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, affectorTime);
 				StartCoroutine(SpeedAffector(statModifier));
+			}
 			else if (CanBeDestroyed())
 				Destroy(gameObject);
 
@@ -71,10 +75,11 @@ namespace LotsOfItems.CustomItems
 			float timer = affectorTime;
 			while (timer > 0f)
 			{
+				gauge.SetValue(affectorTime, timer);
 				timer -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
 				yield return null;
 			}
-
+			gauge.Deactivate();
 			stat.RemoveModifier(mod);
 			stat.RemoveModifier(staminaRiseMod);
 			stat.RemoveModifier(staminaDropMod);
@@ -93,5 +98,8 @@ namespace LotsOfItems.CustomItems
 
 		[SerializeField]
 		internal SoundObject audEat, audSecondEatNoise;
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		protected HudGauge gauge;
 	}
 }

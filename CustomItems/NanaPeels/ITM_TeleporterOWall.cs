@@ -66,8 +66,8 @@ namespace LotsOfItems.CustomItems.NanaPeels
 
 				filteredPositions.Clear();
 				var dirToGo = Directions.DirFromVector3(direction, 45f).GetOpposite();
-				
-				
+
+
 				for (int i = 0; i < candidatePositions.Count; i++)
 				{
 					if (candidatePositions[i].HasWallInDirection(dirToGo))
@@ -91,7 +91,7 @@ namespace LotsOfItems.CustomItems.NanaPeels
 			yield return null;
 
 			entity.Teleport(posToGo);
-			slippingEntitity?.Teleport(posToGo);
+			slippingEntity?.Teleport(posToGo);
 			audioManager.PlaySingle(audTeleport);
 
 			if (--hitsLeft <= 0)

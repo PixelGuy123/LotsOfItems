@@ -1,5 +1,4 @@
-﻿using LotsOfItems.Components;
-using LotsOfItems.ItemPrefabStructures;
+﻿using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using UnityEngine;
@@ -9,8 +8,9 @@ namespace LotsOfItems.CustomItems.Nametags
 	public class ITM_EnergyNametag : ITM_Nametag, IItemPrefab
 	{
 		public void SetupPrefab(ItemObject itm) =>
-			NametagAnimationOverrider.InstallOverrider(this, this.GetSpriteSheet("EnergyTag_world.png", 4, 2, 25f));
-		
+		   //NametagAnimationOverrider.InstallOverrider(this, this.GetSpriteSheet("EnergyTag_world.png", 4, 2, 25f));
+		   gaugeSprite = itm.itemSpriteLarge;
+
 
 		public void SetupPrefabPost() { }
 
@@ -42,7 +42,7 @@ namespace LotsOfItems.CustomItems.Nametags
 
 			return base.Use(pm);
 		}
-		void OnDestroy() 
+		void OnDestroy()
 		{
 			pm.plm.stamina = 0;
 			if (statMod)
@@ -51,6 +51,6 @@ namespace LotsOfItems.CustomItems.Nametags
 				statMod.RemoveModifier(speedMod);
 			}
 		}
-		
+
 	}
 }

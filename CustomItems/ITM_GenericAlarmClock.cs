@@ -1,14 +1,15 @@
 ﻿using System.Collections;
-using UnityEngine;
 using HarmonyLib;
 using LotsOfItems.ItemPrefabStructures;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems;
 public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 {
+	protected int CurrentTimeSet { get; private set; } = 0;
 	public void SetupPrefab(ItemObject itm) =>
 		VirtualSetupPrefab(itm);
-	
+
 	public void SetupPrefabPost() { }
 	protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 	protected virtual bool ShouldRingOnEnd() => true;
@@ -19,6 +20,8 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 
 	public IEnumerator OverrideTimer(float initTime)
 	{
+		CurrentTimeSet = initSetTime;
+		yield return null;
 		time = initTime;
 		while (time > 0f)
 		{
@@ -26,11 +29,11 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 
 			if (AllowClickable())
 			{
-				if (time <= setTime[0])
+				if (time <= setTime[CurrentTimeSet])
 					spriteRenderer.sprite = clockSprite[0];
-				else if (time <= setTime[1])
+				else if (time <= setTime[CurrentTimeSet])
 					spriteRenderer.sprite = clockSprite[1];
-				else if (time <= setTime[2])
+				else if (time <= setTime[CurrentTimeSet])
 					spriteRenderer.sprite = clockSprite[2];
 				else
 					spriteRenderer.sprite = clockSprite[3];
@@ -58,13 +61,25 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 		{
 			audMan.PlaySingle(audWind);
 			if (time <= setTime[0])
+			{
+				CurrentTimeSet = 1;
 				time = setTime[1];
+			}
 			else if (time <= setTime[1])
+			{
+				CurrentTimeSet = 2;
 				time = setTime[2];
+			}
 			else if (time <= setTime[2])
+			{
+				CurrentTimeSet = 3;
 				time = setTime[3];
+			}
 			else
+			{
+				CurrentTimeSet = 0;
 				time = setTime[0];
+			}
 			OnClockClicked();
 		}
 	}
@@ -80,7 +95,7 @@ static class GenericAlarmClockPatch
 		if (__instance is ITM_GenericAlarmClock generic)
 		{
 			__result = generic.OverrideTimer(initTime);
-			return false; 
+			return false;
 		}
 		return true;
 	}

@@ -1,11 +1,12 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using System.IO;
 using BaldiLevelEditor;
-using MTM101BaldAPI;
-using UnityEngine;
-using System.Collections.Generic;
+using HarmonyLib;
 using LotsOfItems.Plugin;
-using PlusLevelLoader;
+using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using PlusLevelLoader;
+using UnityEngine;
 
 namespace LotsOfItems.Patches
 {
@@ -55,27 +56,28 @@ namespace LotsOfItems.Patches
 			foreach (var item in itemsToAdd)
 			{
 				BaldiLevelEditorPlugin.itemObjects.Add(item.Key, item.Value);
+				var maskRef = AssetLoader.TextureFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "Mask_itemSlotMask.png"));
 
 				Sprite icon = item.Value.itemSpriteSmall;
+				Texture2D tex = icon.texture;
 				if (icon == item.Value.itemSpriteLarge)
 				{
-					var tex = icon.texture.ActualResize(32, 32);
-					tex.name = "Resized_" + icon.texture.name;
-
-					
-					icon = AssetLoader.SpriteFromTexture2D(tex, 40f);
+					tex = icon.texture.ActualResize(32, 32);
+					tex.name = "Resized_" + tex.name;
 				}
 
+				tex = tex.Mask(maskRef);
+				tex.name = "EditorIcon_" + tex.name;
 
-				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/ITM_" + item.Key, icon);
+				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/ITM_" + item.Key, AssetLoader.SpriteFromTexture2D(tex, 40f));
 			}
-			
+
 		}
 
 		readonly internal static Dictionary<string, ItemObject> itemsToAdd = [];
 
-		
-			
+
+
 	}
 
 	[ConditionalPatchMod("mtm101.rulerp.baldiplus.levelloader")]

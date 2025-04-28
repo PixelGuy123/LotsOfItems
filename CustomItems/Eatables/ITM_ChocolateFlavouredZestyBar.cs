@@ -1,7 +1,7 @@
 ﻿using System.Collections;
-using UnityEngine;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Eatables
 {
@@ -18,6 +18,7 @@ namespace LotsOfItems.CustomItems.Eatables
 			this.pm = pm;
 			pm.plm.stamina = 200;
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audEat);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, affectorTime);
 			StartCoroutine(DynamicSpeedEffect());
 			return base.Use(pm);
 		}
@@ -36,6 +37,7 @@ namespace LotsOfItems.CustomItems.Eatables
 			while (timer > 0f)
 			{
 				timer -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(boostDuration, timer);
 				yield return null;
 			}
 
@@ -48,9 +50,11 @@ namespace LotsOfItems.CustomItems.Eatables
 
 			while (pm.plm.stamina > statModifier.baseStats["staminaMax"])
 			{
+				gauge.SetValue(statModifier.baseStats["staminaMax"], pm.plm.stamina);
 				yield return null;
 			}
 
+			gauge.Deactivate();
 			statModifier.RemoveModifier(penaltySpeedMod);
 			Destroy(gameObject);
 		}

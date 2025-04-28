@@ -1,9 +1,9 @@
-﻿using MTM101BaldAPI.Components;
+﻿using System.Collections;
+using LotsOfItems.ItemPrefabStructures;
+using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
-using LotsOfItems.ItemPrefabStructures;
 using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
@@ -26,19 +26,20 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 	{
 		setTime = 12.5f;
 		audWalk = GenericExtensions.FindResourceObjectByName<SoundObject>("CartoonKnock_Trimmed");
-		GetComponentInChildren<Image>().sprite = this.GetSprite("BalletShoes_canvas.png", 1f);
+		//GetComponentInChildren<Image>().sprite = this.GetSprite("BalletShoes_canvas.png", 1f); Unused since gauge exists
+		gaugeSprite = itm.itemSpriteLarge;
 	}
 	public void SetupPrefabPost() { }
 
 	public override bool Use(PlayerManager pm)
 	{
-		pm.plm.Entity.SetIgnoreAddend(true);
+		pm.plm.Entity.SetResistAddend(true);
 		this.pm = pm;
-		canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
+		gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, setTime);
 
 		// Setup stamina drain modifier
 		staminaMod = new ValueModifier(staminaDropMultiplier);
-		
+
 
 		lastPosition = pm.transform.position;
 		StartCoroutine(EnhancedTimer());
@@ -50,15 +51,17 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 		var stats = pm.GetMovementStatModifier();
 		stats.AddModifier("staminaDrop", staminaMod);
 
-		for (int i = 0; i < pm.ec.Npcs.Count; i++)
-		{
-			if (!pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity)) // To make sure recently spawned npcs are included too
-				pm.ec.Npcs[i].Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
-		}
+		yield return null;
 
 		float time = setTime;
 		while (time > 0f)
 		{
+			for (int i = 0; i < pm.ec.Npcs.Count; i++) // Inside the while loop to make sure recently spawned npcs are included as well
+			{
+				if (!pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity))
+					pm.ec.Npcs[i].Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
+			}
+
 			// Track movement distance
 			Vector3 currentPos = pm.transform.position;
 			distanceAccumulated += Vector3.Distance(lastPosition, currentPos);
@@ -72,26 +75,23 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 			}
 
 			time -= Time.deltaTime * pm.PlayerTimeScale;
+			gauge.SetValue(setTime, time);
 			yield return null;
 		}
 
 		// Cleanup
 
-		for (int i = 0; i < pm.ec.Npcs.Count; i++)
+		for (int i = 0; i < pm.ec.Npcs.Count; i++) // Revert npc ignoring thing
 		{
-			if (pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity)) // To make sure recently spawned npcs are included too
+			if (pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity))
 				pm.ec.Npcs[i].Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
 		}
 		pm.GetMovementStatModifier().RemoveModifier(staminaMod);
-		pm.plm.Entity.SetIgnoreAddend(false);
+		pm.plm.Entity.SetResistAddend(false);
 
-		animator.Play("Up", -1, 0f);
-		float destroyTimer = 2f;
-		while (destroyTimer > 0f)
-		{
-			destroyTimer -= Time.deltaTime;
-			yield return null;
-		}
+		//animator.Play("Up", -1, 0f);
+		gauge.Deactivate();
+
 		Destroy(gameObject);
 	}
 }

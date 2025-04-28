@@ -1,15 +1,16 @@
 ﻿using System.Collections;
-using UnityEngine;
 using LotsOfItems.Components;
-using UnityEngine.UI;
 using LotsOfItems.ItemPrefabStructures;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
 public class ITM_ShinyCleanGloves : ITM_Boots, IItemPrefab
 {
 	public void SetupPrefab(ItemObject itm) =>
-		GetComponentInChildren<Image>().sprite = this.GetSprite("ShinyCleanGloves_canvas.png", 1f);
-	
+		// GetComponentInChildren<Image>().sprite = this.GetSprite("ShinyCleanGloves_canvas.png", 1f);
+		gaugeSprite = itm.itemSpriteLarge;
+
 
 	public void SetupPrefabPost() { }
 
@@ -17,7 +18,8 @@ public class ITM_ShinyCleanGloves : ITM_Boots, IItemPrefab
 	{
 		this.pm = pm;
 		pm.GetAttributes().SetDoorOpeningSilent(true);
-		canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
+
+		gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, setTime);
 		StartCoroutine(NewTimer());
 		return true;
 	}
@@ -28,16 +30,12 @@ public class ITM_ShinyCleanGloves : ITM_Boots, IItemPrefab
 		while (time > 0f)
 		{
 			time -= Time.deltaTime * pm.PlayerTimeScale;
+			gauge.SetValue(setTime, time);
 			yield return null;
 		}
 		pm.GetAttributes().SetDoorOpeningSilent(false);
-		animator.Play("Up", -1, 0f);
-		time = 2f;
-		while (time > 0f)
-		{
-			time -= Time.deltaTime;
-			yield return null;
-		}
+		gauge.Deactivate();
+		//animator.Play("Up", -1, 0f);
 		Destroy(gameObject);
 	}
 }

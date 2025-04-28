@@ -1,9 +1,8 @@
-﻿using HarmonyLib;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using HarmonyLib;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace LotsOfItems.Patches
 {
@@ -54,7 +53,7 @@ namespace LotsOfItems.Patches
 						activateOriginalEnumeratorToo = false;
 					})
 					)
-				.MatchForward(false, 
+				.MatchForward(false,
 				new(OpCodes.Ldarg_0),
 				new(CodeInstruction.LoadField(typeof(TapePlayer), "audMan"))
 				)
@@ -85,8 +84,8 @@ namespace LotsOfItems.Patches
 			TapePlayerPatch.newEnumerator = newEnumerator;
 			activateOriginalEnumeratorToo = activateOgEnumerator;
 			tp.OverridenInsertItem(pm, ec);
-			
+
 		}
-		
+
 	}
 }

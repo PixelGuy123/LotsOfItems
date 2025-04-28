@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using HarmonyLib;
+﻿using HarmonyLib;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Eatables
 {
@@ -20,7 +20,7 @@ namespace LotsOfItems.CustomItems.Eatables
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(ITM_BSODA), nameof(ITM_BSODA.Use))]
-		static void BSodaPostfix(bool __result, PlayerManager pm)
+		static void BSODAPostfix(bool __result, PlayerManager pm)
 		{
 			int idx = pm.itm.FindKernel();
 			if (!canInstantiateSodas || !__result || idx == -1)
@@ -38,15 +38,15 @@ namespace LotsOfItems.CustomItems.Eatables
 			CreateAngledProjectile(pm, (ITM_BSODA)pm.itm.items[pm.itm.selectedItem].item, spawnPos, baseRot * Quaternion.Euler(0, 45, 0));
 			CreateAngledProjectile(pm, (ITM_BSODA)pm.itm.items[pm.itm.selectedItem].item, spawnPos, baseRot * Quaternion.Euler(0, -45, 0));
 
-			
+
 		}
 
 		static int FindKernel(this ItemManager itm)
 		{
-			for (int i = 0; i <=itm. maxItem; i++)
-				if (itm.items[i].itemType == itemEnum && !itm. slotLocked[i])
+			for (int i = 0; i <= itm.maxItem; i++)
+				if (itm.items[i].itemType == itemEnum && !itm.slotLocked[i])
 					return i;
-			
+
 			return -1;
 		}
 

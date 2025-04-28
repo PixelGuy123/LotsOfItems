@@ -27,10 +27,12 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 		collider.height = 10f;
 
 		gameObject.layer = LayerStorage.ignoreRaycast;
-		GetComponentInChildren<Image>().sprite = this.GetSprite("ReallyTallBoots_canvas.png", 1f);
+		//GetComponentInChildren<Image>().sprite = this.GetSprite("ReallyTallBoots_canvas.png", 1f); Gauge exists
 
 		audFellFloor = GenericExtensions.FindResourceObjectByName<SoundObject>("Bang");
 		audStomp = GenericExtensions.FindResourceObjectByName<SoundObject>("CartoonKnock_Trimmed");
+
+		gaugeSprite = itm.itemSpriteLarge;
 	}
 	public void SetupPrefabPost() { }
 
@@ -43,9 +45,9 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 		}
 
 		overrider.SetHeight(9.5f);
-		pm.plm.Entity.SetIgnoreAddend(true);
+		pm.plm.Entity.SetResistAddend(true);
+		gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, setTime);
 		this.pm = pm;
-		canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 		StartCoroutine(NewTimer());
 
 		return true;
@@ -54,6 +56,7 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 	private IEnumerator NewTimer()
 	{
 		float time = setTime;
+		yield return null;
 		while (time > 0f)
 		{
 			for (int i = 0; i < pm.ec.Npcs.Count; i++)
@@ -63,15 +66,23 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 			}
 			transform.position = pm.transform.position;
 			time -= Time.deltaTime * pm.PlayerTimeScale;
+
+			gauge.SetValue(setTime, time);
+
 			yield return null;
 		}
 
-		pm.plm.Entity.SetIgnoreAddend(false);
-		foreach (var npc in pm.ec.Npcs)
-			npc.Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
+		pm.plm.Entity.SetResistAddend(false);
+		for (int i = 0; i < pm.ec.Npcs.Count; i++)
+		{
+			if (pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity))
+				pm.ec.Npcs[i].Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
+		}
 
 		canStomp = false;
-		animator.Play("Up", -1, 0f);
+		//animator.Play("Up", -1, 0f); (0.10.x) doesn't use screen effects anymore
+		
+		
 		Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audFellFloor);
 		overrider.SetHeight(1.5f);
 		pm.Am.moveMods.Add(moveMod);
@@ -80,8 +91,10 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 		while (time > 0f)
 		{
 			time -= Time.deltaTime;
+			gauge.SetValue(timeStuckOnFloor, time);
 			yield return null;
 		}
+		gauge.Deactivate();
 		Destroy(gameObject);
 		overrider.Release();
 		pm.Am.moveMods.Remove(moveMod);

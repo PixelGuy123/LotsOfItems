@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using HarmonyLib;
 using LotsOfItems.ItemPrefabStructures;
-using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems
 {
@@ -9,7 +8,7 @@ namespace LotsOfItems.CustomItems
 	{
 		public void SetupPrefab(ItemObject itm) =>
 			VirtualSetupPrefab(itm);
-		
+
 		public void SetupPrefabPost() { }
 		protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 		internal virtual void AdditionalSpawnContribute() { }

@@ -1,24 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using LotsOfItems.ItemPrefabStructures;
-using PixelInternalAPI.Extensions;
 using LotsOfItems.Components;
+using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.ChalkErasers
 {
 	public class ITM_FogMachine : Item, IItemPrefab
 	{
 		[SerializeField]
-		internal RaycastBlocker fogParticlesPre;
+		internal CoverCloud fogParticlesPre;
 		[SerializeField]
 		internal Sprite[] explosionSheet;
-		[SerializeField] 
+		[SerializeField]
 		internal float minDuration = 28f, maxDuration = 31f, smallDelayBeforeDespawn = 5f, explosionSpeed = 12f;
-		[SerializeField] 
+		[SerializeField]
 		internal int distance = 5, minBreakParticles = 12, maxBreakParticles = 16; // Distance for DijkstraMap (10x10 area)
-		[SerializeField] 
+		[SerializeField]
 		internal Color initialFogColor = Color.white, finalFogColor = Color.red; // Final malfunction red color
 		[SerializeField]
 		internal SpriteRenderer renderer;
@@ -27,7 +27,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 		[SerializeField]
 		internal SoundObject audWorking, audExplode;
 
-		private readonly List<RaycastBlocker> activeFogs = [];
+		private readonly List<CoverCloud> activeFogs = [];
 
 		public void SetupPrefab(ItemObject itm)
 		{
@@ -35,7 +35,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			audWorking = this.GetSound("fogMachine_loop.wav", "LtsOItems_Vfx_FogMachine_Working", SoundType.Effect, Color.white);
 			audExplode = LotOfItemsPlugin.assetMan.Get<SoundObject>("aud_explode");
 
-			explosionSheet = this.GetSpriteSheet("FogMachine_world.png",3, 2, itm.itemSpriteLarge.pixelsPerUnit);
+			explosionSheet = this.GetSpriteSheet("FogMachine_world.png", 3, 2, itm.itemSpriteLarge.pixelsPerUnit);
 
 			renderer = ObjectCreationExtensions.CreateSpriteBillboard(explosionSheet[0]);
 			renderer.transform.SetParent(transform);
@@ -60,12 +60,12 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audWorking);
-			
+
 
 			EnvironmentController ec = pm.ec;
 			IntVector2 centerCellPos = IntVector2.GetGridPosition(transform.position);
 
-			DijkstraMap dMap = new(ec, PathType.Nav, []);
+			DijkstraMap dMap = new(ec, PathType.Nav, distance, []);
 			dMap.Calculate(distance + 1, true, [centerCellPos]);
 
 			foreach (Cell cell in dMap.FoundCells())
@@ -74,20 +74,18 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 
 			float duration = Random.Range(minDuration, maxDuration),
 				timer = duration;
+			foreach (var fog in activeFogs)
+				fog.StartEndTimer(timer - 1f);
 
 			while (timer > 0f)
 			{
 				renderer.color = Color.Lerp(initialFogColor,
-					finalFogColor, 
+					finalFogColor,
 					1f - (timer / duration));
 
 				timer -= Time.deltaTime * ec.EnvironmentTimeScale;
 				yield return null;
 			}
-
-
-			foreach (var fog in activeFogs)
-				fog.DisablePermanently(); // Should disable emission too
 
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audExplode);
@@ -118,6 +116,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			var fog = Instantiate(fogParticlesPre);
 			fog.transform.SetParent(transform);
 			fog.transform.position = cell.CenterWorldPosition;
+			fog.Ec = pm.ec;
 			activeFogs.Add(fog);
 		}
 	}

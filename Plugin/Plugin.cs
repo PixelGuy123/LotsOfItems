@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+using System.IO;
+using BepInEx;
 using HarmonyLib;
 using LotsOfItems.Components;
 using LotsOfItems.Patches;
@@ -8,8 +10,6 @@ using MTM101BaldAPI.Registers;
 using MTM101BaldAPI.SaveSystem;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace LotsOfItems.Plugin
@@ -28,13 +28,28 @@ namespace LotsOfItems.Plugin
 		internal static AssetManager assetMan = new();
 		internal static LayerMask onlyNpcPlayerLayers = LayerMask.GetMask("NPCs", "Player", LayerMask.LayerToName(LayerStorage.standardEntities));
 
-#pragma warning disable IDE0051 // Remover membros privados não utilizados
+		bool IsItemEnabled(ItemObject itm) =>
+				Config.Bind("Item Settings",
+							$"Disable {Singleton<LocalizationManager>.Instance.GetLocalizedText(itm.nameKey)
+							.Replace('\'', ' ')}",
+							true,
+							"If True, this item will spawn naturally in the game (in levels made by the Level Generator).")
+						.Value;
 		private void Awake()
-#pragma warning restore IDE0051 // Remover membros privados não utilizados
 		{
 			plug = this;
 			ModPath = AssetLoader.GetModPath(this);
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
+
+			try
+			{
+				CompatibilityModule.InitializeOnAwake();
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogWarning("LOTSOFITEMS: Failed to initialize a compatibility module!");
+				Debug.LogException(e);
+			}
 
 			ModdedSaveGame.AddSaveHandler(Info);
 
@@ -73,67 +88,82 @@ namespace LotsOfItems.Plugin
 				for (int i = 0; i < availableItems.Count; i++)
 				{
 					// This will allow you to disable items you want. The release build won't have it to force people to enjoy every single bit of this mod lol
-					//if (!Config.Bind("Item Settings", 
-					//	$"Disable {Singleton<LocalizationManager>.Instance.GetLocalizedText(availableItems[i].itm.nameKey)}", 
-					//	true, 
-					//	"If True, this item will spawn naturally in the game (in levels made by the Level Generator).")
-					//.Value)
-					//	continue;
-					
+					if (!IsItemEnabled(availableItems[i].itm))
+						continue;
+
 					var itm = availableItems[i];
 					if (!itm.acceptFieldTrips) continue; // No real check for tripType, idk why would I need to have specific selections
 
-					tripLoot.potentialItems.Add(new() { selection = itm.itm, weight = itm.weight });
+					tripLoot.potentialItems.Add(new() { selection = availableItems[i].itm, weight = availableItems[i].weight });
 					objectDataPair.Add(availableItems[i].itm, availableItems[i]);
 				}
 
 				BalanceOutListWeights(objectDataPair, tripLoot.potentialItems);
 			});
 
-			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) => sco.levelObject.forcedItems.RemoveAll(x => x.itemType != Items.BusPass)); // forced items screw up in F1 >:(
+			GeneratorManagement.Register(this, GenerationModType.Override, (name, num, sco) =>
+			{
+				foreach (var levelObject in sco.GetCustomLevelObjects())
+					levelObject.forcedItems.RemoveAll(x => x.itemType != Items.BusPass); // forced items screw up in F1 >:(
+			});
 
 			GeneratorManagement.Register(this, GenerationModType.Addend, (name, num, sco) =>
 			{
-				if (!sco.levelObject)
-					return;
-
-				bool levelObjectUsed = false;
-
+				// **** Adds shopItems to the SceneObject
 				Dictionary<ItemObject, ItemData> objectDataPair = [];
 
 				for (int i = 0; i < availableItems.Count; i++)
 				{
-					// This will allow you to disable items you want. The release build won't have it to force people to enjoy every single bit of this mod lol
-					//if (!Config.Bind("Item Settings", 
-					//	$"Disable {Singleton<LocalizationManager>.Instance.GetLocalizedText(availableItems[i].itm.nameKey)}", 
-					//	true, 
-					//	"If True, this item will spawn naturally in the game (in levels made by the Level Generator).")
-					//.Value)
-					//	continue;
+					// This will allow you to disable items you want.
+					if (!IsItemEnabled(availableItems[i].itm))
+						continue;
 
-					if (availableItems[i].acceptableFloors.Contains(name))
+					if (availableItems[i].appearsInStore)
 					{
-						levelObjectUsed = true;
-
-						var weight = new WeightedItemObject() { selection = availableItems[i].itm, weight = availableItems[i].weight };
-						sco.levelObject.potentialItems = sco.levelObject.potentialItems.AddToArray(weight);
-						if (availableItems[i].appearsInStore)
-							sco.shopItems = sco.shopItems.AddToArray(weight);
+						sco.shopItems = sco.shopItems.AddToArray(new() { selection = availableItems[i].itm, weight = availableItems[i].weight });
 
 						objectDataPair.Add(availableItems[i].itm, availableItems[i]);
 					}
 				}
 
-				if (levelObjectUsed)
-				{
-					sco.levelObject.maxItemValue += 125; // To make more items spawn :)
-					sco.levelObject.MarkAsNeverUnload();
-				}
-
-				BalanceOutWeights(objectDataPair, ref sco.levelObject.potentialItems);
 				BalanceOutWeights(objectDataPair, ref sco.shopItems);
 
-				
+
+				// **** Adds stuff to individual Level Objects
+
+
+				foreach (var levelObject in sco.GetCustomLevelObjects())
+				{
+					bool levelObjectUsed = false;
+
+					objectDataPair.Clear();
+
+					for (int i = 0; i < availableItems.Count; i++)
+					{
+						// This will allow you to disable items you want.
+						if (!IsItemEnabled(availableItems[i].itm))
+							continue;
+
+						if (availableItems[i].AcceptsLevel(name, levelObject))
+						{
+							levelObjectUsed = true;
+
+							levelObject.potentialItems = levelObject.potentialItems.AddToArray(new() { selection = availableItems[i].itm, weight = availableItems[i].weight });
+
+							objectDataPair.Add(availableItems[i].itm, availableItems[i]);
+						}
+					}
+
+					if (levelObjectUsed)
+					{
+						levelObject.maxItemValue += 125; // To make more items spawn :)
+						levelObject.MarkAsNeverUnload();
+					}
+
+					BalanceOutWeights(objectDataPair, ref levelObject.potentialItems);
+				}
+
+
 			});
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, PostLoad, true);

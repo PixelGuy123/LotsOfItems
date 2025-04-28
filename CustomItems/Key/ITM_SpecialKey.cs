@@ -35,6 +35,14 @@ namespace LotsOfItems.CustomItems.Key
 					Destroy(gameObject);
 					return true;
 				}
+
+				var gameLock = hit.transform.GetComponent<GameLock>();
+				if (gameLock)
+				{
+					gameLock.InsertItem(pm, pm.ec);
+					Destroy(gameObject);
+					return true;
+				}
 			}
 			return false;
 		}

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿//using System.Collections.Generic;
+//using UnityEngine;
 
-namespace LotsOfItems.Components
-{
+namespace LotsOfItems.Components;
+
+	// Unused since the existence of CoverCloud (0.10.x) which does basically the same thing as here 
+	/*
 	public class RaycastBlocker : MonoBehaviour
 	{
 		[SerializeField]
@@ -27,7 +29,7 @@ namespace LotsOfItems.Components
 				if (pm && !touchedPlayers.Contains(pm))
 				{
 					touchedPlayers.Add(pm);
-					pm.SetInvisible(true);
+					pm.Invisible (true);
 				}
 			}
 		}
@@ -70,4 +72,4 @@ namespace LotsOfItems.Components
 
 		readonly HashSet<PlayerManager> touchedPlayers = [];
 	}
-}
+	*/

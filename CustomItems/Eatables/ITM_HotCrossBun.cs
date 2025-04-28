@@ -21,7 +21,7 @@ namespace LotsOfItems.CustomItems.Eatables
 		{
 			pm.ec.MakeNoise(pm.transform.position, noiseLevel);
 
-			DijkstraMap map = new(pm.ec, PathType.Nav, pm.transform);
+			DijkstraMap map = new(pm.ec, PathType.Nav, minimumDistanceForCall + 1, pm.transform);
 			map.Calculate();
 
 			foreach (var npc in pm.ec.Npcs)
@@ -39,5 +39,5 @@ namespace LotsOfItems.CustomItems.Eatables
 		internal int minimumDistanceForCall = 12, noiseLevel = 15;
 	}
 
-	
+
 }

@@ -16,17 +16,12 @@ namespace LotsOfItems.CustomItems.Eatables
 			this.pm = pm;
 			bool flag = base.Use(pm);
 			if (flag && nextItem)
-				StartCoroutine(Delay());
-			
+			{
+				pm.itm.SetItem(nextItem, pm.itm.selectedItem);
+				return false;
+			}
+
 			return flag;
-		}
-
-		IEnumerator Delay()
-		{
-			yield return null;
-
-			pm.itm.SetItem(nextItem, pm.itm.selectedItem);
-			Destroy(gameObject);
 		}
 
 		[SerializeField]

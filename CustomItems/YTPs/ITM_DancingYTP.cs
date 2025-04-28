@@ -15,7 +15,7 @@ namespace LotsOfItems.CustomItems.YTPs
 			this.pickup = pickup;
 			var vec = Random.insideUnitCircle.normalized;
 			dir = new(vec.x, 0f, vec.y);
-			room = ec.CellFromPosition(pickup.transform.position).room.type == RoomType.Null ? 
+			room = ec.CellFromPosition(pickup.transform.position).room.type == RoomType.Null ?
 				GetComponentInParent<RoomController>() : ec.CellFromPosition(pickup.transform.position).room; // Usually pickups are children
 		}
 #pragma warning disable IDE0051 // Remover membros privados não utilizados
@@ -27,16 +27,18 @@ namespace LotsOfItems.CustomItems.YTPs
 			Vector3 prevPos = pickup.transform.position;
 			pickup.transform.position += dir * speed * Time.deltaTime * ec.EnvironmentTimeScale;
 
-			if (!ec.CellFromPosition(pickup.transform.position).TileMatches(room))
+			if (!SuitablePosition(pickup.transform.position))
 				pickup.transform.position = prevPos;
 			pickup.icon.UpdatePosition(ec.map);
 
 			ray.origin = pickup.transform.position;
 			ray.direction = dir;
-			if (Physics.Raycast(ray, out hit, maxDistance, layer) || !ec.CellFromPosition(ray.origin).TileMatches(room))
+			if (Physics.Raycast(ray, out hit, maxDistance, layer) || !SuitablePosition(ray.origin))
 				dir = Vector3.Reflect(dir, hit.normal);
-			
+
 		}
+
+		bool SuitablePosition(Vector3 position) => ec.ContainsCoordinates(position) && ec.CellFromPosition(position).TileMatches(room);
 
 		RaycastHit hit;
 		Ray ray = new();
@@ -69,8 +71,8 @@ namespace LotsOfItems.CustomItems.YTPs
 				__instance.gameObject.AddComponent<DancingPickup>().AttachToPickup(__instance, Singleton<BaseGameManager>.Instance.Ec);
 				return;
 			}
-			
-			
+
+
 		}
 	}
 }

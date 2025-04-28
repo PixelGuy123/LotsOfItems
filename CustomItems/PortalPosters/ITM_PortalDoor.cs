@@ -1,13 +1,13 @@
-﻿using UnityEngine;
-using PixelInternalAPI.Extensions;
+﻿using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
-using System.Collections;
 using LotsOfItems.Plugin;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.PortalPosters;
 public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 {
-	[SerializeField] 
+	[SerializeField]
 	private SoundObject audTeleport, audNoHere, audOpen, audClose;
 
 	[SerializeField]
@@ -66,7 +66,9 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 		doorPre = itm;
 	}
 
-	public void SetLinkage(ITM_PortalDoor link) 
+	public void SetupPrefabPost() { }
+
+	public void SetLinkage(ITM_PortalDoor link)
 	{
 		if (link == Linkage)
 			return;
@@ -130,10 +132,11 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 		return false;
 	}
 
-	public void SetupPrefabPost() { }
-
-	void OnDestroy() =>
-		spawnCell.UncoverSoftWall(PlacedDirection);
+	void OnDestroy()
+	{
+		if (IsDead)
+			spawnCell.UncoverSoftWall(PlacedDirection);
+	}
 
 	IEnumerator CloseEnum()
 	{
@@ -209,7 +212,7 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 	public void ClickableSighted(int player) { }
 	public void ClickableUnsighted(int player) { }
 
-	public void Die() 
+	public void Die()
 	{
 		if (IsDead)
 			return;
@@ -221,7 +224,7 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 
 	public void Teleport() =>
 		audman.PlaySingle(audTeleport);
-	
+
 
 	void OnTriggerEnter(Collider other)
 	{
@@ -239,7 +242,7 @@ public class ITM_PortalDoor : Item, IItemPrefab, IClickable<int>
 					Die();
 				else
 					Open();
-				
+
 				Teleport();
 
 				if (!Linkage)
