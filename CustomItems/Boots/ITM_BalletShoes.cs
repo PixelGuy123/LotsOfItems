@@ -4,7 +4,6 @@ using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
 public class ITM_BalletShoes : ITM_Boots, IItemPrefab
@@ -17,6 +16,12 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 
 	[SerializeField]
 	internal SoundObject audWalk;
+
+	[SerializeField]
+	internal float shakeForce = 2.5f; // How strong the tripping/shaking is
+
+	[SerializeField]
+	internal float npcPushRadius = 3f, npcPushForce = 12f; // Dust pan effect
 
 	ValueModifier staminaMod;
 	float distanceAccumulated;
@@ -51,6 +56,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 		var stats = pm.GetMovementStatModifier();
 		stats.AddModifier("staminaDrop", staminaMod);
 
+
 		yield return null;
 
 		float time = setTime;
@@ -65,8 +71,32 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 			// Track movement distance
 			Vector3 currentPos = pm.transform.position;
 			distanceAccumulated += Vector3.Distance(lastPosition, currentPos);
+
+			// --- SHAKING/TRIPPING EFFECT WHEN RUNNING ---
+			if (pm.plm.running)
+			{
+				// Apply a random sideways force to the player
+				Vector3 right = pm.transform.right;
+				float shake = (Random.value - 0.5f) * 2f * shakeForce * Time.deltaTime * pm.PlayerTimeScale;
+				pm.plm.Entity.AddForce(new((right * shake).normalized, Mathf.Abs(shake), -Mathf.Abs(shake)));
+
+				// --- NPC PUSH (DUST PAN EFFECT) ---
+				for (int i = 0; i < pm.ec.Npcs.Count; i++)
+				{
+					var npc = pm.ec.Npcs[i];
+					if (npc == null || npc.Navigator == null) continue;
+					float dist = Vector3.Distance(npc.transform.position, pm.transform.position);
+					if (dist <= npcPushRadius)
+					{
+						Vector3 pushDir = (npc.transform.position - pm.transform.position).normalized;
+						npc.Navigator.Entity.AddForce(new((pushDir * npcPushForce).normalized, npcPushForce, -npcPushForce));
+					}
+				}
+			}
+
 			lastPosition = currentPos;
 
+			// --- NOISE ON WALKING/RUNNING ---
 			while (distanceAccumulated >= distanceAccumulation)
 			{
 				pm.ec.MakeNoise(currentPos, noiseVal); // Medium noise value
