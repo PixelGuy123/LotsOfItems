@@ -131,6 +131,8 @@ namespace LotsOfItems.Plugin
             return newTex;
         }
 
+        static Ray ray = new();
+
         public static void Explode(
             this Item item,
             float explosionRadius,
@@ -141,13 +143,13 @@ namespace LotsOfItems.Plugin
         {
             Vector3 position = item.transform.position;
 
-            Collider[] colliders = Physics.OverlapSphere(
+            var colliders = Physics.OverlapSphere(
                 position,
                 explosionRadius,
                 collisionLayer,
                 QueryTriggerInteraction.Ignore
             );
-            Ray ray = new();
+
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (colliders[i].transform == item.transform)
@@ -161,15 +163,15 @@ namespace LotsOfItems.Plugin
                 ray.origin = position;
                 ray.direction = entityDirection;
 
-                var allCasts = Physics.RaycastAll(
+                var allResults = Physics.RaycastAll(
                     ray,
                     9999f,
                     LayerStorage.principalLookerMask,
                     QueryTriggerInteraction.Ignore
                 );
-                for (int z = 0; z < allCasts.Length; z++)
+                for (int z = 0; z < allResults.Length; z++)
                 {
-                    var hit = allCasts[z];
+                    var hit = allResults[z];
                     if (hit.transform == colliders[i].transform)
                     {
                         entity.AddForce(
@@ -264,6 +266,14 @@ namespace LotsOfItems.Plugin
                 else
                     UnityEngine.Object.Destroy(parts.gameObject);
             }
+        }
+
+        static MaterialPropertyBlock _propertyBlock = new();
+        public static void RotateBy(this SpriteRenderer renderer, float angle)
+        {
+            renderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetFloat("_SpriteRotation", _propertyBlock.GetFloat("_SpriteRotation") + angle);
+            renderer.SetPropertyBlock(_propertyBlock);
         }
     }
 

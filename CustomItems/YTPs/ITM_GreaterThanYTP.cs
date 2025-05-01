@@ -13,7 +13,7 @@ namespace LotsOfItems.CustomItems.YTPs
         internal float rotationDuration = 15f;
 
         [SerializeField]
-        internal float initialRotationSpeed = 35f;
+        internal float initialRotationSpeed = 175f;
 
         [SerializeField]
         internal Sprite gaugeSprite;
@@ -24,11 +24,11 @@ namespace LotsOfItems.CustomItems.YTPs
 
         public override bool Use(PlayerManager pm)
         {
-            Debug.Log("I\'m alive!");
             this.pm = pm;
             gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, rotationDuration);
             StartCoroutine(SpinEnumerator());
-            return base.Use(pm);
+            Singleton<CoreGameManager>.Instance.AddPoints(value, pm.playerNumber, true);
+            return true; // Before you wonder why I didn't use base.Use(), keep in mind that some dark magic makes it call the Item.Use() after ITM_YTPs.Use().
         }
 
         IEnumerator SpinEnumerator()
@@ -38,7 +38,6 @@ namespace LotsOfItems.CustomItems.YTPs
 
             while (elapsedTime < rotationDuration)
             {
-                Debug.Log("I\'m running this properly!");
                 // Calculate current speed (linear decrease)
                 float currentSpeed = Mathf.Lerp(initialRotationSpeed, 0f, elapsedTime / rotationDuration);
 

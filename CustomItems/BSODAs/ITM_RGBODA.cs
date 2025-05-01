@@ -1,4 +1,4 @@
-using LotsOfItems.ItemPrefabStructures;
+using System.Collections;
 using LotsOfItems.Plugin;
 using UnityEngine;
 
@@ -26,16 +26,24 @@ namespace LotsOfItems.CustomItems.BSODAs
             this.pm = pm;
             bool flag = base.Use(pm);
 
-            if (RGBsodaVariant == 1)
+            if (RGBsodaVariant == 2)
             {
                 entity.OnEntityMoveInitialCollision += (hit) =>
                 {
-                    if (hit.transform.CompareTag("Wall"))
+                    transform.forward = Vector3.Reflect(transform.forward, hit.normal);
+                    time -= 1f;
+                };
+            }
+
+            else if (RGBsodaVariant == 1)
+            {
+                entity.OnEntityMoveInitialCollision += (hit) =>
+                {
+                    if (!hasEnded && hit.transform.CompareTag("Wall"))
                     {
-                        CreateAngledProjectile(pm, 30f);
-                        CreateAngledProjectile(pm, -30f);
+                        hasEnded = true;
+                        StartCoroutine(CreateAngleWait());
                     }
-                    VirtualEnd();
                 };
             }
 
@@ -48,15 +56,22 @@ namespace LotsOfItems.CustomItems.BSODAs
             return flag;
         }
 
+        IEnumerator CreateAngleWait()
+        {
+            yield return null; // Waits a frame to avoid the MoveNext() collection issue with PhysicsManager.UpdateAllEntities()
+            CreateAngledProjectile(pm, 30f);
+            CreateAngledProjectile(pm, -30f);
+            VirtualEnd();
+        }
+
         private void CreateAngledProjectile(PlayerManager pm, float angleOffset) // Note that this one does backwards
         {
             // Calculate rotated direction
             Quaternion rotation = Quaternion.Euler(0f, angleOffset, 0f);
-            Vector3 spawnPos = pm.transform.position;
 
             // Instantiate and configure projectile
-            var projectile = Instantiate(foamPrefab, spawnPos, Quaternion.identity);
-            projectile.Spawn(pm.ec, spawnPos, transform.forward);
+            var projectile = Instantiate(foamPrefab, transform.position, Quaternion.identity);
+            projectile.Spawn(pm.ec, transform.position, transform.forward);
             projectile.transform.rotation = Quaternion.LookRotation(rotation * -transform.forward);
         }
     }
@@ -68,7 +83,7 @@ namespace LotsOfItems.CustomItems.BSODAs
             this.ec = ec;
             transform.position = position;
             transform.forward = rotation;
-            entity.Initialize(ec, transform.position);
+            entity.Initialize(ec, position);
             spriteRenderer.SetSpriteRotation(Random.Range(0f, 360f));
             moveMod.priority = 1;
         }

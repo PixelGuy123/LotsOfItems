@@ -1,10 +1,22 @@
-﻿using UnityEngine;
-using HarmonyLib;
+﻿using HarmonyLib;
+using UnityEngine;
 
 namespace LotsOfItems.Components
 {
 	public class PlayerCustomAttributes : MonoBehaviour
 	{
+		public void SetAddendOnlyImmunity(bool resist)
+		{
+			if (resist)
+				immuneResists++;
+			else
+			{
+				if (--immuneResists < 0)
+					immuneResists = 0;
+			}
+		}
+		public bool AddendImmune => immuneResists != 0;
+		int immuneResists = 0;
 		public void SetDoorOpeningSilent(bool silent)
 		{
 			if (silent)
@@ -41,6 +53,20 @@ namespace LotsOfItems.Components
 		[HarmonyPostfix]
 		static void CorrectNoiseAttributeAfterwards(bool __state, ref bool ___makesNoise) =>
 			___makesNoise = __state;
+
+		[HarmonyPatch(typeof(ActivityModifier), "Addend", MethodType.Getter)]
+		[HarmonyPrefix]
+		static bool OverrideActivityAddend(ref Vector3 __result, Entity ___entity)
+		{
+			if (___entity is not PlayerEntity)
+				return true;
+			if (___entity.GetComponent<PlayerCustomAttributes>()?.AddendImmune ?? false)
+			{
+				__result = Vector3.zero;
+				return false;
+			}
+			return true;
+		}
 	}
-	
+
 }

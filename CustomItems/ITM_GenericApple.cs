@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using HarmonyLib;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems
 {
@@ -68,10 +68,13 @@ namespace LotsOfItems.CustomItems
 	{
 
 		static readonly Dictionary<Items, Func<Baldi, Baldi_CustomAppleState>> appleFuncs = [];
+		static readonly HashSet<Items> applesThatCantBePickedUp = [];
 
-		public static ItemObject AddItemAsApple(this ItemObject itmObj, Func<Baldi, Baldi_CustomAppleState> func)
+		public static ItemObject AddItemAsApple(this ItemObject itmObj, Func<Baldi, Baldi_CustomAppleState> func, bool canBePicked = true)
 		{
 			appleFuncs.Add(itmObj.itemType, func);
+			if (!canBePicked)
+				applesThatCantBePickedUp.Add(itmObj.itemType);
 			return itmObj;
 		}
 
@@ -98,7 +101,7 @@ namespace LotsOfItems.CustomItems
 					{
 						foreach (var apple in appleFuncs)
 						{
-							if (itm.Has(apple.Key))
+							if (!applesThatCantBePickedUp.Contains(apple.Key) && itm.Has(apple.Key))
 							{
 								itm.Remove(apple.Key);
 								__instance.baldi.TriggerBaldiApple(apple.Value(__instance.baldi));

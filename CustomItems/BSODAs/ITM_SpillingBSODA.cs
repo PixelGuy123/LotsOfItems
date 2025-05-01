@@ -1,115 +1,141 @@
-﻿using UnityEngine;
-using LotsOfItems.ItemPrefabStructures;
-using LotsOfItems.Components;
+﻿using System.Collections;
+using LotsOfItems.Plugin;
 using MTM101BaldAPI;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using LotsOfItems.Plugin;
-using MTM101BaldAPI.Registers;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_SpillingBSODA : Item, IItemPrefab
+public class ITM_SpillingBSODA : ITM_GenericNanaPeel
 {
 	[SerializeField]
 	private float duration = 15f, spawnSpeed = 3.5f;
 
 	[SerializeField]
-	internal BoxCollider collider;
-
-	[SerializeField]
-	internal SoundObject audUse;
-
-	Cell spawnCell;
-
-	public void SetupPrefab(ItemObject itm)
+	private SpillingBSODA_PuddleTimer puddlePrefab;
+	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
-		var puddleSprite = ObjectCreationExtensions.CreateSpriteBillboard(
-				((ITM_BSODA)ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value.item).spriteRenderer.sprite,
+		// Get the original BSODA sprite for the puddle visual
+		var puddleSpriteVisual = ((ITM_BSODA)ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value.item).spriteRenderer.sprite;
+
+		// Create the puddle prefab
+		var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(
+				puddleSpriteVisual,
 				false
-			).gameObject;
+			).AddSpriteHolder(out var renderer, 0.1f, LayerStorage.ignoreRaycast);
+		puddleObject.name = "SpillingBSODAPuddle";
 
-		puddleSprite.transform.SetParent(transform);
-		puddleSprite.transform.localPosition = Vector3.up * 0.05f;
-		puddleSprite.name = "Sprite";
-		puddleSprite.layer = 0;
-		puddleSprite.transform.Rotate(90, 0, 0); // Face downward
+		renderer.gameObject.layer = 0;
+		renderer.transform.Rotate(90, 0, 0); // Face downward
+		puddleObject.gameObject.ConvertToPrefab(true);
 
-		collider = gameObject.AddComponent<BoxCollider>();
-		collider.isTrigger = false;
-		collider.size = new Vector3(5f, 5f, 5f);
-		collider.center = Vector3.up * 5f;
+		// Add collider to the puddle prefab
+		var puddleCollider = puddleObject.gameObject.AddComponent<BoxCollider>();
+		puddleCollider.isTrigger = false; // Make it solid
+		puddleCollider.size = new Vector3(5f, 5f, 5f);
+		puddleCollider.center = Vector3.up * 5f; // Adjust center if needed based on visual
 
-		audUse = GenericExtensions.FindResourceObjectByName<SoundObject>("BsodaSpray");
+		// Add the PuddleTimer component to the prefab
+		var timerComponent = puddleObject.gameObject.AddComponent<SpillingBSODA_PuddleTimer>();
+		timerComponent.duration = duration;
+		timerComponent.spawnSpeed = spawnSpeed;
+		timerComponent.audSplash = GenericExtensions.FindResourceObjectByName<SoundObject>("BsodaSpray"); // Assign sound
+		timerComponent.audMan = timerComponent.gameObject.CreatePropagatedAudioManager(35f, 50f);
+
+		puddlePrefab = timerComponent;
+
+
+
+		GetComponentInChildren<SpriteRenderer>().sprite = itm.itemSpriteLarge; // Use the item's large icon for the thrown visual
+
+		throwSpeed *= 1.85f;
+		endHeight = 1.25f;
+		gravity *= 0.65f;
+		height = 2.5f;
 	}
 
-	public void SetupPrefabPost() { }
-
-	public override bool Use(PlayerManager pm)
+	internal override void OnFloorHit() // When hitting floor
 	{
-		this.pm = pm;
-		if (!pm.ec.ContainsCoordinates(pm.transform.position))
+		// Instantiate the puddle prefab at the hit location
+		Instantiate(puddlePrefab, transform.position, Quaternion.identity)
+			.Initialize(ec);
+
+
+		Destroy(gameObject);
+	}
+}
+
+public class SpillingBSODA_PuddleTimer : MonoBehaviour
+{
+	[SerializeField]
+	internal float duration, spawnSpeed;
+	private EnvironmentController ec;
+	private Cell spawnCell;
+	[SerializeField]
+	internal AudioManager audMan;
+	[SerializeField]
+	internal BoxCollider puddleCollider;
+	[SerializeField]
+	internal SoundObject audSplash;
+
+	internal void Initialize(EnvironmentController environmentController)
+	{
+		ec = environmentController;
+		puddleCollider = GetComponent<BoxCollider>(); // Get the collider attached to the puddle prefab
+
+		if (ec == null || !ec.ContainsCoordinates(transform.position))
 		{
 			Destroy(gameObject);
-			return false;
+			return;
 		}
 
-		spawnCell = pm.ec.CellFromPosition(pm.transform.position);
+		spawnCell = ec.CellFromPosition(transform.position);
 		if (!spawnCell.Null)
 		{
-			Physics.IgnoreCollision(collider, pm.plm.Entity.collider, true);
-			transform.position = spawnCell.FloorWorldPosition;
-			StartCoroutine(WaitForPlayerToLeaveArea());
+			transform.position = spawnCell.FloorWorldPosition; // Snap to floor center
+			audMan.PlaySingle(audSplash);
 			StartCoroutine(Timer());
-
-			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
-			return true;
+			return;
 		}
 		Destroy(gameObject);
-		return false;
-	}
-
-	IEnumerator WaitForPlayerToLeaveArea()
-	{
-		while (pm.ec.CellFromPosition(pm.transform.position) == spawnCell)
-			yield return null;
-		Physics.IgnoreCollision(collider, pm.plm.Entity.collider, false);
 	}
 
 	IEnumerator Timer()
 	{
-		spawnCell.BlockAll(pm.ec, true);
-
-		float scale = 0f;
-		while (true)
+		if (spawnCell.Null || puddleCollider == null || ec == null)
 		{
-			scale += pm.ec.EnvironmentTimeScale * Time.deltaTime * spawnSpeed;
-			if (scale >= 1f)
-				break;
-			transform.localScale = scale * Vector3.one;
-			yield return null;
+			Destroy(gameObject);
+			yield break;
 		}
 
+		spawnCell.BlockAll(ec, true); // Block the cell
+
+		float scale = 0f;
+		while (scale < 1f)
+		{
+			scale += ec.EnvironmentTimeScale * Time.deltaTime * spawnSpeed;
+			transform.localScale = Mathf.Min(scale, 1f) * Vector3.one;
+			yield return null;
+		}
 		transform.localScale = Vector3.one;
 
 		float timer = duration;
 		while (timer > 0f)
 		{
-			timer -= Time.deltaTime;
+			timer -= Time.deltaTime; // Use standard Time.deltaTime for puddle duration
 			yield return null;
 		}
 
-		spawnCell.BlockAll(pm.ec, false);
-		collider.enabled = false;
+		spawnCell.BlockAll(ec, false); // Unblock the cell
+		puddleCollider.enabled = false; // Disable collider before shrinking
 
 		scale = 1f;
-		while (true)
+		while (scale > 0f)
 		{
-			scale -= pm.ec.EnvironmentTimeScale * Time.deltaTime * spawnSpeed;
-			if (scale <= 0f)
-				break;
-			transform.localScale = scale * Vector3.one;
+			scale -= ec.EnvironmentTimeScale * Time.deltaTime * spawnSpeed;
+			transform.localScale = Mathf.Max(scale, 0f) * Vector3.one;
 			yield return null;
 		}
 
@@ -117,4 +143,3 @@ public class ITM_SpillingBSODA : Item, IItemPrefab
 	}
 }
 
-			   

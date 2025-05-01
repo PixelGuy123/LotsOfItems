@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Extensions;
@@ -18,10 +20,13 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 	internal SoundObject audWalk;
 
 	[SerializeField]
-	internal float shakeForce = 2.5f; // How strong the tripping/shaking is
+	internal float shakeForce = 10f; // How strong the tripping/shaking is
 
 	[SerializeField]
-	internal float npcPushRadius = 3f, npcPushForce = 12f; // Dust pan effect
+	internal float npcPushRadius = 35f, npcPushForce = 25f; // Dust pan effect
+
+	[SerializeField]
+	internal LayerMask collisionLayer = LotOfItemsPlugin.onlyNpcLayers;
 
 	ValueModifier staminaMod;
 	float distanceAccumulated;
@@ -38,8 +43,8 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 
 	public override bool Use(PlayerManager pm)
 	{
-		pm.plm.Entity.SetResistAddend(true);
 		this.pm = pm;
+		pm.GetAttributes().SetAddendOnlyImmunity(true);
 		gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, setTime);
 
 		// Setup stamina drain modifier
@@ -72,36 +77,33 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 			Vector3 currentPos = pm.transform.position;
 			distanceAccumulated += Vector3.Distance(lastPosition, currentPos);
 
-			// --- SHAKING/TRIPPING EFFECT WHEN RUNNING ---
-			if (pm.plm.running)
-			{
-				// Apply a random sideways force to the player
-				Vector3 right = pm.transform.right;
-				float shake = (Random.value - 0.5f) * 2f * shakeForce * Time.deltaTime * pm.PlayerTimeScale;
-				pm.plm.Entity.AddForce(new((right * shake).normalized, Mathf.Abs(shake), -Mathf.Abs(shake)));
-
-				// --- NPC PUSH (DUST PAN EFFECT) ---
-				for (int i = 0; i < pm.ec.Npcs.Count; i++)
-				{
-					var npc = pm.ec.Npcs[i];
-					if (npc == null || npc.Navigator == null) continue;
-					float dist = Vector3.Distance(npc.transform.position, pm.transform.position);
-					if (dist <= npcPushRadius)
-					{
-						Vector3 pushDir = (npc.transform.position - pm.transform.position).normalized;
-						npc.Navigator.Entity.AddForce(new((pushDir * npcPushForce).normalized, npcPushForce, -npcPushForce));
-					}
-				}
-			}
-
 			lastPosition = currentPos;
 
 			// --- NOISE ON WALKING/RUNNING ---
-			while (distanceAccumulated >= distanceAccumulation)
+			if (distanceAccumulated >= distanceAccumulation)
 			{
 				pm.ec.MakeNoise(currentPos, noiseVal); // Medium noise value
 				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audWalk);
-				distanceAccumulated -= distanceAccumulation;
+				distanceAccumulated = 0f;
+
+				// --- SHAKING/TRIPPING EFFECT WHEN RUNNING ---
+				if (pm.plm.running && pm.plm.stamina > 0f)
+				{
+					// Apply a random sideways force to the player
+					float shakeForce = Random.value * this.shakeForce;
+					Vector2 unit = Random.insideUnitCircle;
+					pm.plm.Entity.AddForce(new(new(unit.x, 0f, unit.y), shakeForce, -shakeForce));
+
+					// --- NPC PUSH (DUST PAN EFFECT) ---
+					transform.position = pm.transform.position;
+					Extensions.Explode(
+							this,
+							npcPushRadius,
+							collisionLayer,
+							npcPushForce,
+							-npcPushForce
+						);
+				}
 			}
 
 			time -= Time.deltaTime * pm.PlayerTimeScale;
@@ -117,7 +119,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 				pm.ec.Npcs[i].Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
 		}
 		pm.GetMovementStatModifier().RemoveModifier(staminaMod);
-		pm.plm.Entity.SetResistAddend(false);
+		pm.GetAttributes().SetAddendOnlyImmunity(false);
 
 		//animator.Play("Up", -1, 0f);
 		gauge.Deactivate();

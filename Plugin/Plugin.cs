@@ -26,7 +26,8 @@ namespace LotsOfItems.Plugin
 		public static LotOfItemsPlugin plug;
 		internal List<ItemData> availableItems = [];
 		internal static AssetManager assetMan = new();
-		internal static LayerMask onlyNpcPlayerLayers = LayerMask.GetMask("NPCs", "Player", LayerMask.LayerToName(LayerStorage.standardEntities));
+		internal static LayerMask onlyNpcPlayerLayers = LayerMask.GetMask("NPCs", "Player", LayerMask.LayerToName(LayerStorage.standardEntities)),
+			onlyNpcLayers = LayerMask.GetMask("NPCs", LayerMask.LayerToName(LayerStorage.standardEntities));
 
 		bool IsItemEnabled(ItemObject itm) =>
 				Config.Bind("Item Settings",
@@ -61,6 +62,7 @@ namespace LotsOfItems.Plugin
 				try
 				{
 					assetMan.Add("aud_explode", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "fogMachine_explode.wav")), "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white));
+					assetMan.Add("audBump", GenericExtensions.FindResourceObjectByName<SoundObject>("Bang"));
 
 					TheItemBuilder.StartBuilding();
 

@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using HarmonyLib;
 using LotsOfItems.Components;
 using LotsOfItems.CustomItems;
 using LotsOfItems.CustomItems.AlarmClock;
+using LotsOfItems.CustomItems.Apples;
 using LotsOfItems.CustomItems.Boots;
 using LotsOfItems.CustomItems.BSODAs;
 using LotsOfItems.CustomItems.ChalkErasers;
@@ -21,6 +23,7 @@ using LotsOfItems.CustomItems.Tapes;
 using LotsOfItems.CustomItems.Teleporters;
 using LotsOfItems.CustomItems.YTPs;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Patches;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.ObjectCreation;
@@ -58,6 +61,7 @@ namespace LotsOfItems.Plugin
 
 				PIRATE_CANN_HATE = "cann_hate",
 				CRIMINALPACK_CONTRABAND = "crmp_contraband",
+				//STACK_NOSTACK = "StackableItems_NotAllowStacking",
 
 				DRINK_TAG = "drink",
 				FOOD_TAG = "food",
@@ -202,11 +206,11 @@ namespace LotsOfItems.Plugin
 				.SetMeta(ItemFlags.InstantUse, [YTPVARTAG])
 				.SetAsInstantUse()
 				.SetPickupSound(GetGenericYtpAudio(2))
-				.SetEnum("GreaterThanYTP")
+				.SetEnum(Items.Points)
 				.SetItemComponent<ITM_GreaterThanYTP>()
 				.SetNameAndDescription("LtsOItems_GreaterThanYTP_Name", "LtsOItems_GreaterThanYTP_Desc")
 				.BuildAndSetup(out ytp)
-				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 70, acceptableFloors: [F2, F3, F4, F5, END]); // Common YTP spawning
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 70, acceptableFloors: [F2, F3, F4, F5, END]);
 			ytp.value = 100;
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -216,11 +220,11 @@ namespace LotsOfItems.Plugin
 				.SetMeta(ItemFlags.InstantUse, [YTPVARTAG])
 				.SetAsInstantUse()
 				.SetPickupSound(GetGenericYtpAudio(2))
-				.SetEnum("LessThanYTP")
+				.SetEnum(Items.Points)
 				.SetItemComponent<ITM_GreaterThanYTP>()
 				.SetNameAndDescription("LtsOItems_LessThanYTP_Name", "LtsOItems_LessThanYTP_Desc")
 				.BuildAndSetup(out ITM_GreaterThanYTP greaterThanYtp)
-				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 70, acceptableFloors: [F2, F3, F4, F5, END]); // Common YTP spawning
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 70, acceptableFloors: [F2, F3, F4, F5, END]);
 			greaterThanYtp.value = 100;
 			greaterThanYtp.initialRotationSpeed = -greaterThanYtp.initialRotationSpeed;
 
@@ -493,7 +497,6 @@ namespace LotsOfItems.Plugin
 			new(F4, LevelType.Laboratory),
 			new(F5, LevelType.Laboratory)
 			, END]);
-
 			genericTp.minTeleports = 1;
 			genericTp.maxTeleports = 1;
 			genericTp.baseTime = 0.035f;
@@ -699,6 +702,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_UniversalLock_Name", "LtsOItems_UniversalLock_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 100, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("WeakLock") // expects WeakLock_smallIcon.png and WeakLock_largeIcon.png
+			.SetGeneratorCost(20)
+			.SetShopPrice(250)
+			.SetMeta(ItemFlags.None, [DOORLOCKVARTAG]) // Consumed on use
+			.SetEnum("WeakLock")
+			.SetItemComponent<ITM_WeakLock>()
+			.SetNameAndDescription("LtsOItems_WeakLock_Name", "LtsOItems_WeakLock_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 120, acceptableFloors: [F1, F2, F3, F4, F5, END]); // More common than Universal Lock
 
 			// ---- boots ----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -1131,7 +1145,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(400)
 			.SetMeta(ItemFlags.Persists, [DRINK_TAG, SODAVARTAG])
 			.SetEnum("SpillingBSODA")
-			.SetItemComponent<ITM_SpillingBSODA>()
+			.SetItemComponent<ITM_SpillingBSODA>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_SpillingBSODA_Name", "LtsOItems_SpillingBSODA_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 90, acceptableFloors: [F1, F2, F3, F4, F5, END]);
@@ -1184,6 +1198,7 @@ namespace LotsOfItems.Plugin
 			prevRgb.foamPrefab.speed *= 1.25f;
 			prevRgb.foamPrefab.spriteRenderer.sprite = dustCloudSprite;
 			prevRgb.foamPrefab.spriteRenderer.color = Color.green;
+			prevRgb.foamPrefab.DestroyParticleIfItHasOne();
 			prevRgb.RGBsodaVariant = 1;
 			prevRgb.entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 
@@ -1199,7 +1214,32 @@ namespace LotsOfItems.Plugin
 				.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 45, acceptableFloors: [F2, F3, F4, F5, END]);
 			prevRgb.nextItem = rgboda;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PSODA")
+			.SetGeneratorCost(32)
+			.SetShopPrice(900)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("PSODA")
+			.SetItemComponent<ITM_PSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_PSODA_Name", "LtsOItems_PSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 70, acceptableFloors: [F2, F3, F4, F5, END]);
+
 			// ------ Apple Variants ------
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("OminousApple")
+			.SetGeneratorCost(42)
+			.SetShopPrice(1000)
+			.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [FOOD_TAG, APPLEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("OminousApple")
+			.SetItemComponent<ITM_OminousApple>()
+			.SetNameAndDescription("LtsOItems_OminousApple_Name", "LtsOItems_OminousApple_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Apple, appearsInStore: true, goToFieldTrips: true, weight: 45, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			Sprite[] spriteCollection_1 = TextureExtensions.LoadSpriteSheet(3, 1, 30.5f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiHaired.png"),
+			spriteCollection_2 = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png");
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("HairSpray")
@@ -1215,18 +1255,20 @@ namespace LotsOfItems.Plugin
 			{
 				var nextState = new Baldi_CustomAppleState(baldi,
 					baldi.behaviorStateMachine.CurrentState,
-					TextureExtensions.LoadSpriteSheet(3, 1, 30.5f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiHaired.png"),
+					spriteCollection_1,
 					eatTime: 65f,
 					eatSounds: [new() { selection = GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"), weight = 100 }],
 					thanksAudio: GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"));
 
 				var mainState = new Baldi_CustomAppleState(baldi,
 					nextState,
-					TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png"),
+					spriteCollection_2,
 					eatTime: 15f,
 					thanksAudio: ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green));
 				return mainState;
 			});
+
+			spriteCollection_1 = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png");
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("GreenApple")
@@ -1241,7 +1283,7 @@ namespace LotsOfItems.Plugin
 			.AddItemAsApple((baldi) =>
 					new Baldi_CustomAppleState(baldi,
 					baldi.behaviorStateMachine.CurrentState,
-					TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png"),
+					spriteCollection_1,
 					eatTime: 5f));
 
 			GrowItemAcceptor.RegisterExchangingItem(item.itemType, ItemMetaStorage.Instance.FindByEnum(Items.Apple).value, 45f);
@@ -1271,6 +1313,46 @@ namespace LotsOfItems.Plugin
 				acceptor.audMan = acceptor.gameObject.CreatePropagatedAudioManager(65f, 75f);
 				acceptor.audEnd = GenericExtensions.FindResourceObjectByName<SoundObject>("Boink");
 			});
+
+
+			// ----- Bus Pass -----
+
+			SoundObject baldiTripSpeech = ObjectCreators.CreateSoundObject(
+				AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "BAL_FabricatedPass.wav")),
+				 "LtsOItems_Vfx_BAL_FabPass_1", SoundType.Voice, Color.green
+			);
+			baldiTripSpeech.additionalKeys = [
+				new() { key = "LtsOItems_Vfx_BAL_FabPass_2", time = 1.361f },
+				new() { key = "LtsOItems_Vfx_BAL_FabPass_3", time = 3.137f },
+				new() { key = "LtsOItems_Vfx_BAL_FabPass_4", time = 6.488f }
+			];
+
+			SoundObject johnnyGetOut = GenericExtensions.FindResourceObjectByName<SoundObject>("Jon_Expel3");
+			// ObjectCreators.CreateSoundObject(
+			// 	AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "Johnny_YouJerk.wav")),
+			// 	 "Vfx_Jon_Expel3", SoundType.Voice, Color.white // update color!
+			// );
+			// johnnyGetOut.hasAnimation = true;
+			// johnnyGetOut.soundClip.name = "Jon_Expel3";
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("FabricatedBusPass")
+			.SetGeneratorCost(26)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.NoUses, [])
+			.SetEnum("FabricatedBusPass")
+			.SetItemComponent<ITM_Acceptable>()
+			.SetNameAndDescription("LtsOItems_FabricatedBusPass_Name", "LtsOItems_FabricatedBusPass_Desc")
+			.BuildAndSetup(out ITM_Acceptable acceptable)
+			.StoreAsNormal(Items.BusPass, appearsInStore: false, weight: 35, acceptableFloors: [F1, F2])
+			.MarkAsBusPass((pm, isJohnny) =>
+			{
+				pm.itm.Remove(item.itemType);
+				return new(Random.value <= 0.25f, isJohnny ? johnnyGetOut : baldiTripSpeech);
+			});
+			acceptable.item = item.itemType;
+			acceptable.layerMask = playerClickLayer;
+
 		}
 
 		static SoundObject GetYtpAudio(string name)
@@ -1324,6 +1406,15 @@ namespace LotsOfItems.Plugin
 			var itm = bld.Build();
 			if (itm.item is IItemPrefab pre)
 				pre.SetupPrefab(itm);
+			return itm;
+		}
+
+		static ItemObject MarkAsBusPass(this ItemObject itm, System.Func<PlayerManager, bool, KeyValuePair<bool, SoundObject>> func)
+		{
+			FieldTripRelatedPatch.busPasses.Add(itm.itemType, func);
+			GenericExtensions.FindResourceObjects<StoreRoomFunction>()
+			.First(x => !x.name.Contains("Tutorial"))
+			.johnnyHotspot.GetComponent<ItemAcceptor>().acceptibleItems.Add(itm.itemType);
 			return itm;
 		}
 
