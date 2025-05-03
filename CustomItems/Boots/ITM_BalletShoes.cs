@@ -20,7 +20,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 	internal SoundObject audWalk;
 
 	[SerializeField]
-	internal float shakeForce = 10f; // How strong the tripping/shaking is
+	internal float shakeForce = 22f; // How strong the tripping/shaking is
 
 	[SerializeField]
 	internal float npcPushRadius = 35f, npcPushForce = 25f; // Dust pan effect

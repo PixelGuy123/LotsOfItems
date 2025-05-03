@@ -1,8 +1,8 @@
-﻿using LotsOfItems.CustomItems;
+﻿using System.Collections;
+using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using PixelInternalAPI.Classes;
-using System.Collections;
 using UnityEngine;
 
 public class ITM_LandMine : ITM_GenericNanaPeel
@@ -47,7 +47,6 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 		if (!activated)
 		{
 			StartCoroutine(CanBeBully());
-			audioManager.PlaySingle(activationSound);
 			activated = true;
 		}
 	}
@@ -66,14 +65,17 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 
 	private IEnumerator Explode()
 	{
+		entity.SetFrozen(true); // yup, freezes on touch like that lol
+		audioManager.PlaySingle(activationSound);
+		while (audioManager.AnyAudioIsPlaying)
+			yield return null; // Waits for activation finish
+
 		if (canBeBully)
 			pm?.RuleBreak("Bullying", 1f);
 		hasExploded = true;
 		audioManager.PlaySingle(explosionSound);
 
-
 		renderer.sprite = explosionSprite;
-		entity.SetFrozen(true);
 
 
 		Extensions.Explode(this, explosionDistance, collisionLayer, explosionForce, explosionAcceleration);

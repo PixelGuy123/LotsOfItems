@@ -68,13 +68,10 @@ namespace LotsOfItems.CustomItems
 	{
 
 		static readonly Dictionary<Items, Func<Baldi, Baldi_CustomAppleState>> appleFuncs = [];
-		static readonly HashSet<Items> applesThatCantBePickedUp = [];
 
-		public static ItemObject AddItemAsApple(this ItemObject itmObj, Func<Baldi, Baldi_CustomAppleState> func, bool canBePicked = true)
+		public static ItemObject AddItemAsApple(this ItemObject itmObj, Func<Baldi, Baldi_CustomAppleState> func)
 		{
 			appleFuncs.Add(itmObj.itemType, func);
-			if (!canBePicked)
-				applesThatCantBePickedUp.Add(itmObj.itemType);
 			return itmObj;
 		}
 
@@ -86,29 +83,20 @@ namespace LotsOfItems.CustomItems
 			baldi.volumeAnimator.enabled = false;
 		}
 
-		[HarmonyPatch(typeof(Baldi_Chase), "OnStateTriggerStay")]
+		[HarmonyPatch(typeof(Baldi), "CaughtPlayer")]
 		[HarmonyPrefix]
-		static bool MakeSureBaldiCanPickUpOtherApples(Baldi_Chase __instance, Collider other)
+		static bool MakeSureBaldiCanPickUpOtherApples(Baldi __instance, PlayerManager player)
 		{
-			if (other.CompareTag("Player"))
+			if (__instance.Character != Character.Baldi) // TeacherAPI support
+				return true;
+
+			foreach (var apple in appleFuncs)
 			{
-				__instance.baldi.looker.Raycast(other.transform, Vector3.Magnitude(__instance.baldi.transform.position - other.transform.position), out bool flag);
-				if (flag)
+				if (player.itm.Has(apple.Key))
 				{
-					PlayerManager component = other.GetComponent<PlayerManager>();
-					ItemManager itm = component.itm;
-					if (!component.invincible)
-					{
-						foreach (var apple in appleFuncs)
-						{
-							if (!applesThatCantBePickedUp.Contains(apple.Key) && itm.Has(apple.Key))
-							{
-								itm.Remove(apple.Key);
-								__instance.baldi.TriggerBaldiApple(apple.Value(__instance.baldi));
-								return false;
-							}
-						}
-					}
+					player.itm.Remove(apple.Key);
+					__instance.TriggerBaldiApple(apple.Value(__instance));
+					return false;
 				}
 			}
 			return true;

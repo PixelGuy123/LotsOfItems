@@ -17,8 +17,9 @@ public class ITM_SpillingBSODA : ITM_GenericNanaPeel
 	private SpillingBSODA_PuddleTimer puddlePrefab;
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
+		var bsodaItm = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
 		// Get the original BSODA sprite for the puddle visual
-		var puddleSpriteVisual = ((ITM_BSODA)ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value.item).spriteRenderer.sprite;
+		var puddleSpriteVisual = ((ITM_BSODA)bsodaItm.item).spriteRenderer.sprite;
 
 		// Create the puddle prefab
 		var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(
@@ -48,7 +49,7 @@ public class ITM_SpillingBSODA : ITM_GenericNanaPeel
 
 
 
-		GetComponentInChildren<SpriteRenderer>().sprite = itm.itemSpriteLarge; // Use the item's large icon for the thrown visual
+		GetComponentInChildren<SpriteRenderer>().sprite = bsodaItm.itemSpriteLarge; // Use the item's large icon for the thrown visual
 
 		throwSpeed *= 1.85f;
 		endHeight = 1.25f;

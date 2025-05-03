@@ -76,6 +76,9 @@ namespace LotsOfItems.Plugin
 			LayerMaskObject playerClickLayer = GenericExtensions.FindResourceObjectByName<LayerMaskObject>("PlayerClickLayerMask");
 			var dustCloudSprite = AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud"),
 			((ITM_BSODA)ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value.item).spriteRenderer.sprite.pixelsPerUnit);
+			SoundObject genericDrinking = ObjectCreators.CreateSoundObject(
+				AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "Generic_Drinking.wav")),
+				"LtsOItems_Vfx_Drinking", SoundType.Effect, Color.white);
 
 			// ---------- YTPS
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -228,6 +231,18 @@ namespace LotsOfItems.Plugin
 			greaterThanYtp.value = 100;
 			greaterThanYtp.initialRotationSpeed = -greaterThanYtp.initialRotationSpeed;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("SomethingYTP")
+				.SetGeneratorCost(37)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [YTPVARTAG])
+				.SetAsInstantUse()
+				.SetPickupSound(GetGenericYtpAudio(2))
+				.SetItemComponent<ITM_SomethingYTP>()
+				.SetNameAndDescription("LtsOItems_SomethingYtp_Name", "LtsOItems_SomethingYtp_Desc")
+				.BuildAndSetup()
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 22, acceptableFloors: [F2, F3, F4, END]);
+
 
 			// ------------- EATABLES ---------------
 
@@ -291,15 +306,26 @@ namespace LotsOfItems.Plugin
 				.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 86, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
-			.AutoGetSprites("orangeJuice")
-			.SetGeneratorCost(30)
-			.SetShopPrice(225)
-			.SetMeta(ItemFlags.Persists, [FOOD_TAG, DRINK_TAG, ZESTYVARTAG])
-			.SetEnum("OrangeJuice")
-			.SetItemComponent<ITM_GenericZestyEatable>()
-			.SetNameAndDescription("LtsOItems_OrangeJuice_Name", "LtsOItems_OrangeJuice_Desc")
-			.BuildAndSetup(out genericZesty)
-			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 65, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+				.AutoGetSprites("IceCreamSandwich")
+				.SetGeneratorCost(36)
+				.SetShopPrice(665)
+				.SetMeta(ItemFlags.Persists, [FOOD_TAG, ZESTYVARTAG, PIRATE_CANN_HATE])
+				.SetEnum("IceCreamSandwich")
+				.SetItemComponent<ITM_IceCreamSandwich>()
+				.SetNameAndDescription("LtsOItems_IceCreamSandwich_Name", "LtsOItems_IceCreamSandwich_Desc")
+				.BuildAndSetup()
+				.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 70, acceptableFloors: [F1, F2, F3, END]); // Example weight and floors
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("orangeJuice")
+				.SetGeneratorCost(30)
+				.SetShopPrice(225)
+				.SetMeta(ItemFlags.Persists, [FOOD_TAG, DRINK_TAG, ZESTYVARTAG])
+				.SetEnum("OrangeJuice")
+				.SetItemComponent<ITM_GenericZestyEatable>()
+				.SetNameAndDescription("LtsOItems_OrangeJuice_Name", "LtsOItems_OrangeJuice_Desc")
+				.BuildAndSetup(out genericZesty)
+				.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 65, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
 			genericZesty.affectorTime = 15f;
 			genericZesty.staminaRiseChanger = 2f;
@@ -412,6 +438,19 @@ namespace LotsOfItems.Plugin
 			genericZesty.affectorTime = 0f;
 			genericZesty.staminaGain = 300f;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("FizzUp")
+			.SetGeneratorCost(28)
+			.SetShopPrice(400)
+			.SetMeta(ItemFlags.Persists, [FOOD_TAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("FizzUp")
+			.SetItemComponent<ITM_FizzUp>()
+			.SetNameAndDescription("LtsOItems_FizzUp_Name", "LtsOItems_FizzUp_Desc")
+			.BuildAndSetup(out genericZesty)
+			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 65, acceptableFloors: [F2, F3, F4, END]);
+
+			genericZesty.audEat = genericDrinking;
+
 
 			// ---------------- TELEPORTERS ---------------
 
@@ -501,6 +540,23 @@ namespace LotsOfItems.Plugin
 			genericTp.maxTeleports = 1;
 			genericTp.baseTime = 0.035f;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("BrokenTeleporter")
+				.SetGeneratorCost(32)
+				.SetShopPrice(500)
+				.SetMeta(ItemFlags.Persists, [DANGERTELEPORTERVARTAG, CRIMINALPACK_CONTRABAND])
+				.SetEnum("BrokenTeleporter")
+				.SetItemComponent<ITM_BrokenTeleporter>()
+				.SetNameAndDescription("LtsOItems_BrokenTeleporter_Name", "LtsOItems_BrokenTeleporter_Desc")
+				.BuildAndSetup(out genericTp)
+				.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 60, acceptableFloors: [F2, F3,
+			new(F4, LevelType.Laboratory),
+			new(F5, LevelType.Laboratory)
+			, END]);
+
+			genericTp.minTeleports = 1;
+			genericTp.maxTeleports = 1;
+
 
 			// ---------- WHISTLES VARIANTS ----------
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -548,6 +604,16 @@ namespace LotsOfItems.Plugin
 			new(F5, LevelType.Laboratory)
 			, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("GoldenBanana")
+			.SetGeneratorCost(40)
+			.SetShopPrice(1200)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, "CRIMINALPACK_CONTRABAND"])
+			.SetEnum("GoldenBanana")
+			.SetItemComponent<ITM_GoldenBanana>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_GoldenBanana_Name", "LtsOItems_GoldenBanana_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 45, acceptableFloors: [F2, F3, END]);
 
 
 			// ------------ QUARTERS -------------
@@ -1225,6 +1291,19 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 70, acceptableFloors: [F2, F3, F4, F5, END]);
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("RetroFireFlower")
+			.SetGeneratorCost(38)
+			.SetShopPrice(950)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("RetroFireFlower")
+			.SetItemComponent<ITM_RetroFireFlower>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_RetroFireFlower_Name_3", "LtsOItems_RetroFireFlower_Desc")
+			.BuildAndSetup(out ITM_RetroFireFlower flower)
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 15, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			flower.CreateNewReusableInstances(item, "LtsOItems_RetroFireFlower_Name", 2);
+
 			// ------ Apple Variants ------
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -1238,8 +1317,13 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Apple, appearsInStore: true, goToFieldTrips: true, weight: 45, acceptableFloors: [F2, F3, F4, F5, END]);
 
-			Sprite[] spriteCollection_1 = TextureExtensions.LoadSpriteSheet(3, 1, 30.5f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiHaired.png"),
-			spriteCollection_2 = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png");
+			Sprite[] baldiHaired = TextureExtensions.LoadSpriteSheet(3, 1, 30.5f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiHaired.png"),
+			baldiEatingHair = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png"),
+			baldiGreenAppleEat = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png");
+
+			SoundObject ooohBaldi = GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"),
+			scissorsNoise = GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"),
+			vfxSufferHair = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("HairSpray")
@@ -1255,20 +1339,18 @@ namespace LotsOfItems.Plugin
 			{
 				var nextState = new Baldi_CustomAppleState(baldi,
 					baldi.behaviorStateMachine.CurrentState,
-					spriteCollection_1,
+					baldiHaired,
 					eatTime: 65f,
-					eatSounds: [new() { selection = GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"), weight = 100 }],
-					thanksAudio: GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"));
+					eatSounds: [new() { selection = scissorsNoise }],
+					thanksAudio: ooohBaldi);
 
 				var mainState = new Baldi_CustomAppleState(baldi,
 					nextState,
-					spriteCollection_2,
+					baldiEatingHair,
 					eatTime: 15f,
-					thanksAudio: ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green));
+					thanksAudio: vfxSufferHair);
 				return mainState;
 			});
-
-			spriteCollection_1 = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png");
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("GreenApple")
@@ -1283,7 +1365,7 @@ namespace LotsOfItems.Plugin
 			.AddItemAsApple((baldi) =>
 					new Baldi_CustomAppleState(baldi,
 					baldi.behaviorStateMachine.CurrentState,
-					spriteCollection_1,
+					baldiGreenAppleEat,
 					eatTime: 5f));
 
 			GrowItemAcceptor.RegisterExchangingItem(item.itemType, ItemMetaStorage.Instance.FindByEnum(Items.Apple).value, 45f);
@@ -1468,7 +1550,7 @@ namespace LotsOfItems.Plugin
 
 			var newItm = itm.gameObject.AddComponent<T>()
 				.GetACopyFromFields(itm);
-			Object.Destroy(itm);
+			Object.DestroyImmediate(itm); // immediately to be sure it is not inherited later
 
 			newItm.gameObject.ConvertToPrefab(true);
 

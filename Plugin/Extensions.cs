@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
-using LotsOfItems.Components;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
@@ -53,6 +52,21 @@ namespace LotsOfItems.Plugin
             }
 
             return original;
+        }
+
+        public static List<ItemObject> GetAllShoppingItems()
+        {
+            List<ItemObject> itmObjs = [];
+            foreach (var s in GenericExtensions.FindResourceObjects<SceneObject>())
+            {
+                s.shopItems.Do(x =>
+                {
+                    var meta = x.selection.GetMeta();
+                    if (meta != null && !itmObjs.Contains(meta.value))
+                        itmObjs.Add(meta.value);
+                });
+            }
+            return itmObjs;
         }
 
         public static Texture2D Mask(this Texture2D original, Texture2D texRef) =>
@@ -261,10 +275,10 @@ namespace LotsOfItems.Plugin
             var parts = bsoda.GetComponentInChildren<ParticleSystem>(true);
             if (parts)
             {
-                if (parts.GetComponent<ITM_BSODA>())
-                    UnityEngine.Object.Destroy(parts);
+                if (parts.GetComponent<ITM_BSODA>()) // Immediate destruction to avoid stuff like ReusableInstance not helping out
+                    UnityEngine.Object.DestroyImmediate(parts);
                 else
-                    UnityEngine.Object.Destroy(parts.gameObject);
+                    UnityEngine.Object.DestroyImmediate(parts.gameObject);
             }
         }
 
@@ -304,6 +318,7 @@ namespace LotsOfItems.Plugin
                 );
                 meta.itemObjects[meta.itemObjects.Length - count] = itemObject;
                 instances[instances.Length - count] = itemObject;
+                itemObject.AddMeta(meta);
             }
             return instances;
         }
@@ -321,9 +336,9 @@ namespace LotsOfItems.Plugin
             newItmObj.nameKey = $"{newNameKey}_{count}";
             newItmObj.name = $"ItmOb_{newItmObj.nameKey}";
 
-            newItmObj.item.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
-            var newItm = UnityEngine.Object.Instantiate(newItmObj.item as T);
-            newItmObj.item.gameObject.SetActive(true);
+            ogItmObj.item.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
+            var newItm = UnityEngine.Object.Instantiate(ogItmObj.item as T);
+            ogItmObj.item.gameObject.SetActive(true);
 
             newItmObj.item = newItm;
             newItm.name = $"ObjItmOb_{newItmObj.nameKey}";

@@ -53,26 +53,4 @@ namespace LotsOfItems.CustomItems.YTPs
 		[SerializeField]
 		internal LayerMask layer = LayerMask.GetMask("Default", "Windows");
 	}
-
-	[HarmonyPatch(typeof(Pickup))]
-	static class MakePickupBounce
-	{
-		[HarmonyPatch("Start")]
-		[HarmonyPatch("AssignItem")]
-		static void Postfix(Pickup __instance)
-		{
-			var bounce = __instance.gameObject.GetComponent<DancingPickup>();
-
-			if (bounce)
-				Object.Destroy(bounce);
-
-			if (__instance.item.item is ITM_DancingYTP)
-			{
-				__instance.gameObject.AddComponent<DancingPickup>().AttachToPickup(__instance, Singleton<BaseGameManager>.Instance.Ec);
-				return;
-			}
-
-
-		}
-	}
 }
