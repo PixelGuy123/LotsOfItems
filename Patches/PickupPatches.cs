@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using HarmonyLib;
 using LotsOfItems.CustomItems.YTPs;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace LotsOfItems.Patches;
 internal static class MakePickupBounce
 {
 
+    // ********** Dancing YTP Pickup Patch ***********
     [HarmonyPatch("Start")]
     [HarmonyPatch("AssignItem")]
     [HarmonyPostfix]
@@ -25,6 +27,56 @@ internal static class MakePickupBounce
             return;
         }
     }
+
+    // ********** Teleporting YTP Pickup Patches ***********
+
+    [HarmonyPatch("Collect")]
+    [HarmonyPrefix]
+    static void RegisterItemObjectForTpYTP(Pickup __instance, out ItemObject __state) =>
+        __state = __instance.item;
+
+    [HarmonyPatch("Collect")]
+    [HarmonyPostfix]
+    static void TeleportIfTeleportationYTP(Pickup __instance, ItemObject __state)
+    {
+        if (__state.item is not ITM_TeleportingYTP)
+            return;
+
+        potentialSpots.Clear();
+        var currentRoom = Singleton<BaseGameManager>.Instance.Ec.CellFromPosition(__instance.transform.position).room;
+        foreach (var room in Singleton<BaseGameManager>.Instance.Ec.rooms)
+        {
+            if (room == currentRoom)
+                continue;
+
+            var spawns = room.itemSpawnPoints;
+            for (int i = 0; i < spawns.Count; i++)
+            {
+                potentialSpots.Add(spawns[i].position);
+            }
+        }
+
+        if (potentialSpots.Count == 0)
+            return;
+
+        var comp = __instance.GetComponent<TeleportingYTP_TpMarker>();
+        if (!comp)
+            comp = __instance.gameObject.AddComponent<TeleportingYTP_TpMarker>();
+
+        if (++comp.tpTimes > ITM_TeleportingYTP.maxTpsPerInstance)
+        {
+            Object.Destroy(comp);
+            return;
+        }
+        __instance.transform.position = potentialSpots[Random.Range(0, potentialSpots.Count)];
+        __instance.gameObject.SetActive(true);
+        __instance.AssignItem(__state);
+    }
+
+    readonly static List<Vector2> potentialSpots = [];
+
+
+    // ********** Something Pickup Patch ***********
 
     [HarmonyPatch("Clicked")]
     [HarmonyPrefix]

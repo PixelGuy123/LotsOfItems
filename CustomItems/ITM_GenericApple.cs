@@ -7,8 +7,12 @@ namespace LotsOfItems.CustomItems
 {
 	internal class Baldi_CustomAppleState(Baldi baldi, NpcState prevState, Sprite[] customEatSprites, WeightedSoundObject[] eatSounds = null, float eatTime = -1f, SoundObject thanksAudio = null) : Baldi_SubState(baldi, baldi, prevState)
 	{
+		internal Baldi_CustomAppleState(Baldi baldi, NpcState prevState, Sprite[] customEatSprites, Action postAppleEat, WeightedSoundObject[] eatSounds = null, float eatTime = -1f, SoundObject thanksAudio = null) : this(baldi, prevState, customEatSprites, eatSounds, eatTime, thanksAudio)
+		{
+			postEating = postAppleEat;
+		}
 		const float minEatDelay = 0.015f, maxEatDelay = 0.07f;
-
+		readonly protected Action postEating;
 		readonly protected SoundObject thanksAudio = thanksAudio;
 		readonly protected Sprite eat1 = customEatSprites[0], eat2 = customEatSprites[1];
 		protected float time = eatTime <= 0f ? baldi.appleTime : eatTime;
@@ -52,7 +56,7 @@ namespace LotsOfItems.CustomItems
 
 			eatDelay += UnityEngine.Random.Range(minEatDelay, maxEatDelay);
 			baldi.spriteRenderer[0].sprite = baldi.spriteRenderer[0].sprite == eat1 ? eat2 : eat1;
-			if (baldi.spriteRenderer[0].sprite == eat2)
+			if (baldi.spriteRenderer[0].sprite == eat2 && eatSounds.Length != 0)
 				baldi.audMan.PlaySingle(WeightedSoundObject.RandomSelection(eatSounds));
 		}
 
@@ -60,6 +64,7 @@ namespace LotsOfItems.CustomItems
 		{
 			base.Exit();
 			baldi.animator.enabled = true;
+			postEating();
 		}
 	}
 

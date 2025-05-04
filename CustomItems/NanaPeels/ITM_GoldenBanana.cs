@@ -1,5 +1,7 @@
 using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
+using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.NanaPeels
@@ -11,11 +13,7 @@ namespace LotsOfItems.CustomItems.NanaPeels
         [SerializeField]
         private SpriteRenderer arrowRenderer;
         [SerializeField]
-        private Sprite arrowForward;
-        [SerializeField]
-        private float fastSpeed = 60f;
-        [SerializeField]
-        private float arrowYOffset = 1.2f;
+        private Vector2 arrowOffset = new(2.5f, 0f);
 
         Direction preSelectedDirection = Direction.North;
 
@@ -26,17 +24,34 @@ namespace LotsOfItems.CustomItems.NanaPeels
             // ***** Visual Setup here ******
 
             animationComponent = gameObject.AddComponent<AnimationComponent>();
+            animationComponent.animation = this.GetSpriteSheet("GoldenBanana_World.png", 6, 2, 25f);
+            animationComponent.speed = 10f;
             animationComponent.renderers = [GetComponentInChildren<SpriteRenderer>()];
+            animationComponent.renderers[0].sprite = animationComponent.animation[0];
+
+            this.CreateClickableLink<int>()
+            .CopyColliderAttributes(GetComponent<CapsuleCollider>());
+
+            endHeight = 1f;
+            startHeight = 6f;
+            speed = 60f;
 
             // ***** Arrow Thing *****
-            // TODO: Change to a ObjectCreationExtensions things
-            arrowRenderer = new GameObject("DirectionArrow").AddComponent<SpriteRenderer>();
-            arrowRenderer.transform.SetParent(transform);
-            arrowRenderer.transform.localPosition = new Vector3(0, arrowYOffset, 0);
-            arrowForward = this.GetSprite("GoldenBanana_ArrowForward.png", 32);
-            arrowRenderer.sprite = arrowForward;
+
+            arrowRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite("GoldenBanana_Arrow.png", 25f), false);
+            arrowRenderer.name = "ArrowRenderer";
+            arrowRenderer.transform.SetParent(entity.rendererBase);
             arrowRenderer.enabled = false;
-            speed = fastSpeed;
+
+
+            // ***** Audio Setup *****
+            audSplat = this.GetSound("GoldenBanana_KongSplat.wav", "LtsOItems_Vfx_OoohBanana_1", SoundType.Effect, Color.yellow);
+            audSplat.additionalKeys = [
+                new() { key = "LtsOItems_Vfx_OoohBanana_2", time = 0.744f },
+                new() { key = "LtsOItems_Vfx_OoohBanana_3", time = 1.64f },
+                new() { key = "LtsOItems_Vfx_OoohBanana_4", time = 1.944f },
+                new() { key = "LtsOItems_Vfx_OoohBanana_5", time = 2.293f }
+            ];
         }
 
         public override bool Use(PlayerManager pm)
@@ -48,8 +63,7 @@ namespace LotsOfItems.CustomItems.NanaPeels
         internal override void AdditionalSpawnContribute()
         {
             base.AdditionalSpawnContribute();
-            if (animationComponent != null)
-                animationComponent.speed = 15f; // Faster rotation
+            animationComponent.Initialize(ec);
             arrowRenderer.enabled = true;
             UpdateArrow(0);
         }
@@ -67,7 +81,21 @@ namespace LotsOfItems.CustomItems.NanaPeels
 
         private void UpdateArrow(int offset)
         {
-            // TODO: make the arrow cahnge direction based on where the nana peel can go
+            int i = (((int)preSelectedDirection + offset) % Directions.Count + Directions.Count) % Directions.Count; // really weird logic, but should account for offset being negative
+            int z = i; // to avoid an infinite while loop
+            var cell = ec.CellFromPosition(transform.position);
+
+            while (cell.HasWallInDirection((Direction)i))
+            {
+                i = (i + 1) % Directions.Count;
+                if (i == z) // reached the original point
+                    break; // Breaks and stays as it is
+            }
+
+            preSelectedDirection = (Direction)i;
+
+            arrowRenderer.transform.localPosition = preSelectedDirection.ToVector3() * arrowOffset.x + Vector3.up * arrowOffset.y;
+            arrowRenderer.transform.rotation = Quaternion.Euler(90f, preSelectedDirection.ToDegrees(), 0f);
         }
 
         internal override bool EntityTriggerStayOverride(Collider other) // Copy paste from NanaPeel, to have a direction selection :()
@@ -76,6 +104,7 @@ namespace LotsOfItems.CustomItems.NanaPeels
             Entity component = other.GetComponent<Entity>();
             if (component != null && component.Grounded && component.Velocity.magnitude > 0f)
             {
+                arrowRenderer.enabled = false;
                 entity.Teleport(component.transform.position);
                 component.ExternalActivity.moveMods.Add(moveMod);
                 slippingEntity = component;

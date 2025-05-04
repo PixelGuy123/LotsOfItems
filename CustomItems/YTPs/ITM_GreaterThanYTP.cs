@@ -28,7 +28,7 @@ namespace LotsOfItems.CustomItems.YTPs
             gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, rotationDuration);
             StartCoroutine(SpinEnumerator());
             Singleton<CoreGameManager>.Instance.AddPoints(value, pm.playerNumber, true);
-            return true; // Before you wonder why I didn't use base.Use(), keep in mind that some dark magic makes it call the Item.Use() after ITM_YTPs.Use().
+            return true; // TweaksPlus has a patch for ytps, so... better manually do what ytps does ratehr than having a broken instance
         }
 
         IEnumerator SpinEnumerator()

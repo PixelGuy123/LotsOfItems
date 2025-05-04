@@ -79,6 +79,7 @@ namespace LotsOfItems.Plugin
 			SoundObject genericDrinking = ObjectCreators.CreateSoundObject(
 				AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "Generic_Drinking.wav")),
 				"LtsOItems_Vfx_Drinking", SoundType.Effect, Color.white);
+			SoundObject audTeleport = GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport");
 
 			// ---------- YTPS
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -242,6 +243,23 @@ namespace LotsOfItems.Plugin
 				.SetNameAndDescription("LtsOItems_SomethingYtp_Name", "LtsOItems_SomethingYtp_Desc")
 				.BuildAndSetup()
 				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 22, acceptableFloors: [F2, F3, F4, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+				.AutoGetSprites("TeleportingYTP")
+				.SetGeneratorCost(22)
+				.SetEnum(Items.Points)
+				.SetMeta(ItemFlags.InstantUse, [YTPVARTAG])
+				.SetAsInstantUse()
+				.SetPickupSound(GetGenericYtpAudio(0))
+				.SetItemComponent<ITM_TeleportingYTP>()
+				.SetNameAndDescription("LtsOItems_TeleportingYTP_Name", "LtsOItems_TeleportingYTP_Desc")
+				.BuildAndSetup(out ITM_TeleportingYTP genericAudioYTP)
+				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 55, acceptableFloors: [F1, F2, F3,
+				new(F4, LevelType.Laboratory),
+				new(F5, LevelType.Laboratory)
+				]);
+			genericAudioYTP.value = 25;
+			genericAudioYTP.audPlay = audTeleport;
 
 
 			// ------------- EATABLES ---------------
@@ -451,6 +469,17 @@ namespace LotsOfItems.Plugin
 
 			genericZesty.audEat = genericDrinking;
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("GrandmaBrownies")
+			.SetGeneratorCost(40)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [FOOD_TAG, ZESTYVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("GrandmaBrownies")
+			.SetItemComponent<ITM_GrandmaBrownies>()
+			.SetNameAndDescription("LtsOItems_GrandmaBrownies_Name_3", "LtsOItems_GrandmaBrownies_Desc")
+			.BuildAndSetup<ITM_GrandmaBrownies>(out var grandmaBrownies)
+			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 60, acceptableFloors: [F2, F3, F4, END]);
+			grandmaBrownies.CreateNewReusableInstances(item, "LtsOItems_GrandmaBrownies_Name", 2);
 
 			// ---------------- TELEPORTERS ---------------
 
@@ -606,9 +635,9 @@ namespace LotsOfItems.Plugin
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("GoldenBanana")
-			.SetGeneratorCost(40)
-			.SetShopPrice(1200)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, "CRIMINALPACK_CONTRABAND"])
+			.SetGeneratorCost(32)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, CRIMINALPACK_CONTRABAND])
 			.SetEnum("GoldenBanana")
 			.SetItemComponent<ITM_GoldenBanana>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_GoldenBanana_Name", "LtsOItems_GoldenBanana_Desc")
@@ -646,6 +675,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_EnergyNametag_Name", "LtsOItems_EnergyNametag_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Nametag, goToFieldTrips: true, appearsInStore: true, weight: 75, acceptableFloors: [F1, F2, F3, F4, F5]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PrincipalsBowTie")
+			.SetGeneratorCost(33)
+			.SetShopPrice(900)
+			.SetMeta(ItemFlags.Persists, [NAMETAGVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("PrincipalsBowTie")
+			.SetItemComponent<ITM_PrincipalsBowTie>()
+			.SetNameAndDescription("LtsOItems_PrincipalsBowTie_Name", "LtsOItems_PrincipalsBowTie_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Nametag, appearsInStore: true, weight: 80, acceptableFloors: [F2, F3, END]);
 
 			// --------- Chalk Erasers ---------
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -1304,7 +1344,23 @@ namespace LotsOfItems.Plugin
 
 			flower.CreateNewReusableInstances(item, "LtsOItems_RetroFireFlower_Name", 2);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BaconSoup")
+			.SetGeneratorCost(32)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("BaconSoup")
+			.SetItemComponent<ITM_BaconSoup>()
+			.SetNameAndDescription("LtsOItems_BaconSoup_Name", "LtsOItems_BaconSoup_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 75, acceptableFloors: [F2, F3,
+			new(F4, LevelType.Maintenance),
+			new(F5, LevelType.Maintenance),
+			END]);
+
 			// ------ Apple Variants ------
+
+			WeightedSoundObject[] emptyEatSoundArray = [];
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("OminousApple")
@@ -1320,6 +1376,7 @@ namespace LotsOfItems.Plugin
 			Sprite[] baldiHaired = TextureExtensions.LoadSpriteSheet(3, 1, 30.5f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiHaired.png"),
 			baldiEatingHair = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png"),
 			baldiGreenAppleEat = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png");
+
 
 			SoundObject ooohBaldi = GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"),
 			scissorsNoise = GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"),
@@ -1394,6 +1451,37 @@ namespace LotsOfItems.Plugin
 
 				acceptor.audMan = acceptor.gameObject.CreatePropagatedAudioManager(65f, 75f);
 				acceptor.audEnd = GenericExtensions.FindResourceObjectByName<SoundObject>("Boink");
+			});
+
+			Sprite sprBaldiPlasticLook = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "PlasticApple_Baldi_FoundOut.png"), Vector2.one * 0.5f, 32f);
+			Sprite[] baldiAwkardPlasticAppleLook = [sprBaldiPlasticLook, sprBaldiPlasticLook];
+			SoundObject audBalPlastic = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "BAl_PlasticReaction.wav")), "LtsOItems_Vfx_BAL_Plastic", SoundType.Voice, Color.green); ;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PlasticApple")
+			.SetGeneratorCost(32)
+			.SetShopPrice(325)
+			.SetMeta(ItemFlags.NoUses, [FOOD_TAG, APPLEVARTAG])
+			.SetEnum("PlasticApple")
+			.SetItemComponent<Item>()
+			.SetNameAndDescription("LtsOItems_PlasticApple_Name", "LtsOItems_PlasticApple_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 35, acceptableFloors: [F2, F3, F4, F5, END])
+			.AddItemAsApple((baldi) =>
+			{
+				var nextState = new Baldi_CustomAppleState(baldi,
+					baldi.behaviorStateMachine.CurrentState,
+					baldiAwkardPlasticAppleLook,
+					postAppleEat: () => baldi.GetExtraAnger(7.5f),
+					eatTime: 10f,
+					eatSounds: emptyEatSoundArray,
+					thanksAudio: audBalPlastic);
+
+				var mainState = new Baldi_CustomAppleState(baldi,
+					nextState,
+					null,
+					eatTime: 0.75f);
+				return mainState;
 			});
 
 
