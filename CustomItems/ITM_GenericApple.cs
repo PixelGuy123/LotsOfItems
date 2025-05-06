@@ -64,7 +64,7 @@ namespace LotsOfItems.CustomItems
 		{
 			base.Exit();
 			baldi.animator.enabled = true;
-			postEating();
+			postEating?.Invoke();
 		}
 	}
 

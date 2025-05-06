@@ -49,12 +49,12 @@ namespace LotsOfItems.CustomItems.Nametags
                 yield return null;
             }
 
-            gauge.Deactivate();
             Deactivate();
         }
 
         void Deactivate()
         {
+            gauge.Deactivate();
             Destroy(gameObject);
             pm.ClearGuilt();
         }
@@ -69,7 +69,9 @@ namespace LotsOfItems.CustomItems.Nametags
         {
             if (other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
             {
-                if (IsPrincipal(npc) || npc is Baldi) // If it is Baldi or inherits Baldi, it should always be ignored
+                if (npc is Baldi) return; // If it is Baldi or inherits Baldi, it should always be ignored
+
+                if (IsPrincipal(npc))
                 {
                     Deactivate();
                     return;

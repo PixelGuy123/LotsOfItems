@@ -1350,7 +1350,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(650)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG, CRIMINALPACK_CONTRABAND])
 			.SetEnum("BaconSoup")
-			.SetItemComponent<ITM_BaconSoup>()
+			.SetItemComponent<ITM_BaconSoup>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_BaconSoup_Name", "LtsOItems_BaconSoup_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 75, acceptableFloors: [F2, F3,
@@ -1360,6 +1360,10 @@ namespace LotsOfItems.Plugin
 
 			// ------ Apple Variants ------
 
+			Sprite[] baldiDefaultEatingSprites = [
+				GenericExtensions.FindResourceObjectByName<Sprite>("BaldiApple_0"),
+				GenericExtensions.FindResourceObjectByName<Sprite>("BaldiApple_1")
+			];
 			WeightedSoundObject[] emptyEatSoundArray = [];
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -1479,8 +1483,8 @@ namespace LotsOfItems.Plugin
 
 				var mainState = new Baldi_CustomAppleState(baldi,
 					nextState,
-					null,
-					eatTime: 0.75f);
+					baldiDefaultEatingSprites,
+					eatTime: 5.7f);
 				return mainState;
 			});
 

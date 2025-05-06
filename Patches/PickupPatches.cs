@@ -42,21 +42,21 @@ internal static class MakePickupBounce
         if (__state.item is not ITM_TeleportingYTP)
             return;
 
-        potentialSpots.Clear();
-        var currentRoom = Singleton<BaseGameManager>.Instance.Ec.CellFromPosition(__instance.transform.position).room;
-        foreach (var room in Singleton<BaseGameManager>.Instance.Ec.rooms)
+        var ec = Singleton<BaseGameManager>.Instance.Ec;
+        RoomController room;
+
+        potentialRooms.Clear();
+        var currentRoom = ec.CellFromPosition(__instance.transform.position).room;
+        for (int i = 0; i < ec.rooms.Count; i++)
         {
-            if (room == currentRoom)
+            room = ec.rooms[i];
+            if (room == currentRoom || room.itemSpawnPoints.Count == 0)
                 continue;
 
-            var spawns = room.itemSpawnPoints;
-            for (int i = 0; i < spawns.Count; i++)
-            {
-                potentialSpots.Add(spawns[i].position);
-            }
+            potentialRooms.Add(room);
         }
 
-        if (potentialSpots.Count == 0)
+        if (potentialRooms.Count == 0)
             return;
 
         var comp = __instance.GetComponent<TeleportingYTP_TpMarker>();
@@ -68,12 +68,15 @@ internal static class MakePickupBounce
             Object.Destroy(comp);
             return;
         }
-        __instance.transform.position = potentialSpots[Random.Range(0, potentialSpots.Count)];
+        room = potentialRooms[Random.Range(0, potentialRooms.Count)];
+        var position = room.itemSpawnPoints[Random.Range(0, room.itemSpawnPoints.Count)].position;
+        __instance.transform.SetParent(room.objectObject.transform);
+        __instance.transform.localPosition = new(position.x, __instance.transform.position.y, position.y);
         __instance.gameObject.SetActive(true);
         __instance.AssignItem(__state);
     }
 
-    readonly static List<Vector2> potentialSpots = [];
+    readonly static List<RoomController> potentialRooms = [];
 
 
     // ********** Something Pickup Patch ***********

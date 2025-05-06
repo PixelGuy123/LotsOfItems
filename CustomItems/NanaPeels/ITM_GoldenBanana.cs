@@ -13,7 +13,7 @@ namespace LotsOfItems.CustomItems.NanaPeels
         [SerializeField]
         private SpriteRenderer arrowRenderer;
         [SerializeField]
-        private Vector2 arrowOffset = new(2.5f, 0f);
+        private Vector2 arrowOffset = new(4f, -0.99f);
 
         Direction preSelectedDirection = Direction.North;
 
@@ -35,6 +35,8 @@ namespace LotsOfItems.CustomItems.NanaPeels
             endHeight = 1f;
             startHeight = 6f;
             speed = 60f;
+
+            entity.colliderRadius *= 0.925f;
 
             // ***** Arrow Thing *****
 

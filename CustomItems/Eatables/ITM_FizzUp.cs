@@ -1,3 +1,4 @@
+using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Eatables
@@ -13,6 +14,7 @@ namespace LotsOfItems.CustomItems.Eatables
             speedMultiplier = 1.5f;
             affectorTime = 15f;
             speedAffectorAffectsRunSpeed = true;
+            audSecondEatNoise = this.GetSoundNoSub("FizzUp_FizzingUp.wav", SoundType.Effect);
             speedAffectorAffectsWalkSpeed = true;
         }
 

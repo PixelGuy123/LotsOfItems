@@ -97,8 +97,6 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		triggered = true;
 		if (Random.value <= (steppedOn ? chanceToFailExplosionSteppedOn : chanceToFailExplosion)) // 15% failure chance
 		{
-			foreach (var ac in activityMods)
-				ac?.moveMods.Remove(moveMod);
 			StartCoroutine(FailExplosion());
 			return;
 		}
@@ -121,11 +119,12 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 	{
 		if (isArmed)
 			return true;
-		if (!triggered && other.isTrigger && other.GetComponent<Entity>())
+		if (!triggered && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 		{
-			StopCoroutine(detonationCor);
+			if (detonationCor != null)
+				StopCoroutine(detonationCor);
 			TryExplode(true);
-			return true;
+			return isArmed;
 		}
 		return false;
 	}

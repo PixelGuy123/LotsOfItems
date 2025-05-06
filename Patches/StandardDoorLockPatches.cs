@@ -12,7 +12,7 @@ internal static class DoorActualLockPatch
 	[HarmonyPatch(typeof(StandardDoor), "TempCloseIfLocked")]
 	[HarmonyPrefix]
 	static bool NoTempChangeWhenLocked(StandardDoor __instance) =>
-		!__instance.GetComponent<DoorActuallyBlockedMarker>() && !__instance.GetComponent<WeakLockMarker>();
+		!__instance.GetComponent<DoorActuallyBlockedMarker>();
 
 	internal static bool IsPrincipal(NPC npc) =>
 			npc.Character == Character.Principal; // To be patched later lol
@@ -25,7 +25,15 @@ internal static class DoorActualLockPatch
 
 		var weakMarker = __instance.GetComponent<WeakLockMarker>();
 		if (weakMarker && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
-			return IsPrincipal(npc);
+		{
+			if (IsPrincipal(npc))
+				return true;
+			if (!weakMarker.IncrementRattle())
+			{
+				npc.Navigator.Entity.Teleport(__instance.ec.CellFromPosition(npc.transform.position - npc.Navigator.Velocity).FloorWorldPosition);
+				return false;
+			}
+		}
 
 		return !__instance.GetComponent<DoorActuallyBlockedMarker>();
 	}
@@ -36,7 +44,7 @@ internal static class DoorActualLockPatch
 	static void ActualLock(Door __instance, ref bool ___lockBlocks)
 	{
 		if (!___lockBlocks)
-			___lockBlocks = __instance.GetComponent<DoorActuallyBlockedMarker>() || __instance.GetComponent<WeakLockMarker>();
+			___lockBlocks = __instance.GetComponent<DoorActuallyBlockedMarker>();
 	}
 
 	[HarmonyPrefix]

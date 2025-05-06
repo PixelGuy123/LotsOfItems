@@ -63,14 +63,15 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
             }
         }
 
-        public void IncrementRattle()
+        public bool IncrementRattle()
         {
             if (++rattleCount >= rattlesToUnlock)
             {
                 UnlockAndDestroy();
-                return;
+                return true;
             }
             door.audMan.PlaySingle(door.audDoorLocked);
+            return false;
         }
 
         private void UnlockAndDestroy()
