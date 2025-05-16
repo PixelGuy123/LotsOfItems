@@ -1,4 +1,5 @@
 using LotsOfItems.ItemPrefabStructures;
+using MTM101BaldAPI;
 using PixelInternalAPI.Components;
 using UnityEngine;
 
@@ -17,6 +18,10 @@ public class ITM_PortalPosterV2 : ITM_PortalPoster, IItemPrefab
                 mainTexture = texture
             }; // Clone Material
         }
+
+        windowObject.windowPre = Instantiate(windowObject.windowPre);
+        windowObject.windowPre.name = "PortalPosterV2Window"; // Get a custom instance of the prefab
+        windowObject.windowPre.gameObject.ConvertToPrefab(true);
     }
 
     public void SetupPrefabPost()

@@ -57,7 +57,7 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
             foreach (var col in door.colliders)
                 Physics.IgnoreCollision(col, entity.characterController, true);
 
-            while (!door.locked)
+            while (door.locked)
                 yield return null;
 
             foreach (var col in door.colliders)

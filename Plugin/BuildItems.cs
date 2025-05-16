@@ -823,13 +823,13 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("StudentLock")
 			.SetGeneratorCost(28)
-			.SetShopPrice(375)
+			.SetShopPrice(500)
 			.SetMeta(ItemFlags.None, [DOORLOCKVARTAG])
 			.SetEnum("StudentLock")
 			.SetItemComponent<ITM_StudentLock>()
 			.SetNameAndDescription("LtsOItems_StudentLock_Name", "LtsOItems_StudentLock_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 110, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 65, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
 			// ---- boots ----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -1067,13 +1067,13 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PortalPosterV2")
 			.SetGeneratorCost(50)
-			.SetShopPrice(900)
+			.SetShopPrice(925)
 			.SetMeta(ItemFlags.Persists, [PORTALVARTAG, CRIMINALPACK_CONTRABAND])
 			.SetEnum("PortalPosterV2")
 			.SetItemComponent<ITM_PortalPosterV2>(Items.PortalPoster)
 			.SetNameAndDescription("LtsOItems_PortalPosterV2_Name", "LtsOItems_PortalPosterV2_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(Items.PortalPoster, appearsInStore: true, goToFieldTrips: true, weight: 30, acceptableFloors: [F2, F3,
+			.StoreAsNormal(Items.PortalPoster, appearsInStore: true, goToFieldTrips: true, weight: 15, acceptableFloors: [F2, F3,
 			new(F4, LevelType.Laboratory),
 			new(F5, LevelType.Laboratory)
 			, END]);
