@@ -29,7 +29,7 @@ namespace LotsOfItems.CustomItems.YTPs
 
 			if (!SuitablePosition(pickup.transform.position))
 				pickup.transform.position = prevPos;
-			pickup.icon.UpdatePosition(ec.map);
+			pickup.icon?.UpdatePosition(ec.map);
 
 			ray.origin = pickup.transform.position;
 			ray.direction = dir;

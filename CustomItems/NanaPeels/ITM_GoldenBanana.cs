@@ -96,7 +96,7 @@ namespace LotsOfItems.CustomItems.NanaPeels
 
             preSelectedDirection = (Direction)i;
 
-            arrowRenderer.transform.localPosition = preSelectedDirection.ToVector3() * arrowOffset.x + Vector3.up * arrowOffset.y;
+            arrowRenderer.transform.position = entity.rendererBase.position + (preSelectedDirection.ToVector3() * arrowOffset.x + Vector3.up * arrowOffset.y);
             arrowRenderer.transform.rotation = Quaternion.Euler(90f, preSelectedDirection.ToDegrees(), 0f);
         }
 

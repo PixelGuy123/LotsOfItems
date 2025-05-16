@@ -74,6 +74,7 @@ internal static class MakePickupBounce
         __instance.transform.localPosition = new(position.x, __instance.transform.position.y, position.y);
         __instance.gameObject.SetActive(true);
         __instance.AssignItem(__state);
+        __instance.icon.UpdatePosition(ec.map);
     }
 
     readonly static List<RoomController> potentialRooms = [];

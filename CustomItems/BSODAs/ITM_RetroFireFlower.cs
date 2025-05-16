@@ -24,7 +24,7 @@ namespace LotsOfItems.CustomItems.BSODAs
         private Vector2 goombaDeathForce = new(8.5f, 2.5f);
 
         [SerializeField]
-        SpriteRenderer goombaDeathPrefab;
+        SpriteRenderer goombaDeathPrefab, respawnPrefab;
 
         [SerializeField]
         AnimationComponent animComp;
@@ -53,11 +53,19 @@ namespace LotsOfItems.CustomItems.BSODAs
             goombaDeathPrefab = ObjectCreationExtensions.CreateSpriteBillboard(null);
             goombaDeathPrefab.gameObject.ConvertToPrefab(true);
             goombaDeathPrefab.name = "DeathSprite";
+
             var rb = goombaDeathPrefab.gameObject.AddComponent<Rigidbody>();
             rb.useGravity = true;
+            rb.mass *= 1.75f;
 
             goombaDeathPrefab.gameObject.CreatePropagatedAudioManager(55f, 120f)
             .AddStartingAudiosToAudioManager(false, this.GetSoundNoSub("RetroFireFlower_Hit.wav", SoundType.Effect));
+
+            respawnPrefab = ObjectCreationExtensions.CreateSpriteBillboard(null);
+            respawnPrefab.gameObject.ConvertToPrefab(true);
+            respawnPrefab.name = "RespawnSprite";
+
+            breaksRuleWhenUsed = false;
         }
 
         public override bool Use(PlayerManager pm)
@@ -104,6 +112,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 
                 if (npc != null && npc.isActiveAndEnabled)
                 {
+                    pm?.RuleBreak("Bullying", 2.5f, 0.35f);
                     KillNpc(npc);
                     VirtualEnd();
                     return false; // Prevent default BSODA push
@@ -125,7 +134,7 @@ namespace LotsOfItems.CustomItems.BSODAs
             // --- Goomba Death Animation ---
             if (npc.spriteRenderer[0])
             {
-                var deathSpriteObject = Instantiate(goombaDeathPrefab, npc.spriteRenderer[0].transform.position, Quaternion.identity);
+                var deathSpriteObject = Instantiate(goombaDeathPrefab, npc.spriteRenderer[0].transform.position, npc.spriteRenderer[0].transform.rotation);
                 deathSpriteObject.sprite = npc.spriteRenderer[0].sprite;
                 deathSpriteObject.SetSpriteRotation(180f);
                 deathSpriteObject.transform.localScale = npc.spriteRenderer[0].transform.localScale; // Match scale
@@ -146,24 +155,13 @@ namespace LotsOfItems.CustomItems.BSODAs
             // --- Wait for Disable Duration ---
             yield return new WaitForSecondsEnvironmentTimescale(ec, duration);
 
-            // --- Flicker Phase ---
-            SpriteRenderer flickerRenderer = null;
+
             if (npc.spriteRenderer[0])
             {
-                flickerRenderer = Instantiate(npc.spriteRenderer[0], npc.spriteRenderer[0].transform.position + Vector3.up * 0.1f, npc.spriteRenderer[0].transform.rotation);
+                var flickerRenderer = Instantiate(respawnPrefab, npc.spriteRenderer[0].transform.position, npc.spriteRenderer[0].transform.rotation);
+                flickerRenderer.sprite = npc.spriteRenderer[0].sprite;
                 flickerRenderer.transform.localScale = npc.spriteRenderer[0].transform.localScale; // Match scale
-                flickerRenderer.enabled = true;
 
-                foreach (var comp in flickerRenderer.GetComponents<Component>()) // To avoid any other component (like AnimatedSpriteRotator) from getting in
-                {
-                    if (comp is Transform || comp is SpriteRenderer) continue;
-                    Destroy(comp);
-                }
-            }
-
-
-            if (flickerRenderer)
-            {
                 float flickerTimer = flickerDuration;
                 bool visible = true;
                 while (flickerTimer > 0f)

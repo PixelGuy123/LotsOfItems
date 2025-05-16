@@ -1,5 +1,5 @@
-﻿using LotsOfItems.ItemPrefabStructures;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.GrapplingHooks
@@ -27,7 +27,7 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 				ForceSnap();
 				for (int i = 0; i < pushedNpcs.Count; i++)
 				{
-					pushedNpcs[i]?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+					pushedNpcs[i]?.Navigator.Am.moveMods.Remove(pushModifier);
 					pushedNpcs.RemoveAt(i--);
 				}
 			}
@@ -37,10 +37,20 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 		public override void VirtualEnd()
 		{
 			base.VirtualEnd();
+			UngrabNPCs();
+		}
+
+		protected override void OnDespawn() =>
+			UngrabNPCs();
+
+
+		void UngrabNPCs()
+		{
 			for (int i = 0; i < pushedNpcs.Count; i++)
 			{
-				pushedNpcs[i]?.Navigator.Entity.ExternalActivity.moveMods.Remove(pushModifier);
+				pushedNpcs[i]?.Navigator.Am.moveMods.Remove(pushModifier);
 			}
+			pushedNpcs.Clear();
 		}
 
 		public override void VirtualUpdate()
@@ -63,7 +73,7 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 				// Try get component exists?? WOW
 				if (other.TryGetComponent(out NPC npc) && npc.Navigator.isActiveAndEnabled && !pushedNpcs.Contains(npc))
 				{
-					npc.Navigator.Entity.ExternalActivity.moveMods.Add(pushModifier);
+					npc.Navigator.Am.moveMods.Add(pushModifier);
 					pushedNpcs.Add(npc);
 					npc.Navigator.Entity.Teleport(transform.position);
 				}

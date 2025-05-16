@@ -1,5 +1,5 @@
-﻿using LotsOfItems.ItemPrefabStructures;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.GrapplingHooks;

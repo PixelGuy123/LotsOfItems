@@ -15,13 +15,16 @@ internal static class FieldTripRelatedPatch
     [HarmonyPrefix]
     static bool CheckForAdditionalBusPasses(FieldTripEntranceRoomFunction __instance, PlayerManager player, ref bool ___unlocked, AudioManager ___baldiAudioManager, SoundObject ___audNoPass)
     {
-        if (___unlocked)
+        if (___unlocked || player.itm.Has(Items.BusPass))
             return true;
 
         SoundObject speech = null;
 
         foreach (var pass in busPasses)
         {
+            if (!player.itm.Has(pass.Key))
+                continue;
+
             var result = pass.Value(player, false); // it is entrance (false)
 
             if (result.Key)
@@ -71,12 +74,13 @@ internal static class FieldTripRelatedPatch
 
     static IEnumerator AlternativeBusPassSequencer(StoreRoomFunction store)
     {
+        Items savedLastUsedPass = lastUsedPass; // To avoid changing the item mid-talk
         yield return null;
         while (store.johnnyAudioManager.QueuedAudioIsPlaying)
         {
             yield return null;
         }
-        if (!busPasses.TryGetValue(lastUsedPass, out var func)) // Try to get the last bus pass used to be sure it is a custom one
+        if (!busPasses.TryGetValue(savedLastUsedPass, out var func)) // Try to get the last bus pass used to be sure it is a custom one
         {
             Singleton<BaseGameManager>.Instance.CallSpecialManagerFunction(3, store.gameObject);
             store.johnnyAudioManager.QueueAudio(store.audTripReturn);

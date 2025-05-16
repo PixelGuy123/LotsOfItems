@@ -61,8 +61,17 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 		public override void VirtualEnd()
 		{
 			base.VirtualEnd();
+			UntouchNPC();
+		}
+
+		protected override void OnDespawn() =>
+			UntouchNPC();
+
+
+		void UntouchNPC()
+		{
 			if (touchedNPCs)
-				npc?.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+				npc?.Navigator.Am.moveMods.Remove(moveMod);
 		}
 
 		public override void EntityTriggerEnter(Collider other)
@@ -73,7 +82,7 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 				if (other.TryGetComponent(out NPC npc) && npc.Navigator.isActiveAndEnabled)
 				{
 					touchedNPCs = true;
-					npc.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
+					npc.Navigator.Am.moveMods.Add(moveMod);
 					pm.Am.moveMods.Remove(moveMod);
 					this.npc = npc;
 				}

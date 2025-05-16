@@ -6,7 +6,6 @@ namespace LotsOfItems.CustomItems
 {
 	public class ITM_GenericGrapplingHook : ITM_GrapplingHook, IEntityTrigger, IItemPrefab
 	{
-		bool ended = false;
 		public void SetupPrefab(ItemObject itm) =>
 			VirtualSetupPrefab(itm);
 		public void SetupPrefabPost() { }
@@ -15,10 +14,8 @@ namespace LotsOfItems.CustomItems
 		public virtual bool VirtualPreUpdate() => true;
 		public virtual bool VirtualPreLateUpdate() => true;
 		public virtual bool OnWallHitOverride(RaycastHit hit) => true;
-		public virtual void VirtualEnd() 
-		{
-			ended = true;
-		}
+		public virtual void VirtualEnd() { }
+		protected virtual void OnDespawn() { }
 
 		public void ForceStop()
 		{
@@ -28,7 +25,7 @@ namespace LotsOfItems.CustomItems
 			entity.SetFrozen(true);
 			force = initialForce;
 			initialDistance = (transform.position - pm.transform.position).magnitude;
-			
+
 		}
 		public void ForceStop(Vector3 crackRotation, bool motorAudio)
 		{
@@ -54,11 +51,9 @@ namespace LotsOfItems.CustomItems
 		public virtual void EntityTriggerStay(Collider other) { }
 		public virtual void EntityTriggerExit(Collider other) { }
 
-		void OnDestroy()
-		{
-			if (!ended)
-				VirtualEnd();
-		}
+		void OnDestroy() =>
+			OnDespawn();
+
 	}
 
 	[HarmonyPatch(typeof(ITM_GrapplingHook))]

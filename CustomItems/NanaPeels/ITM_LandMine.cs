@@ -65,6 +65,7 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 
 	private IEnumerator Explode()
 	{
+		hasExploded = true;
 		entity.SetFrozen(true); // yup, freezes on touch like that lol
 		audioManager.PlaySingle(activationSound);
 		while (audioManager.AnyAudioIsPlaying)
@@ -72,9 +73,8 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 
 		if (canBeBully)
 			pm?.RuleBreak("Bullying", 1f);
-		hasExploded = true;
-		audioManager.PlaySingle(explosionSound);
 
+		audioManager.PlaySingle(explosionSound);
 		renderer.sprite = explosionSprite;
 
 

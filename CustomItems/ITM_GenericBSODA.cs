@@ -15,6 +15,9 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 	[SerializeField]
 	protected float AddendMultiplier = 1f;
 
+	[SerializeField]
+	protected bool breaksRuleWhenUsed = true;
+
 	Quaternion rotation;
 	internal void SetOriginalRotation(Quaternion rot)
 	{
@@ -25,10 +28,19 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 
 	public override bool Use(PlayerManager pm)
 	{
-		var val = base.Use(pm);
+		this.pm = pm;
+		ec = pm.ec;
+		transform.position = pm.transform.position;
+		transform.forward = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+		entity.Initialize(ec, transform.position);
+		spriteRenderer.SetSpriteRotation(Random.Range(0f, 360f));
+		Singleton<CoreGameManager>.Instance.audMan.PlaySingle(sound);
+		if (breaksRuleWhenUsed)
+			pm.RuleBreak("Drinking", 0.8f, 0.25f);
+		moveMod.priority = 1;
 		if (hasOriginalRotationSet)
 			transform.rotation = rotation;
-		return val;
+		return true;
 	}
 
 	public virtual void VirtualUpdate()
@@ -103,7 +115,7 @@ static class GenericBSODAPatches
 			bool flag = generic.VirtualEntityTriggerExit(other);
 			if (!flag && other.CompareTag("Player"))
 				___launching = false;
-				
+
 			return flag;
 		}
 		return true;

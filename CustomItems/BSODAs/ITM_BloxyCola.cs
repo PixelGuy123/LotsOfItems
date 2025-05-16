@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
+using MTM101BaldAPI;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using MTM101BaldAPI;
-using LotsOfItems.ItemPrefabStructures;
-using MTM101BaldAPI.Registers;
-using LotsOfItems.Plugin;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 public class ITM_BloxyCola : ITM_GenericBSODA
@@ -43,7 +43,7 @@ public class ITM_BloxyCola : ITM_GenericBSODA
 
 		stainEffectorPre = new GameObject("StainEffector").AddComponent<StainEffector>();
 		stainEffectorPre.gameObject.ConvertToPrefab(true);
-		stainEffectorPre.entity = stainEffectorPre.gameObject.CreateEntity(2f, 2f);
+		stainEffectorPre.entity = stainEffectorPre.gameObject.CreateEntity(4.5f, 2f);
 		stainEffectorPre.entity.collisionLayerMask = ((ITM_NanaPeel)ItemMetaStorage.Instance.FindByEnum(Items.NanaPeel).value.item).entity.collisionLayerMask;
 
 		stainEffectorPre.audMan = stainEffectorPre.gameObject.CreatePropagatedAudioManager(65f, 75f)
@@ -91,7 +91,7 @@ public class StainController : MonoBehaviour
 
 	public void Initialize(ITM_BloxyCola soda) =>
 		owner = soda;
-	
+
 
 	public void CreateStain(Cell cell)
 	{
@@ -130,7 +130,7 @@ public class Stain : MonoBehaviour
 		if (spawnDelay > 0f)
 			spawnDelay -= Time.deltaTime;
 	}
-	
+
 
 	void OnTriggerEnter(Collider other)
 	{

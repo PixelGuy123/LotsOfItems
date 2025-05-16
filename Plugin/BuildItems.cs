@@ -820,6 +820,17 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 120, acceptableFloors: [F1, F2, F3, F4, F5, END]); // More common than Universal Lock
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("StudentLock")
+			.SetGeneratorCost(28)
+			.SetShopPrice(375)
+			.SetMeta(ItemFlags.None, [DOORLOCKVARTAG])
+			.SetEnum("StudentLock")
+			.SetItemComponent<ITM_StudentLock>()
+			.SetNameAndDescription("LtsOItems_StudentLock_Name", "LtsOItems_StudentLock_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.DoorLock, appearsInStore: true, weight: 110, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
 			// ---- boots ----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ShinyCleanGloves")
@@ -1038,7 +1049,7 @@ namespace LotsOfItems.Plugin
 			hookRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "CheapGrapplingHook_world.png"), Vector2.one * 0.5f, hookRenderer.sprite.pixelsPerUnit);
 			hook.uses = 0;
 
-			// ----- portal poster variant -----
+			// ----- Portal Poster variant -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PortalDoor")
 			.SetGeneratorCost(45)
@@ -1049,6 +1060,20 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_PortalDoor_Name", "LtsOItems_PortalDoor_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.PortalPoster, appearsInStore: true, weight: 35, acceptableFloors: [F2, F3,
+			new(F4, LevelType.Laboratory),
+			new(F5, LevelType.Laboratory)
+			, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PortalPosterV2")
+			.SetGeneratorCost(50)
+			.SetShopPrice(900)
+			.SetMeta(ItemFlags.Persists, [PORTALVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("PortalPosterV2")
+			.SetItemComponent<ITM_PortalPosterV2>(Items.PortalPoster)
+			.SetNameAndDescription("LtsOItems_PortalPosterV2_Name", "LtsOItems_PortalPosterV2_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.PortalPoster, appearsInStore: true, goToFieldTrips: true, weight: 30, acceptableFloors: [F2, F3,
 			new(F4, LevelType.Laboratory),
 			new(F5, LevelType.Laboratory)
 			, END]);
@@ -1383,8 +1408,13 @@ namespace LotsOfItems.Plugin
 
 
 			SoundObject ooohBaldi = GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"),
-			scissorsNoise = GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"),
-			vfxSufferHair = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green);
+
+			baldiScissorsNoise = Object.Instantiate(GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"));
+			baldiScissorsNoise.name = "BaldiScissorsNoise";
+			baldiScissorsNoise.subtitle = true;
+			baldiScissorsNoise.soundKey = "LtsOItems_Vfx_BAL_HairCut";
+
+			var vfxSufferHair = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("HairSpray")
@@ -1402,7 +1432,7 @@ namespace LotsOfItems.Plugin
 					baldi.behaviorStateMachine.CurrentState,
 					baldiHaired,
 					eatTime: 65f,
-					eatSounds: [new() { selection = scissorsNoise }],
+					eatSounds: [new() { selection = baldiScissorsNoise }],
 					thanksAudio: ooohBaldi);
 
 				var mainState = new Baldi_CustomAppleState(baldi,
