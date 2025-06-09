@@ -8,6 +8,7 @@ using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
+
 public class ITM_BloxyCola : ITM_GenericBSODA
 {
 	private StainController stainController;
@@ -166,6 +167,7 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 		this.controller = controller;
 		targetEntity = target;
 		targetEntity.ExternalActivity.moveMods.Add(slipMod);
+		entity.ExternalActivity.ignoreFrictionForce = true;
 		speed += targetEntity.Velocity.magnitude * 22.5f;
 		if (speed > speedLimit)
 			speed = speedLimit;
@@ -177,6 +179,8 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 			slipDirection = Vector3.Reflect(slipDirection, hit.normal);
 			audMan.PlaySingle(audHitWall);
 		};
+
+		entity.IgnoreEntity(target, true); // Avoid collision with whatever is slipping above
 
 		audMan.PlaySingle(audStartSlip);
 	}

@@ -20,7 +20,7 @@ namespace LotsOfItems.CustomItems.Nametags
 
         public void SetupPrefab(ItemObject itm)
         {
-            gaugeSprite = itm.itemSpriteLarge;
+            gaugeSprite = itm.itemSpriteSmall;
 
             ignoreRaycastCollider = gameObject.AddComponent<CapsuleCollider>();
             ignoreRaycastCollider.isTrigger = true;

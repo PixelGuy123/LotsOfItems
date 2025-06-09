@@ -50,7 +50,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
             gravity = -2.5f;
             throwSpeed *= 1.5f;
 
-            fogParticlesPre = Extensions.GetRawChalkParticleGenerator();
+            fogParticlesPre = ParticleExtensions.GetRawChalkParticleGenerator();
             var render = fogParticlesPre.particles.GetComponent<ParticleSystemRenderer>();
 
             explodeParticles = renderer.gameObject.AddComponent<ParticleSystem>();
@@ -115,7 +115,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
             audioManager.FlushQueue(true);
             audioManager.QueueAudio(audExplode);
 
-            Extensions.Explode(
+            ItemExtensions.Explode(
                 this,
                 explosionDistance,
                 collisionLayer,

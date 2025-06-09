@@ -10,7 +10,7 @@ namespace LotsOfItems.CustomItems.YTPs
         public void SetupPrefab(ItemObject itm) { }
 
         public void SetupPrefabPost() =>
-            potentialItems = Extensions.GetAllShoppingItems();
+            potentialItems = ItemObjectExtensions.GetAllShoppingItems();
 
         public override bool Use(PlayerManager pm)
         {

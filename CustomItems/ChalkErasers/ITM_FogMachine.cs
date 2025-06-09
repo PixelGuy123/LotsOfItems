@@ -43,7 +43,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
 			//renderer.transform.localScale = Vector3.one * 2f;
 			renderer.name = "FogMachineSprite";
 
-			fogParticlesPre = Extensions.GetRawChalkParticleGenerator();
+			fogParticlesPre = ParticleExtensions.GetRawChalkParticleGenerator();
 		}
 		public void SetupPrefabPost() { }
 

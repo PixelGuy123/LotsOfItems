@@ -1,8 +1,8 @@
-﻿using LotsOfItems.ItemPrefabStructures;
+﻿using System.Collections;
+using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems
@@ -12,7 +12,7 @@ namespace LotsOfItems.CustomItems
 		public void SetupPrefab(ItemObject itm)
 		{
 			audEat = GenericExtensions.FindResourceObjectByName<SoundObject>("ChipCrunch");
-			gaugeSprite = itm.itemSpriteLarge;
+			gaugeSprite = itm.itemSpriteSmall;
 			VirtualSetupPrefab(itm);
 		}
 		public void SetupPrefabPost() { }

@@ -78,7 +78,7 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 		renderer.sprite = explosionSprite;
 
 
-		Extensions.Explode(this, explosionDistance, collisionLayer, explosionForce, explosionAcceleration);
+		ItemExtensions.Explode(this, explosionDistance, collisionLayer, explosionForce, explosionAcceleration);
 
 		while (audioManager.AnyAudioIsPlaying)
 			yield return null;

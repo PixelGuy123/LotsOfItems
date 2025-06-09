@@ -9,7 +9,7 @@ namespace LotsOfItems.CustomItems.Nametags
 	{
 		public void SetupPrefab(ItemObject itm) =>
 		   //NametagAnimationOverrider.InstallOverrider(this, this.GetSpriteSheet("EnergyTag_world.png", 4, 2, 25f));
-		   gaugeSprite = itm.itemSpriteLarge;
+		   gaugeSprite = itm.itemSpriteSmall;
 
 
 		public void SetupPrefabPost() { }

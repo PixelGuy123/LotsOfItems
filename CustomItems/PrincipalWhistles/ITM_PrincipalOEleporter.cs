@@ -1,7 +1,7 @@
-﻿using LotsOfItems.ItemPrefabStructures;
-using PixelInternalAPI.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using LotsOfItems.ItemPrefabStructures;
+using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.PrincipalWhistles
@@ -69,6 +69,9 @@ namespace LotsOfItems.CustomItems.PrincipalWhistles
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audWhistle);
 			if (worked)
 				StartCoroutine(WaitForAudioFinish());
+			else
+				Destroy(gameObject);
+
 			return true;
 		}
 

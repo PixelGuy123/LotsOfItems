@@ -645,6 +645,7 @@ namespace LotsOfItems.Plugin
 			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 45, acceptableFloors: [F2, F3, END]);
 
 
+
 			// ------------ QUARTERS -------------
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -892,6 +893,17 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 90, acceptableFloors: [F1, F2, F3, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("StompyBoots")
+			.SetGeneratorCost(21)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists, [BOOTSVARTAG])
+			.SetEnum("StompyBoots")
+			.SetItemComponent<ITM_StompyBoots>(Items.Boots)
+			.SetNameAndDescription("LtsOItems_StompyBoots_Name", "LtsOItems_StompyBoots_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 85, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
 			// ---- Alarm Clock variant ----
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
@@ -1049,7 +1061,7 @@ namespace LotsOfItems.Plugin
 			hookRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "CheapGrapplingHook_world.png"), Vector2.one * 0.5f, hookRenderer.sprite.pixelsPerUnit);
 			hook.uses = 0;
 
-			// ----- Portal Poster variant -----
+			// ----- portal poster variant -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("PortalDoor")
 			.SetGeneratorCost(45)
@@ -1104,7 +1116,7 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup<ITM_RootBeer>(out var rootBeer)
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 85, acceptableFloors: [F2, F3, F4, END]);
 
-			rootBeer.bsodaPrefab = GetVariantInstance<TemporaryBsoda>(Items.Bsoda);
+			rootBeer.bsodaPrefab = ItemExtensions.GetVariantInstance<TemporaryBsoda>(Items.Bsoda);
 			rootBeer.bsodaPrefab.time = 7.5f;
 			rootBeer.bsodaPrefab.speed *= 1.2f;
 			rootBeer.bsodaPrefab.spriteRenderer.sprite = dustCloudSprite;
@@ -1227,6 +1239,23 @@ namespace LotsOfItems.Plugin
 			normalBsoda.DestroyParticleIfItHasOne();
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("DietDietDietDietSoda")
+			.SetGeneratorCost(27)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [DRINK_TAG, SODAVARTAG])
+			.SetEnum("DietDietDietDietBSODA")
+			.SetItemComponent<ITM_DietDietDietDietBSODA>()
+			.SetNameAndDescription("LtsOItems_DietDietDietDietSoda_Name", "LtsOItems_DietDietDietDietSoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.DietBsoda, appearsInStore: true, weight: 100, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			normalBsoda.speed = 1f;
+			normalBsoda.time = 10f;
+
+			normalBsoda.spriteRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "DietDietDietDiet_Soda.png"), Vector2.one * 0.5f, normalBsoda.spriteRenderer.sprite.pixelsPerUnit);
+			normalBsoda.DestroyParticleIfItHasOne();
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("FroginaCan")
 			.SetGeneratorCost(28)
 			.SetShopPrice(900)
@@ -1250,6 +1279,7 @@ namespace LotsOfItems.Plugin
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BloxyCola")
+
 			.SetGeneratorCost(32)
 			.SetShopPrice(725)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [DRINK_TAG, SODAVARTAG])
@@ -1324,9 +1354,8 @@ namespace LotsOfItems.Plugin
 			prevRgb = rgboda.item as ITM_RGBODA;
 			prevRgb.spriteRenderer.sprite = prevRgb.GetSprite("RGBSoda_spray_green.png", prevRgb.spriteRenderer.sprite.pixelsPerUnit);
 
-			prevRgb.foamPrefab = GetVariantInstance<RGBODA_Foam>(Items.Bsoda);
+			prevRgb.foamPrefab = ItemExtensions.GetVariantInstance<ITM_BSODA>(Items.Bsoda);
 			prevRgb.foamPrefab.time = 5f;
-			prevRgb.foamPrefab.speed *= 1.25f;
 			prevRgb.foamPrefab.spriteRenderer.sprite = dustCloudSprite;
 			prevRgb.foamPrefab.spriteRenderer.color = Color.green;
 			prevRgb.foamPrefab.DestroyParticleIfItHasOne();
@@ -1383,6 +1412,40 @@ namespace LotsOfItems.Plugin
 			new(F5, LevelType.Maintenance),
 			END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("LoudSpeaker")
+			.SetGeneratorCost(36)
+			.SetShopPrice(850)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG, SODAVARTAG])
+			.SetEnum("LoudSpeaker")
+			.SetItemComponent<ITM_LoudSpeaker>()
+			.SetNameAndDescription("LtsOItems_LoudSpeaker_Name", "LtsOItems_LoudSpeaker_Desc")
+			.BuildAndSetup(out ITM_LoudSpeaker loudSpeaker)
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 45, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			loudSpeaker.foamPrefab = ItemExtensions.GetVariantInstance<ITM_BSODA>(Items.Bsoda);
+			loudSpeaker.foamPrefab.time = 15f;
+
+			var speaker_noiseSprites = loudSpeaker.GetSpriteSheet("LoudSpeaker_Noise.png", 3, 3, 25f).Take(8);
+			loudSpeaker.foamPrefab.spriteRenderer.sprite = speaker_noiseSprites[0];
+			loudSpeaker.foamPrefab.spriteRenderer.CreateAnimatedSpriteRotator(
+				GenericExtensions.CreateRotationMap(8, speaker_noiseSprites)
+			);
+
+			loudSpeaker.foamPrefab.DestroyParticleIfItHasOne();
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("RSODA")
+			.SetGeneratorCost(35)
+			.SetShopPrice(75)
+			.SetMeta(ItemFlags.None, [SODAVARTAG, DRINK_TAG])
+			.SetEnum("RSODA")
+			.SetItemComponent<ITM_RSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_RSODA_Name", "LtsOItems_RSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 75, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+
 			// ------ Apple Variants ------
 
 			Sprite[] baldiDefaultEatingSprites = [
@@ -1406,15 +1469,13 @@ namespace LotsOfItems.Plugin
 			baldiEatingHair = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "HairSpray_BaldiEatHair.png"),
 			baldiGreenAppleEat = TextureExtensions.LoadSpriteSheet(2, 1, 32f, LotOfItemsPlugin.ModPath, "GreenApple_BaldiEat.png");
 
-
 			SoundObject ooohBaldi = GenericExtensions.FindResourceObjectByName<SoundObject>("BAL_Ohh"),
+			vfxSufferHair = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green);
 
-			baldiScissorsNoise = Object.Instantiate(GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"));
+			var baldiScissorsNoise = Object.Instantiate(GenericExtensions.FindResourceObjectByName<SoundObject>("Scissors"));
 			baldiScissorsNoise.name = "BaldiScissorsNoise";
 			baldiScissorsNoise.subtitle = true;
 			baldiScissorsNoise.soundKey = "LtsOItems_Vfx_BAL_HairCut";
-
-			var vfxSufferHair = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "HairSpray_BAL_spray.wav")), "LtsOItems_Vfx_BAL_Hair", SoundType.Voice, Color.green);
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("HairSpray")
@@ -1641,42 +1702,9 @@ namespace LotsOfItems.Plugin
 
 		static ItemBuilder SetItemComponent<T>(this ItemBuilder bld, Items item) where T : Item
 		{
-			bld.SetItemComponent(GetVariantInstance<T>(item)); // To make sure it doesn't create a new one lol
+			bld.SetItemComponent(ItemExtensions.GetVariantInstance<T>(item)); // To make sure it doesn't create a new one lol
 
 			return bld;
-		}
-
-		static LevelType GetCustomLevelType(string lvlTypeName) // For the future, when mods start adding their LevelTypes, so I have this one function that should make it possible to support
-																// all of them, even if they are not in the base game
-		{
-			try
-			{
-				return EnumExtensions.GetFromExtendedName<LevelType>(lvlTypeName);
-			}
-			catch
-			{
-				// If it doesn't exist, just return the default one
-				return LevelType.Schoolhouse;
-			}
-		}
-
-		static T GetVariantInstance<T>(Items item) where T : Item
-		{
-			var ogItem = ItemMetaStorage.Instance.FindByEnum(item).value.item;
-
-			ogItem.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
-			var itm = Object.Instantiate(ogItem);
-			itm.name = typeof(T).Name;
-
-			ogItem.gameObject.SetActive(true); // Forgot about this lol
-
-			var newItm = itm.gameObject.AddComponent<T>()
-				.GetACopyFromFields(itm);
-			Object.DestroyImmediate(itm); // immediately to be sure it is not inherited later
-
-			newItm.gameObject.ConvertToPrefab(true);
-
-			return newItm;
 		}
 	}
 

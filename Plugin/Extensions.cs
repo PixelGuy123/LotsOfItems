@@ -10,7 +10,8 @@ using UnityEngine;
 
 namespace LotsOfItems.Plugin
 {
-    public static class Extensions
+    // General MonoBehaviour extensions
+    public static class MonoBehaviourExtensions
     {
         static bool IsInheritFromType(Type t1, Type t2) => t1.IsSubclassOf(t2) || t1 == t2;
 
@@ -71,6 +72,11 @@ namespace LotsOfItems.Plugin
         }
         public static ClickableLink CreateClickableLink<T>(this MonoBehaviour clickable) =>
             clickable.CreateClickableLink<T>(Vector3.zero);
+    }
+
+    // Collider/ClickableLink extensions
+    public static class ColliderExtensions
+    {
         public static ClickableLink CopyColliderAttributes(this ClickableLink link, CapsuleCollider myCol)
         {
             var col = link.gameObject.AddComponent<CapsuleCollider>();
@@ -80,7 +86,11 @@ namespace LotsOfItems.Plugin
             col.radius = myCol.radius;
             return link;
         }
+    }
 
+    // ItemObject/Shopping extensions
+    public static class ItemObjectExtensions
+    {
         public static List<ItemObject> GetAllShoppingItems()
         {
             List<ItemObject> itmObjs = [];
@@ -95,7 +105,11 @@ namespace LotsOfItems.Plugin
             }
             return itmObjs;
         }
+    }
 
+    // Texture2D extensions
+    public static class Texture2DExtensions
+    {
         public static Texture2D Mask(this Texture2D original, Texture2D texRef) =>
             original.Mask(texRef.GetPixels());
         public static Texture2D Mask(this Texture2D original, Color[] colorRef)
@@ -171,7 +185,12 @@ namespace LotsOfItems.Plugin
 
             return newTex;
         }
+    }
 
+    // Item/Explosion extensions
+    public static class ItemExtensions
+    {
+        // For Items, in World space
         static Ray ray = new();
 
         public static void Explode(
@@ -224,6 +243,57 @@ namespace LotsOfItems.Plugin
             }
         }
 
+        // Generic Extensions
+
+        public static T GetVariantInstance<T>(Items item) where T : Item
+        {
+            var ogItem = ItemMetaStorage.Instance.FindByEnum(item).value.item;
+
+            ogItem.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
+            var itm = UnityEngine.Object.Instantiate(ogItem);
+            itm.name = typeof(T).Name;
+
+            ogItem.gameObject.SetActive(true); // Forgot about this lol
+
+            var newItm = itm.gameObject.AddComponent<T>()
+                .GetACopyFromFields(itm);
+            UnityEngine.Object.DestroyImmediate(itm); // immediately to be sure it is not inherited later
+
+            newItm.gameObject.ConvertToPrefab(true);
+
+            return newItm;
+        }
+
+        // ITM_BSODA Extensions
+        public static void DestroyParticleIfItHasOne(this ITM_BSODA bsoda)
+        {
+            var parts = bsoda.GetComponentInChildren<ParticleSystem>(true);
+            if (parts)
+            {
+                if (parts.GetComponent<ITM_BSODA>()) // Immediate destruction to avoid stuff like ReusableInstance not helping out
+                    UnityEngine.Object.DestroyImmediate(parts);
+                else
+                    UnityEngine.Object.DestroyImmediate(parts.gameObject);
+            }
+        }
+
+        public static void IndividuallySpawn(this ITM_BSODA soda, EnvironmentController ec, Vector3 position, Vector3 direction, bool randomizeRotation)
+        {
+            soda.ec = ec;
+            soda.transform.position = position;
+            soda.transform.forward = direction;
+            soda.entity.Initialize(ec, position);
+            if (randomizeRotation)
+                soda.spriteRenderer.SetSpriteRotation(UnityEngine.Random.Range(0f, 360f));
+            soda.moveMod.priority = 1;
+        }
+        public static void IndividuallySpawn(this ITM_BSODA soda, EnvironmentController ec, Vector3 position, Vector3 direction) =>
+            soda.IndividuallySpawn(ec, position, direction, true);
+    }
+
+    // Particle extensions
+    public static class ParticleExtensions
+    {
         public static CoverCloud GetRawChalkParticleGenerator(bool visualOnly = false)
         {
             var chalk =
@@ -272,8 +342,11 @@ namespace LotsOfItems.Plugin
             renderer.material = new(renderer.material) { name = $"{particle.name}_Mat" };
             return particle.particles;
         }
+    }
 
-        // Cell Extensions
+    // Cell/Level extensions
+    public static class LevelExtensions
+    {
         public static void UncoverSoftWall(this Cell cell, Direction dir)
         {
             CellCoverage mask = (CellCoverage)(1 << (int)dir);
@@ -282,7 +355,6 @@ namespace LotsOfItems.Plugin
                 cell.softCoverage &= ~mask;
             }
         }
-
         public static void BlockAll(this Cell cell, EnvironmentController ec, bool block)
         {
             for (int i = 0; i < Directions.Count; i++)
@@ -296,19 +368,38 @@ namespace LotsOfItems.Plugin
                 }
             }
         }
-
-        public static void DestroyParticleIfItHasOne(this ITM_BSODA bsoda)
+        public static LevelType GetCustomLevelType(string lvlTypeName) // For the future, when mods start adding their LevelTypes, so I have this one function that should make it possible to support
+                                                                       // all of them, even if they are not in the base game
         {
-            var parts = bsoda.GetComponentInChildren<ParticleSystem>(true);
-            if (parts)
+            try
             {
-                if (parts.GetComponent<ITM_BSODA>()) // Immediate destruction to avoid stuff like ReusableInstance not helping out
-                    UnityEngine.Object.DestroyImmediate(parts);
-                else
-                    UnityEngine.Object.DestroyImmediate(parts.gameObject);
+                return EnumExtensions.GetFromExtendedName<LevelType>(lvlTypeName);
+            }
+            catch
+            {
+                // If it doesn't exist, just return the default one
+                return LevelType.Schoolhouse;
             }
         }
+    }
 
+    // Array extensions
+    public static class ArrayExtensions
+    {
+        public static T[] Take<T>(this T[] ar, int count) =>
+            ar.Take(0, count);
+        public static T[] Take<T>(this T[] ar, int index, int count)
+        {
+            var newAr = new T[count];
+            for (int z = 0; z < count; z++)
+                newAr[z] = ar[index++];
+            return newAr;
+        }
+    }
+
+    // SpriteRenderer extensions
+    public static class SpriteRendererExtensions
+    {
         static MaterialPropertyBlock _propertyBlock = new();
         public static void RotateBy(this SpriteRenderer renderer, float angle)
         {
@@ -318,6 +409,7 @@ namespace LotsOfItems.Plugin
         }
     }
 
+    // Reusable item extensions
     public static class ReusableExtensions
     {
         public static ItemObject[] CreateNewReusableInstances<T>(

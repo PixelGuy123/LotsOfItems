@@ -1,11 +1,12 @@
 ﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
 using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
+
 public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 {
 	readonly EntityOverrider overrider = new();
@@ -32,7 +33,7 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 		audFellFloor = GenericExtensions.FindResourceObjectByName<SoundObject>("Bang");
 		audStomp = GenericExtensions.FindResourceObjectByName<SoundObject>("CartoonKnock_Trimmed");
 
-		gaugeSprite = itm.itemSpriteLarge;
+		gaugeSprite = itm.itemSpriteSmall;
 	}
 	public void SetupPrefabPost() { }
 
@@ -81,8 +82,8 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 
 		canStomp = false;
 		//animator.Play("Up", -1, 0f); (0.10.x) doesn't use screen effects anymore
-		
-		
+
+
 		Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audFellFloor);
 		overrider.SetHeight(1.5f);
 		pm.Am.moveMods.Add(moveMod);

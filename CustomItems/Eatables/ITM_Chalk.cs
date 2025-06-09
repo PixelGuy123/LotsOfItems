@@ -16,7 +16,7 @@ namespace LotsOfItems.CustomItems.Eatables
 		protected override void VirtualSetupPrefab(ItemObject itemObject)
 		{
 			base.VirtualSetupPrefab(itemObject);
-			blocker = Plugin.Extensions.GetRawChalkParticleGenerator(true);
+			blocker = Plugin.ParticleExtensions.GetRawChalkParticleGenerator(true);
 		}
 		public override bool Use(PlayerManager pm)
 		{

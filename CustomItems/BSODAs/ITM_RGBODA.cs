@@ -1,4 +1,5 @@
 using System.Collections;
+using LotsOfItems.Components;
 using LotsOfItems.Plugin;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace LotsOfItems.CustomItems.BSODAs
     public class ITM_RGBODA : ITM_GenericBSODA
     {
         [SerializeField]
-        internal RGBODA_Foam foamPrefab;
+        internal ITM_BSODA foamPrefab;
 
         [SerializeField]
         internal ushort RGBsodaVariant = 0; // 0 = blue, 1 = green, 2 = red
@@ -71,22 +72,9 @@ namespace LotsOfItems.CustomItems.BSODAs
 
             // Instantiate and configure projectile
             var projectile = Instantiate(foamPrefab, transform.position, Quaternion.identity);
-            projectile.Spawn(pm.ec, transform.position, transform.forward);
+            projectile.IndividuallySpawn(pm.ec, transform.position, transform.forward);
             projectile.transform.rotation = Quaternion.LookRotation(rotation * -transform.forward);
         }
     }
 
-    public class RGBODA_Foam : ITM_BSODA
-    {
-        public void Spawn(EnvironmentController ec, Vector3 position, Vector3 rotation)
-        {
-            this.ec = ec;
-            transform.position = position;
-            transform.forward = rotation;
-            entity.Initialize(ec, position);
-            spriteRenderer.SetSpriteRotation(Random.Range(0f, 360f));
-            moveMod.priority = 1;
-        }
-
-    }
 }

@@ -8,6 +8,7 @@ using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Boots;
+
 public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 {
 	[SerializeField]
@@ -37,7 +38,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 		setTime = 12.5f;
 		audWalk = GenericExtensions.FindResourceObjectByName<SoundObject>("CartoonKnock_Trimmed");
 		//GetComponentInChildren<Image>().sprite = this.GetSprite("BalletShoes_canvas.png", 1f); Unused since gauge exists
-		gaugeSprite = itm.itemSpriteLarge;
+		gaugeSprite = itm.itemSpriteSmall;
 	}
 	public void SetupPrefabPost() { }
 
@@ -87,7 +88,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 				distanceAccumulated = 0f;
 
 				// --- SHAKING/TRIPPING EFFECT WHEN RUNNING ---
-				if (pm.plm.running && pm.plm.stamina > 0f)
+				if (pm.plm.running && pm.plm.stamina > 0f & pm.plm.Entity.Grounded)
 				{
 					// Apply a random sideways force to the player
 					float shakeForce = Random.value * this.shakeForce;
@@ -96,7 +97,7 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 
 					// --- NPC PUSH (DUST PAN EFFECT) ---
 					transform.position = pm.transform.position;
-					Extensions.Explode(
+					ItemExtensions.Explode(
 							this,
 							npcPushRadius,
 							collisionLayer,

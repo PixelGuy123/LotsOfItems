@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
+
 public class ITM_ShinyCleanGloves : ITM_Boots, IItemPrefab
 {
 	public void SetupPrefab(ItemObject itm) =>
 		// GetComponentInChildren<Image>().sprite = this.GetSprite("ShinyCleanGloves_canvas.png", 1f);
-		gaugeSprite = itm.itemSpriteLarge;
+		gaugeSprite = itm.itemSpriteSmall;
 
 
 	public void SetupPrefabPost() { }
