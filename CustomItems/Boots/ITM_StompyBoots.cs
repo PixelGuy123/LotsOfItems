@@ -8,7 +8,7 @@ namespace LotsOfItems.CustomItems.Boots;
 public class ITM_StompyBoots : ITM_Boots, IItemPrefab
 {
     [SerializeField]
-    internal float stompDistance = 3.5f, stompPushRadius = 16f, stompPushForce = 35f;
+    internal float stompDistance = 8f, stompPushRadius = 16f, stompPushForce = 35f;
 
     [SerializeField]
     internal SoundObject[] audStomps;
@@ -27,6 +27,7 @@ public class ITM_StompyBoots : ITM_Boots, IItemPrefab
             this.GetSoundNoSub("StompyBoots_Stomp_1.wav", SoundType.Effect)
             ];
         gaugeSprite = itm.itemSpriteSmall;
+        setTime = 15f;
     }
 
     public void SetupPrefabPost() { }
