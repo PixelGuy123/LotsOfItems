@@ -44,7 +44,7 @@ public class ITM_BloxyCola : ITM_GenericBSODA
 
 		stainEffectorPre = new GameObject("StainEffector").AddComponent<StainEffector>();
 		stainEffectorPre.gameObject.ConvertToPrefab(true);
-		stainEffectorPre.entity = stainEffectorPre.gameObject.CreateEntity(4.5f, 2f);
+		stainEffectorPre.entity = stainEffectorPre.gameObject.CreateEntity(1.25f, 2f);
 		stainEffectorPre.entity.collisionLayerMask = ((ITM_NanaPeel)ItemMetaStorage.Instance.FindByEnum(Items.NanaPeel).value.item).entity.collisionLayerMask;
 
 		stainEffectorPre.audMan = stainEffectorPre.gameObject.CreatePropagatedAudioManager(65f, 75f)
@@ -166,21 +166,24 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 	{
 		this.controller = controller;
 		targetEntity = target;
+		targetEntity.ExternalActivity.ignoreFrictionForce = true;
 		targetEntity.ExternalActivity.moveMods.Add(slipMod);
-		entity.ExternalActivity.ignoreFrictionForce = true;
+
 		speed += targetEntity.Velocity.magnitude * 22.5f;
 		if (speed > speedLimit)
 			speed = speedLimit;
+
 		slipDirection = targetEntity.Velocity.normalized;
 
 		entity.Initialize(controller.owner.ec, target.transform.position);
 		entity.OnEntityMoveInitialCollision += (hit) =>
 		{
-			slipDirection = Vector3.Reflect(slipDirection, hit.normal);
-			audMan.PlaySingle(audHitWall);
+			if (hit.transform != targetEntity.transform)
+			{
+				slipDirection = Vector3.Reflect(slipDirection, hit.normal);
+				audMan.PlaySingle(audHitWall);
+			}
 		};
-
-		entity.IgnoreEntity(target, true); // Avoid collision with whatever is slipping above
 
 		audMan.PlaySingle(audStartSlip);
 	}

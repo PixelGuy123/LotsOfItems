@@ -4,6 +4,7 @@ using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems;
+
 public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 {
 	protected int CurrentTimeSet { get; private set; } = 0;
@@ -42,15 +43,17 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 		}
 		if (ShouldRingOnEnd())
 		{
-			ec.MakeNoise(transform.position, noiseVal);
+			if (noiseVal > 0)
+				ec.MakeNoise(transform.position, noiseVal);
 			audMan.FlushQueue(endCurrent: true);
 			audMan.PlaySingle(audRing);
 			OnClockRing();
 		}
 
 		finished = true;
-		while (audMan.QueuedAudioIsPlaying)
+		while (audMan.AnyAudioIsPlaying)
 			yield return null;
+
 		Destroy();
 	}
 

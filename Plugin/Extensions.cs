@@ -395,6 +395,45 @@ namespace LotsOfItems.Plugin
                 newAr[z] = ar[index++];
             return newAr;
         }
+        public static Sprite[] RemoveEmptySprites(this Sprite[] sprites)
+        {
+            int countFromEnd = 0;
+            for (int i = sprites.Length - 1; i > 0; i--)
+            {
+                bool hasAnyAlpha = false;
+                var spr = sprites[i];
+
+                // Check all the area indicated by the sprite to tell whether it is transparent or not
+                int xMin = Mathf.RoundToInt(spr.textureRect.x);
+                int xMax = Mathf.RoundToInt(spr.textureRect.x + spr.textureRect.width);
+                int yMax = Mathf.RoundToInt(spr.textureRect.y + spr.textureRect.height);
+                int yMin = Mathf.RoundToInt(spr.textureRect.y);
+                for (int x = xMin;
+                x < xMax && // Normal loop
+                !hasAnyAlpha; // The loop can break if alpha is set to true
+                x++)
+                {
+                    for (int y = yMin; y < yMax; y++)
+                    {
+                        if (spr.texture.GetPixel(x, y).a != 0f) // Checks if it has any alpha
+                        {
+                            hasAnyAlpha = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!hasAnyAlpha)
+                    countFromEnd++; // If it is all clear, it should be removed from the array
+            }
+
+            // Build the new sprites
+            Sprite[] newSprs = new Sprite[sprites.Length - countFromEnd];
+            for (int i = 0; i < newSprs.Length; i++)
+                newSprs[i] = sprites[i];
+
+            return newSprs;
+        }
     }
 
     // SpriteRenderer extensions

@@ -58,6 +58,7 @@ namespace LotsOfItems.Plugin
 				PORTALVARTAG = "LtsOfItms_Portal_Variant",
 				SODAVARTAG = "LtsOfItms_Bsoda_Variant",
 				APPLEVARTAG = "LtsOfItms_Apple_Variant",
+				BUSPASS = "LtsOfItms_BusPass_Variant",
 
 				PIRATE_CANN_HATE = "cann_hate",
 				CRIMINALPACK_CONTRABAND = "crmp_contraband",
@@ -972,6 +973,20 @@ namespace LotsOfItems.Plugin
 			genericClock.setTime[0] = 30f;
 			genericClock.initSetTime = 0;
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("TeleportingClock")
+			.SetGeneratorCost(37)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG])
+			.SetEnum("TeleportingClock")
+			.SetItemComponent<ITM_TeleportingClock>(Items.AlarmClock)
+			.SetNameAndDescription("LtsOItems_TeleportingClock_Name", "LtsOItems_TeleportingClock_Desc")
+			.BuildAndSetup(out genericClock)
+			.StoreAsNormal(Items.AlarmClock, goToFieldTrips: true, appearsInStore: true, weight: 50, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			genericClock.setTime[0] = 60f;
+			genericClock.initSetTime = 0;
+
 			// ---- tape -----
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BaldisMostFavoriteTape")
@@ -1279,7 +1294,6 @@ namespace LotsOfItems.Plugin
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("BloxyCola")
-
 			.SetGeneratorCost(32)
 			.SetShopPrice(725)
 			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [DRINK_TAG, SODAVARTAG])
@@ -1604,7 +1618,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("FabricatedBusPass")
 			.SetGeneratorCost(26)
 			.SetShopPrice(650)
-			.SetMeta(ItemFlags.NoUses, [])
+			.SetMeta(ItemFlags.NoUses, [BUSPASS])
 			.SetEnum("FabricatedBusPass")
 			.SetItemComponent<ITM_Acceptable>()
 			.SetNameAndDescription("LtsOItems_FabricatedBusPass_Name", "LtsOItems_FabricatedBusPass_Desc")
@@ -1715,7 +1729,6 @@ namespace LotsOfItems.Plugin
 			this.acceptFieldTrips = acceptFieldTrips;
 			this.appearsInStore = appearsInStore;
 		}
-
 		readonly public Items replacingItem = itemItIsReplacing;
 		readonly public ItemObject itm = itm;
 		readonly public int weight = Mathf.Max(1, weight);

@@ -2,12 +2,14 @@
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.AlarmClock;
+
 public class ITM_WheelClock : ITM_GenericAlarmClock
 {
-	[SerializeField] 
+	[SerializeField]
 	private float speed = 24f; // movement speed
 
 	private Vector3 direction; // current movement direction
+	bool hasRinged = false;
 
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
@@ -22,7 +24,7 @@ public class ITM_WheelClock : ITM_GenericAlarmClock
 		direction = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward.normalized;
 		entity.OnEntityMoveInitialCollision += (hit) =>
 		{
-			direction = Vector3.Reflect(direction, hit.normal);
+			time = 0f; // Instant start from there
 		};
 
 		return base.Use(pm);
@@ -31,6 +33,12 @@ public class ITM_WheelClock : ITM_GenericAlarmClock
 	public override bool AllowClickable() => false; // disable click adjustments
 
 	void Update() =>
-		entity.UpdateInternalMovement(direction * speed);
-	
+		entity.UpdateInternalMovement(hasRinged ? Vector3.zero : direction * speed);
+
+	protected override void OnClockRing()
+	{
+		base.OnClockRing();
+		hasRinged = true;
+	}
+
 }

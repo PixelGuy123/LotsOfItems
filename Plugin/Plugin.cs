@@ -31,8 +31,7 @@ namespace LotsOfItems.Plugin
 
 		bool IsItemEnabled(ItemObject itm) =>
 				Config.Bind("Item Settings",
-							$"Disable {Singleton<LocalizationManager>.Instance.GetLocalizedText(itm.nameKey)
-							.Replace('\'', ' ')}",
+							$"Disable {EnumExtensions.GetExtendedName<Items>((int)itm.itemType)}",
 							true,
 							"If True, this item will spawn naturally in the game (in levels made by the Level Generator).")
 						.Value;
@@ -41,6 +40,13 @@ namespace LotsOfItems.Plugin
 			plug = this;
 			ModPath = AssetLoader.GetModPath(this);
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
+
+#if KOFI
+			MTM101BaldiDevAPI.AddWarningScreen(
+				"<color=#c900d4>Ko-fi Exclusive Build!</color>\nKo-fi members helped make this possible. This Lots O\' Items build was made exclusively for supporters. Please, don't share it publicly. If you'd like to support future content, visit my Ko-fi page!",
+				false
+			);
+#endif
 
 			try
 			{
@@ -82,7 +88,7 @@ namespace LotsOfItems.Plugin
 					Debug.LogException(e);
 					MTM101BaldiDevAPI.CauseCrash(Info, e);
 				}
-			}, false);
+			}, LoadingEventOrder.Pre);
 
 			GeneratorManagement.RegisterFieldTripLootChange(this, (_, tripLoot) =>
 			{
@@ -133,7 +139,6 @@ namespace LotsOfItems.Plugin
 
 				// **** Adds stuff to individual Level Objects
 
-
 				foreach (var levelObject in sco.GetCustomLevelObjects())
 				{
 					bool levelObjectUsed = false;
@@ -168,7 +173,7 @@ namespace LotsOfItems.Plugin
 
 			});
 
-			LoadingEvents.RegisterOnAssetsLoaded(Info, PostLoad, true);
+			LoadingEvents.RegisterOnAssetsLoaded(Info, PostLoad, LoadingEventOrder.Post);
 
 			// In case I need to know what layers are applied, I use this simple script
 			//DebugLayers(131072);
