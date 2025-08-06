@@ -26,7 +26,13 @@ public class ITM_NoiseDevice : ITM_GenericNanaPeel
         canvasIndicator.gameObject.SetActive(false);
 
         var image = ObjectCreationExtensions.CreateImage(canvasIndicator, this.GetSprite("NoiseDevice_indicator.png", 25f), false);
-        image.transform.localPosition = Vector3.zero;
+        image.transform.localPosition = new(205.75f, -138.29f);
+    }
+
+    public override bool Use(PlayerManager pm)
+    {
+        this.pm = pm;
+        return base.Use(pm);
     }
 
     internal override void OnFloorHit()

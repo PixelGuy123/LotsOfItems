@@ -18,6 +18,7 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
             name = "ReverseSparkle",
             mainTexture = this.GetTexture("WDYesSquee_Sparkle.png")
         };
+        renderer.material = newMat;
     }
     public void SetupPrefabPost() { }
 
@@ -25,7 +26,7 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
     {
         // Find all cells in range
         DijkstraMap dijkstraMap = new(pm.ec, PathType.Nav, int.MaxValue);
-        dijkstraMap.Calculate(distance + 1, true, pm.ec.CellFromPosition(pm.transform.position).position);
+        dijkstraMap.Calculate(distance + 1, true, IntVector2.GetGridPosition(pm.transform.position));
         amplifiedCells.AddRange(dijkstraMap.FoundCells());
         amplifiedCells.Add(pm.ec.CellFromPosition(pm.transform.position));
 
@@ -33,6 +34,8 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
         {
             // Unmute all directions in the cell
             cell.SetSilence(false);
+
+            sparkleParticelEmitters.Add(Instantiate(sparkleParticlesPre, cell.ObjectBase));
 
             // Add to the static patch list to amplify sound
             AmplifiedCellsPatch.amplifiedCells.Add(cell);
@@ -60,6 +63,11 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
         {
             cell.SetSilence(true); // Revert the unsilence performed
             AmplifiedCellsPatch.amplifiedCells.Remove(cell);
+        }
+
+        foreach (Transform sparkleParticelEmitter in sparkleParticelEmitters)
+        {
+            Destroy(sparkleParticelEmitter.gameObject);
         }
     }
 }

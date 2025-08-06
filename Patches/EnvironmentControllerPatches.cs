@@ -24,6 +24,9 @@ namespace LotsOfItems.Patches
                     value *= 2;
                 }
             }
+
+            // Lil' limit to make the noise value not go through Baldi's hearing limits
+            value = Mathf.Min(value, 127); // Limit of its interaction array
         }
     }
 }

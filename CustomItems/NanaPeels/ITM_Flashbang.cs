@@ -150,9 +150,12 @@ public class ITM_Flashbang : ITM_GenericNanaPeel
         canvas.gameObject.SetActive(true);
 
         float t = 0f;
-        float fadeInTime = blindTimer * 0.25f;
-        float fadeOutTime = 0.75f * blindTimer;
+        float fadeInTime = blindTimer * 0.1f;
+        float fadeOutTime = 0.9f * blindTimer;
         float totalTime = blindTimer;
+
+        Color clearWhite = Color.white;
+        clearWhite.a = 0f;
 
         if (Singleton<PlayerFileManager>.Instance.reduceFlashing)
         {
@@ -160,7 +163,7 @@ public class ITM_Flashbang : ITM_GenericNanaPeel
             while (t < fadeInTime)
             {
                 t += ec.EnvironmentTimeScale * Time.deltaTime;
-                image.color = Color.Lerp(Color.clear, Color.white, t / fadeInTime);
+                image.color = Color.Lerp(clearWhite, Color.white, t / fadeInTime);
                 yield return null;
             }
         }
@@ -176,7 +179,7 @@ public class ITM_Flashbang : ITM_GenericNanaPeel
         while (t < fadeOutTime)
         {
             t += ec.EnvironmentTimeScale * Time.deltaTime;
-            image.color = Color.Lerp(Color.white, Color.clear, t / fadeOutTime);
+            image.color = Color.Lerp(Color.white, clearWhite, t / fadeOutTime);
             yield return null;
         }
 

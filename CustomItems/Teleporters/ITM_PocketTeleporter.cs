@@ -11,6 +11,7 @@ public class ITM_PocketTeleporter : ITM_GenericTeleporter
         base.VirtualSetupPrefab(itm);
         minTeleports = 1;
         maxTeleports = 1;
+        baseTime = 0f;
     }
 
     public override bool Use(PlayerManager pm)

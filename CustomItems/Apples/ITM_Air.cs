@@ -6,11 +6,9 @@ internal class Baldi_AirState(Baldi baldi, NpcState prevState, SoundObject loopA
     readonly private MovementModifier pushMoveMod = new(Vector3.zero, 0f)
     {
         forceTrigger = true,
-        ignoreAirborne = true,
-        ignoreGrounded = true,
     };
     float directionCooldown = 0f;
-    const float minDirectionCooldown = 5f, maxDirectionCooldown = 8f, maxSpeed = 15f, minSpeed = 5f;
+    const float minDirectionCooldown = 5f, maxDirectionCooldown = 8f, maxSpeed = 20f, minSpeed = 8f;
     bool startedAirLoop = false, givenMoveMod = false;
     readonly SoundObject loopAudio = loopAudio;
 
@@ -27,8 +25,8 @@ internal class Baldi_AirState(Baldi baldi, NpcState prevState, SoundObject loopA
         {
             if (!baldi.AudMan.AnyAudioIsPlaying)
             {
-                baldi.AudMan.SetLoop(true);
                 baldi.AudMan.QueueAudio(loopAudio);
+                baldi.AudMan.SetLoop(true);
                 startedAirLoop = true;
             }
             return;

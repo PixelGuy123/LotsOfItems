@@ -595,17 +595,17 @@ namespace LotsOfItems.Plugin
 				.AutoGetSprites("PocketTeleporter")
 				.SetGeneratorCost(32)
 				.SetShopPrice(850)
-				.SetMeta(ItemFlags.Persists, [DANGERTELEPORTERVARTAG, CRIMINALPACK_CONTRABAND])
+				.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [DANGERTELEPORTERVARTAG, CRIMINALPACK_CONTRABAND])
 				.SetEnum("PocketTeleporter")
 				.SetItemComponent<ITM_PocketTeleporter>()
 				.SetNameAndDescription("LtsOItems_PocketTeleporter_Name_5", "LtsOItems_PocketTeleporter_Desc")
-				.BuildAndSetup(out genericTp)
+				.BuildAndSetup(out ITM_PocketTeleporter pocketTeleporter)
 				.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 12, acceptableFloors: [F2, F3,
 			new(F4, LevelType.Laboratory),
 			new(F5, LevelType.Laboratory)
 			, END]);
 
-			genericTp.CreateNewReusableInstances(item, "LtsOItems_PocketTeleporter_Name", 4);
+			pocketTeleporter.CreateNewReusableInstances(item, "LtsOItems_PocketTeleporter_Name", 4);
 
 
 			// ---------- WHISTLES VARIANTS ----------

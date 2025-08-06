@@ -55,21 +55,29 @@ namespace LotsOfItems.Patches
 
 			foreach (var item in itemsToAdd)
 			{
-				BaldiLevelEditorPlugin.itemObjects.Add(item.Key, item.Value);
-				var maskRef = AssetLoader.TextureFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "Mask_itemSlotMask.png"));
-
-				Sprite icon = item.Value.itemSpriteSmall;
-				Texture2D tex = icon.texture;
-				if (icon == item.Value.itemSpriteLarge)
+				try
 				{
-					tex = icon.texture.ActualResize(32, 32);
-					tex.name = "Resized_" + tex.name;
+					BaldiLevelEditorPlugin.itemObjects.Add(item.Key, item.Value);
+					var maskRef = AssetLoader.TextureFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "Mask_itemSlotMask.png"));
+
+					Sprite icon = item.Value.itemSpriteSmall;
+					Texture2D tex = icon.texture;
+					if (icon == item.Value.itemSpriteLarge)
+					{
+						tex = icon.texture.ActualResize(32, 32);
+						tex.name = "Resized_" + tex.name;
+					}
+
+					tex = tex.Mask(maskRef);
+					tex.name = "EditorIcon_" + tex.name;
+
+					BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/ITM_" + item.Key, AssetLoader.SpriteFromTexture2D(tex, 40f));
 				}
-
-				tex = tex.Mask(maskRef);
-				tex.name = "EditorIcon_" + tex.name;
-
-				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/ITM_" + item.Key, AssetLoader.SpriteFromTexture2D(tex, 40f));
+				catch (System.Exception e)
+				{
+					Debug.LogException(e);
+					MTM101BaldiDevAPI.CauseCrash(LotOfItemsPlugin.plug.Info, new("Looks like an item failed to be loaded into the editor: " + item.Key));
+				}
 			}
 
 		}
