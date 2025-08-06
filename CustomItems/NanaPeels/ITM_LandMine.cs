@@ -2,7 +2,6 @@
 using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
-using PixelInternalAPI.Classes;
 using UnityEngine;
 
 public class ITM_LandMine : ITM_GenericNanaPeel

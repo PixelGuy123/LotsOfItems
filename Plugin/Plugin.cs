@@ -69,6 +69,7 @@ namespace LotsOfItems.Plugin
 				{
 					assetMan.Add("aud_explode", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "fogMachine_explode.wav")), "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white));
 					assetMan.Add("audBump", GenericExtensions.FindResourceObjectByName<SoundObject>("Bang"));
+					assetMan.Add("tex_white", TextureExtensions.CreateSolidTexture(480, 360, Color.white));
 
 					TheItemBuilder.StartBuilding();
 

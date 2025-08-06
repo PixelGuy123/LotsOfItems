@@ -1,4 +1,5 @@
 using HarmonyLib;
+using LotsOfItems.Components;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.SwingingDoorLocks
@@ -19,12 +20,12 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
             {
                 StandardDoor door = hit.transform.GetComponent<StandardDoor>();
                 // Check if it's a standard door, it's not already locked, and doesn't already have our marker
-                if (door != null && !door.locked && !door.GetComponent<WeakLockMarker>())
+                if (door != null && !door.locked && !door.GetComponent<Marker_WeakLockedDoor>())
                 {
                     door.LockTimed(lockDuration);
                     door.Shut();
 
-                    door.gameObject.AddComponent<WeakLockMarker>().Initialize(pm.ec, door, lockDuration, rattlesBeforeBreak);
+                    door.gameObject.AddComponent<Marker_WeakLockedDoor>().Initialize(pm.ec, door, lockDuration, rattlesBeforeBreak);
 
                     Destroy(gameObject);
                     return true;
@@ -32,59 +33,6 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
             }
             Destroy(gameObject);
             return false; // Didn't hit a valid door or door was already locked/marked
-        }
-    }
-
-    public class WeakLockMarker : MonoBehaviour
-    {
-        internal StandardDoor door;
-        private float cooldown;
-        int rattleCount = 0, rattlesToUnlock = 3;
-        bool initialized = false;
-        EnvironmentController ec;
-
-        public void Initialize(EnvironmentController ec, StandardDoor door, float lockTime, int rattlesBeforeBreak)
-        {
-            initialized = true;
-            this.door = door;
-            cooldown = lockTime;
-            rattlesToUnlock = rattlesBeforeBreak;
-            this.ec = ec;
-        }
-
-        void Update()
-        {
-            if (!initialized) return;
-
-            cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
-            if (cooldown <= 0)
-            {
-                UnlockAndDestroy();
-            }
-        }
-
-        public bool IncrementRattle()
-        {
-            if (++rattleCount >= rattlesToUnlock)
-            {
-                UnlockAndDestroy();
-                return true;
-            }
-            door.audMan.PlaySingle(door.audDoorLocked);
-            return false;
-        }
-
-        private void UnlockAndDestroy()
-        {
-            if (door != null && door.locked)
-            {
-                door.Unlock(); // Calling Unlock destroys this marker anyways.
-            }
-        }
-
-        public void SelfDestroy()
-        {
-            Destroy(this);
         }
     }
 }

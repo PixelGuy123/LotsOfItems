@@ -10,9 +10,29 @@ using UnityEngine;
 
 namespace LotsOfItems.Plugin
 {
+    // General extensions for Plus
+    public static class GameExtensions
+    {
+        public static bool IsPrincipal(this NPC npc) =>
+            npc.Character == Character.Principal; // A self-patch will be applied here to provide support for Replacement Characters.
+
+
+        public static void CallOutPrincipals(this EnvironmentController ec, Vector3 position) // Should be patched by the self-patch to handle replacement principals (I should make a method...)
+        {
+            for (int i = 0; i < ec.Npcs.Count; i++)
+            {
+                if (IsPrincipal(ec.Npcs[i]) && ec.Npcs[i] is Principal pr)
+                {
+                    pr.WhistleReact(position);
+                }
+            }
+        }
+    }
+
     // General MonoBehaviour extensions
     public static class MonoBehaviourExtensions
     {
+
         static bool IsInheritFromType(Type t1, Type t2) => t1.IsSubclassOf(t2) || t1 == t2;
 
         public static T GetACopyFromFields<T, C>(this T original, C toCopyFrom)

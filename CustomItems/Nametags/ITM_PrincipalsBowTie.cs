@@ -1,5 +1,6 @@
 using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 using PixelInternalAPI.Classes;
 using UnityEngine;
 
@@ -71,7 +72,7 @@ namespace LotsOfItems.CustomItems.Nametags
             {
                 if (npc is Baldi) return; // If it is Baldi or inherits Baldi, it should always be ignored
 
-                if (IsPrincipal(npc))
+                if (npc.IsPrincipal())
                 {
                     Deactivate();
                     return;
@@ -83,8 +84,5 @@ namespace LotsOfItems.CustomItems.Nametags
                 npc.SentToDetention();
             }
         }
-
-        protected virtual bool IsPrincipal(NPC npc) =>
-            npc.Character == Character.Principal;
     }
 }

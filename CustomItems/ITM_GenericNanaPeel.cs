@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using HarmonyLib;
+﻿using HarmonyLib;
 using LotsOfItems.ItemPrefabStructures;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems
 {
@@ -15,6 +15,7 @@ namespace LotsOfItems.CustomItems
 		internal virtual bool OnCollisionOverride(RaycastHit hit) => true;
 		internal virtual void OnFloorHit() { }
 		internal virtual bool EntityTriggerStayOverride(Collider other) => true;
+		internal virtual void VirtualUpdate() { }
 		internal virtual bool VirtualEnd() => true;
 	}
 
@@ -58,8 +59,12 @@ namespace LotsOfItems.CustomItems
 
 		[HarmonyPatch("Update")]
 		[HarmonyPrefix]
-		static void MakeSureFloorHitIsCorrect(out bool __state, bool ___ready) =>
+		static void MakeSureFloorHitIsCorrect(ITM_NanaPeel __instance, out bool __state, bool ___ready)
+		{
 			__state = ___ready;
+			if (__instance is ITM_GenericNanaPeel gen)
+				gen.VirtualUpdate();
+		}
 
 		[HarmonyPatch("Update")]
 		[HarmonyPostfix]

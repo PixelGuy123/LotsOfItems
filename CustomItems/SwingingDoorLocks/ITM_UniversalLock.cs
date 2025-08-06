@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+﻿using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
 
@@ -26,9 +26,9 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
 				out hit, pm.pc.reach, pm.pc.ClickLayers))
 			{
 				StandardDoor door = hit.transform.GetComponent<StandardDoor>();
-				if (door != null && !door.locked && !door.GetComponent<DoorActuallyBlockedMarker>())
+				if (door != null && !door.locked && !door.GetComponent<Marker_BlockedStandardDoor>())
 				{
-					door.gameObject.AddComponent<DoorActuallyBlockedMarker>();
+					door.gameObject.AddComponent<Marker_BlockedStandardDoor>();
 					door.LockTimed(lockTimer);
 					door.Shut();
 					Destroy(gameObject);
@@ -47,6 +47,4 @@ namespace LotsOfItems.CustomItems.SwingingDoorLocks
 			return false;
 		}
 	}
-
-	internal class DoorActuallyBlockedMarker : MonoBehaviour { }
 }

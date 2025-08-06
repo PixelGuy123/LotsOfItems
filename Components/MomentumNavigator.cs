@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+namespace LotsOfItems.Components;
+
 public class MomentumNavigator : MonoBehaviour // used DeepSeek to literally convert the entire Navigator class to something that does not need any npc or entity to function
 {
 	public EnvironmentController ec;
@@ -149,7 +151,7 @@ public class MomentumNavigator : MonoBehaviour // used DeepSeek to literally con
 		speed = !useAcceleration ? maxSpeed :
 			decelerate ? Mathf.Clamp(speed + Acceleration, 0, maxSpeed) :
 			Mathf.Min(speed + Acceleration, maxSpeed);
-	
+
 
 	protected IntVector2 GetGridPosition(Vector3 position)
 	{
@@ -161,7 +163,7 @@ public class MomentumNavigator : MonoBehaviour // used DeepSeek to literally con
 
 	public void FindPath(Vector3 targetPosition) =>
 		FindPath(transform.position, targetPosition);
-	
+
 
 	private void FindPath(Vector3 startPos, Vector3 targetPos)
 	{

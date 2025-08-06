@@ -1,6 +1,7 @@
 using HarmonyLib;
 using LotsOfItems.Components;
 namespace LotsOfItems.Patches;
+
 [HarmonyPatch]
 internal static class AudioManagerPatch
 {
@@ -8,7 +9,7 @@ internal static class AudioManagerPatch
     [HarmonyPrefix]
     static bool AutoMuteIfNeeded(AudioManager __instance)
     {
-        if (__instance.GetComponent<AudioManager_MuteMarker>())
+        if (__instance.GetComponent<Marker_AudioManagerMute>())
         {
             __instance.audioDevice.volume = 0f;
             return false;
@@ -20,7 +21,7 @@ internal static class AudioManagerPatch
     [HarmonyPrefix]
     static bool MutePropagationAsNeeded(PropagatedAudioManager __instance, ref float ___propagatedDistance, float ___maxDistance)
     {
-        if (__instance.GetComponent<AudioManager_MuteMarker>())
+        if (__instance.GetComponent<Marker_AudioManagerMute>())
         {
             __instance.audioDevice.volume = 0f;
             ___propagatedDistance = ___maxDistance;

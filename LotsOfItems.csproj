@@ -23,29 +23,32 @@
   
   <ItemGroup>
    <Reference Include="BaldiLevelEditor">
-     <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\BaldiLevelEditor.dll</HintPath>
+     <HintPath>ExternalReferences\BaldiLevelEditor.dll</HintPath>
    </Reference>
    <Reference Include="C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll" Publicize="true" />
    <Reference Include="MTM101BaldAPI">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
+      <HintPath>ExternalReferences\MTM101BaldAPI.dll</HintPath>
     </Reference>
     <Reference Include="CustomVendingMachines">
       <HintPath>ExternalReferences\CustomVendingMachines.dll</HintPath>
     </Reference>
 	<Reference Include="PixelInternalAPI">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\PixelInternalAPI.dll</HintPath>
+      <HintPath>ExternalReferences\PixelInternalAPI.dll</HintPath>
     </Reference>
 	<Reference Include="netstandard">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\netstandard.dll</HintPath>
+      <HintPath>ExternalReferences\netstandard.dll</HintPath>
     </Reference>
 	<Reference Include="PlusLevelFormat">
-	  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\PlusLevelFormat.dll</HintPath>
+	  <HintPath>ExternalReferences\PlusLevelFormat.dll</HintPath>
 	</Reference>
 	<Reference Include="PlusLevelLoader">
-	  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\PlusLevelLoader.dll</HintPath>
+	  <HintPath>ExternalReferences\PlusLevelLoader.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEngine.UI">
-	  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\UnityEngine.UI.dll</HintPath>
+	  <HintPath>ExternalReferences\UnityEngine.UI.dll</HintPath>
+	</Reference>
+  <Reference Include="BBTimes">
+	  <HintPath>ExternalReferences\BBTimes.dll</HintPath>
 	</Reference>
   </ItemGroup>
 

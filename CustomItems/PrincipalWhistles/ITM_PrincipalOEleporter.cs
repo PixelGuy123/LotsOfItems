@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -58,7 +59,7 @@ namespace LotsOfItems.CustomItems.PrincipalWhistles
 			{
 				foreach (NPC npc in pm.ec.Npcs)
 				{
-					if (IsAPrincipal(npc.Character)) // method for, uhm, Times
+					if (GameExtensions.IsPrincipal(npc))
 					{
 						npc.Navigator.Entity.Teleport(pm.transform.position);
 						audMan.PlaySingle(audTeleport);
@@ -74,9 +75,6 @@ namespace LotsOfItems.CustomItems.PrincipalWhistles
 
 			return true;
 		}
-
-		private bool IsAPrincipal(Character c) =>
-			c == Character.Principal;
 
 		IEnumerator WaitForAudioFinish()
 		{

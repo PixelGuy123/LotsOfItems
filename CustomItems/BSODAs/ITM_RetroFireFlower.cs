@@ -129,7 +129,7 @@ namespace LotsOfItems.CustomItems.BSODAs
             npc.Navigator.Entity.SetVisible(false);
             npc.Navigator.Entity.SetInteractionState(false);
             npc.Navigator.Entity.SetBlinded(true);
-            npc.Navigator.Entity.propagatedAudioManager.gameObject.AddComponent<AudioManager_MuteMarker>();
+            npc.Navigator.Entity.propagatedAudioManager.gameObject.AddComponent<Marker_AudioManagerMute>();
 
             // --- Goomba Death Animation ---
             if (npc.spriteRenderer[0])
@@ -184,7 +184,7 @@ namespace LotsOfItems.CustomItems.BSODAs
             npc.Navigator.Entity.SetVisible(true);
             npc.Navigator.Entity.SetInteractionState(true);
             npc.Navigator.Entity.SetBlinded(false);
-            Destroy(npc.Navigator.Entity.propagatedAudioManager.GetComponent<AudioManager_MuteMarker>());
+            Destroy(npc.Navigator.Entity.propagatedAudioManager.GetComponent<Marker_AudioManagerMute>());
         }
     }
 }

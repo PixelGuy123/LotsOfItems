@@ -14,7 +14,7 @@ namespace LotsOfItems.CustomItems.Eatables
         private float eatingDuration = 60f;
 
         [SerializeField]
-        private float minStaminaInterval = 0.25f, maxStaminaInterval = 2f;
+        private float minStaminaInterval = 0.25f, maxStaminaInterval = 2f, eatingCrumbTimer = 0.75f;
 
         [SerializeField]
         private float staminaPerTick = 50f;
@@ -66,7 +66,7 @@ namespace LotsOfItems.CustomItems.Eatables
             gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, eatingDuration);
             StartCoroutine(EatingCoroutine());
 
-            pm.RuleBreak("Eating", 2f);
+            pm.RuleBreak("Eating", eatingCrumbTimer, eatingCrumbTimer + 0.15f);
             CreateCrumb(pm.ec.CellFromPosition(pm.transform.position));
 
             return base.Use(pm);
