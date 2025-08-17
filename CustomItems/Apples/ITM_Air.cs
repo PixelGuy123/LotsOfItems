@@ -1,6 +1,8 @@
 using LotsOfItems.CustomItems;
 using UnityEngine;
 
+namespace LotsOfItems.CustomItems.Apples;
+
 internal class Baldi_AirState(Baldi baldi, NpcState prevState, SoundObject loopAudio, Sprite[] eatSprites, SoundObject thanksAudio) : Baldi_CustomAppleState(baldi, prevState, eatSprites, eatSounds: [], eatTime: 30f, thanksAudio: thanksAudio)
 {
     readonly private MovementModifier pushMoveMod = new(Vector3.zero, 0f)

@@ -1,5 +1,4 @@
 using System.Collections;
-using LotsOfItems.Components;
 using LotsOfItems.Plugin;
 using UnityEngine;
 

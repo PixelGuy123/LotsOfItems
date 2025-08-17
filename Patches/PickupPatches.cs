@@ -10,7 +10,7 @@ namespace LotsOfItems.Patches;
 internal static class MakePickupBounce
 {
 
-    // ********** Dancing YTP Pickup Patch ***********
+    // ********** Overriding YTPs Pickup Patch ***********
     [HarmonyPatch("Start")]
     [HarmonyPatch("AssignItem")]
     [HarmonyPostfix]
@@ -24,6 +24,12 @@ internal static class MakePickupBounce
         if (__instance.item.item is ITM_DancingYTP)
         {
             __instance.gameObject.AddComponent<DancingPickup>().AttachToPickup(__instance, Singleton<BaseGameManager>.Instance.Ec);
+            return;
+        }
+
+        if (__instance.item.item is ITM_OutsideYTPS)
+        {
+            __instance.gameObject.AddComponent<OutsideYTP>().Initialize(Singleton<BaseGameManager>.Instance.Ec, __instance);
             return;
         }
     }

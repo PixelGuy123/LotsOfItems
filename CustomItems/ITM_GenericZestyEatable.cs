@@ -55,7 +55,7 @@ namespace LotsOfItems.CustomItems
 
 		protected virtual bool CanBeDestroyed() => true;
 
-		IEnumerator SpeedAffector(PlayerMovementStatModifier stat)
+		protected IEnumerator SpeedAffector(PlayerMovementStatModifier stat)
 		{
 			ValueModifier mod = new(speedMultiplier, speedAddition),
 				staminaRiseMod = new(multiplier: staminaRiseChanger),

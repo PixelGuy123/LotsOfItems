@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
@@ -15,6 +15,13 @@ namespace LotsOfItems.CustomItems.BSODAs
 			base.VirtualSetupPrefab(itm);
 			spriteRenderer.sprite = this.GetSprite("RootBeer_soda.png", spriteRenderer.sprite.pixelsPerUnit);
 			this.DestroyParticleIfItHasOne();
+
+			bsodaPrefab = ItemExtensions.GetVariantInstance<TemporaryBsoda>(Items.Bsoda);
+			bsodaPrefab.time = 7.5f;
+			bsodaPrefab.speed *= 1.2f;
+			bsodaPrefab.spriteRenderer.sprite = LotOfItemsPlugin.assetMan.Get<Sprite>("DustCloudSprite");
+			bsodaPrefab.DestroyParticleIfItHasOne();
+			speed = bsodaPrefab.speed;
 		}
 
 		public override bool Use(PlayerManager pm)

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
-using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using UnityEngine;
+
+namespace LotsOfItems.CustomItems.NanaPeels;
 
 public class ITM_LandMine : ITM_GenericNanaPeel
 {

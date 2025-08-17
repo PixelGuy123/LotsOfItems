@@ -3,6 +3,8 @@ using MTM101BaldAPI;
 using PixelInternalAPI.Components;
 using UnityEngine;
 
+namespace LotsOfItems.CustomItems.PortalPosters;
+
 public class ITM_PortalPosterV2 : ITM_PortalPoster, IItemPrefab
 {
     public void SetupPrefab(ItemObject itm)

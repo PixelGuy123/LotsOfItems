@@ -1,6 +1,8 @@
 using LotsOfItems.CustomItems;
 using UnityEngine;
 
+namespace LotsOfItems.CustomItems.Teleporters;
+
 public class ITM_PocketTeleporter : ITM_GenericTeleporter
 {
     [SerializeField]

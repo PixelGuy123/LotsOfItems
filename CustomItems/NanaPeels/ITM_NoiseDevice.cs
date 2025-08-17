@@ -1,7 +1,9 @@
-using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
+
+namespace LotsOfItems.CustomItems.NanaPeels;
 
 public class ITM_NoiseDevice : ITM_GenericNanaPeel
 {
@@ -16,7 +18,8 @@ public class ITM_NoiseDevice : ITM_GenericNanaPeel
         base.VirtualSetupPrefab(itm);
 
         var renderer = GetComponentInChildren<SpriteRenderer>();
-        renderer.sprite = itm.itemSpriteLarge;
+        renderer.sprite = itm.itemSpriteLarge.DuplicateItself(renderer.sprite.pixelsPerUnit);
+        renderer.sprite.name = $"{itm.itemSpriteLarge.name}_World";
 
         audBeep = this.GetSoundNoSub("NoiseDevice_Beep.wav", SoundType.Effect);
 

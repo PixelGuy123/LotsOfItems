@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using LotsOfItems.Components;
-using LotsOfItems.CustomItems;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
+
+namespace LotsOfItems.CustomItems.NanaPeels;
 
 public class ITM_Flashbang : ITM_GenericNanaPeel
 {
@@ -28,7 +29,8 @@ public class ITM_Flashbang : ITM_GenericNanaPeel
     {
         base.VirtualSetupPrefab(itm);
         renderer = GetComponentInChildren<SpriteRenderer>();
-        renderer.sprite = itm.itemSpriteLarge;
+        renderer.sprite = itm.itemSpriteLarge.DuplicateItself(renderer.sprite.pixelsPerUnit);
+        renderer.sprite.name = $"{itm.itemSpriteLarge.name}_World";
 
         explosionSound = this.GetSound("Flashbang_explode.wav", "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white);
 

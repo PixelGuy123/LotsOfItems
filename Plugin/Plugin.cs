@@ -69,7 +69,12 @@ namespace LotsOfItems.Plugin
 				{
 					assetMan.Add("aud_explode", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "fogMachine_explode.wav")), "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white));
 					assetMan.Add("audBump", GenericExtensions.FindResourceObjectByName<SoundObject>("Bang"));
+					assetMan.Add("genericExplosionPrefab", ((LookAtGuy)NPCMetaStorage.Instance.Get(Character.LookAt).value).explosionPrefab);
+					assetMan.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
 					assetMan.Add("tex_white", TextureExtensions.CreateSolidTexture(480, 360, Color.white));
+					assetMan.Add("audDrink", ((ITM_InvisibilityElixir)ItemMetaStorage.Instance.FindByEnum(Items.InvisibilityElixir).value.item).audUse);
+					for (int i = 0; i < 3; i++)
+						assetMan.Add("YtpPickup_" + i, GenericExtensions.FindResourceObjectByName<SoundObject>("YTPPickup_" + i));
 
 					TheItemBuilder.StartBuilding();
 

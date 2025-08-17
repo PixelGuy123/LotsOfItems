@@ -29,9 +29,31 @@ namespace LotsOfItems.Plugin
         }
     }
 
+    // Sprite Extensions
+    public static class SpriteExtensions
+    {
+        public static Sprite DuplicateItself(this Sprite ogSpr, float newPixelsPerUnit)
+        {
+            var spr = Sprite.Create(ogSpr.texture, ogSpr.textureRect, ogSpr.pivot, newPixelsPerUnit, 0u, SpriteMeshType.FullRect);
+            spr.name = $"{ogSpr.name}_Duplicate";
+            return spr;
+        }
+    }
+
     // General MonoBehaviour extensions
     public static class MonoBehaviourExtensions
     {
+        public static T SafeDuplicatePrefab<T>(this T obj, bool setActive) where T : Component
+        {
+            obj.gameObject.SetActive(false);
+
+            var inst = obj.DuplicatePrefab();
+            inst.gameObject.SetActive(setActive);
+
+            obj.gameObject.SetActive(true);
+
+            return inst;
+        }
 
         static bool IsInheritFromType(Type t1, Type t2) => t1.IsSubclassOf(t2) || t1 == t2;
 
@@ -141,6 +163,20 @@ namespace LotsOfItems.Plugin
             {
                 if (colorRef[i].a == 0f) // If alpha is 0, it's not inside the mask
                     pixels[i] = Color.clear;
+            }
+            original.SetPixels(pixels);
+            original.Apply();
+            return original;
+        }
+
+        public static Texture2D ApplyColorLevel(this Texture2D original, Color tint)
+        {
+            var pixels = original.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i].r *= tint.r;
+                pixels[i].g *= tint.g;
+                pixels[i].b *= tint.b;
             }
             original.SetPixels(pixels);
             original.Apply();
@@ -263,6 +299,17 @@ namespace LotsOfItems.Plugin
             }
         }
 
+        public static void SpawnInstantly(this ITM_NanaPeel nanaPeel, EnvironmentController ec, Vector3 position, Vector3 forward, bool splatSound = true)
+        {
+            nanaPeel.Spawn(ec, position, forward, 0f);
+
+            nanaPeel.ready = true;
+            nanaPeel.height = nanaPeel.endHeight;
+            nanaPeel.entity.SetGrounded(value: true);
+            nanaPeel.audioManager.PlaySingle(nanaPeel.audSplat);
+            nanaPeel.time = nanaPeel.maxTime;
+        }
+
         // Generic Extensions
 
         public static T GetVariantInstance<T>(Items item) where T : Item
@@ -275,8 +322,9 @@ namespace LotsOfItems.Plugin
 
             ogItem.gameObject.SetActive(true); // Forgot about this lol
 
-            var newItm = itm.gameObject.AddComponent<T>()
-                .GetACopyFromFields(itm);
+            var newItm = itm.gameObject.AddComponent<T>();
+            if (itm.GetType().IsAssignableFrom(typeof(T))) // basically if T inherits itm
+                newItm = newItm.GetACopyFromFields(itm);
             UnityEngine.Object.DestroyImmediate(itm); // immediately to be sure it is not inherited later
 
             newItm.gameObject.ConvertToPrefab(true);
@@ -344,7 +392,7 @@ namespace LotsOfItems.Plugin
             return blocker;
         }
 
-        public static ParticleSystem GetNewParticleSystem(this ParticleSystem original)
+        public static ParticleSystem GetNewParticleSystem(this ParticleSystem original, out ParticleSystemRenderer particleSystemRenderer)
         {
             var particle = UnityEngine.Object.Instantiate(
                         (
@@ -357,9 +405,9 @@ namespace LotsOfItems.Plugin
             UnityEngine.Object.DestroyImmediate(particle.particles); // Destroys original Particle instance
 
             particle.particles = obj.AddComponent<ParticleSystem>(); // Adds a new fresh ParticleSystem to have everything set to default values
-            var renderer = obj.GetComponent<ParticleSystemRenderer>();
+            particleSystemRenderer = obj.GetComponent<ParticleSystemRenderer>();
 
-            renderer.material = new(renderer.material) { name = $"{particle.name}_Mat" };
+            particleSystemRenderer.material = new(particleSystemRenderer.material) { name = $"{particle.name}_Mat" };
             return particle.particles;
         }
     }
@@ -448,6 +496,8 @@ namespace LotsOfItems.Plugin
             }
 
             // Build the new sprites
+            if (countFromEnd >= sprites.Length)
+                return Array.Empty<Sprite>();
             Sprite[] newSprs = new Sprite[sprites.Length - countFromEnd];
             for (int i = 0; i < newSprs.Length; i++)
                 newSprs[i] = sprites[i];
