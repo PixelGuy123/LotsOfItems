@@ -35,7 +35,7 @@ public class ITM_FireFlavouredZestyBar : ITM_GenericZestyEatable
         Destroy(smokeParticles.GetComponent<CoverCloud>());
 
         // Setup Dust Cloud visual
-        var newTexture = Instantiate(systemRenderer.material.mainTexture as Texture2D);
+        var newTexture = Instantiate(LotOfItemsPlugin.assetMan.Get<Texture2D>("DustCloudTexture"));
         newTexture.name = "SmokeFireZestyBar";
         TextureExtensions.ApplyLightLevel(newTexture, -50f);
         systemRenderer.material.mainTexture = newTexture;

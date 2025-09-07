@@ -17,9 +17,7 @@ namespace LotsOfItems.CustomItems.BSODAs
         [SerializeField]
         private SodaPuddle puddlePrefab;
         [SerializeField]
-        internal AudioManager audMan;
-        [SerializeField]
-        internal SoundObject audExplode, audDropPuddle;
+        internal SoundObject audExplode, audDropPuddle, audHit;
         [SerializeField]
         internal SpriteRenderer renderer;
         [SerializeField]
@@ -35,26 +33,30 @@ namespace LotsOfItems.CustomItems.BSODAs
             renderer.sprite = itm.itemSpriteLarge;
 
             audSplat = this.GetSoundNoSub("SpinyBSODA_Splat.wav", SoundType.Effect);
+            endHeight = 0.8f;
 
-            audMan = gameObject.CreatePropagatedAudioManager(35f, 120f);
             audDropPuddle = ((ITM_BSODA)ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value.item).sound;
             audExplode = LotOfItemsPlugin.assetMan.Get<SoundObject>("aud_explode");
+            audHit = this.GetSoundNoSub("SpinyBSODA_SpikeHit.wav", SoundType.Effect);
 
             // Setup Spike Prefab
             var spikeObj = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite("SpinyBSODA_Spike.png", 25f)).AddSpriteHolder(out var spikeRenderer, 0f);
             spikeObj.name = "SpinySpike";
+            spikeObj.gameObject.layer = LayerStorage.standardEntities;
             spikeObj.gameObject.ConvertToPrefab(true);
             spikePrefab = spikeObj.gameObject.AddComponent<SpinySpike>();
             spikePrefab.entity = spikeObj.gameObject.CreateEntity(1f, 1f, spikeRenderer.transform);
             spikePrefab.audMan = spikePrefab.gameObject.CreatePropagatedAudioManager(25f, 75f);
-            spikePrefab.audHit = this.GetSoundNoSub("SpinyBSODA_SpikeHit.wav", SoundType.Effect);
+            spikePrefab.audHit = audHit;
             spikePrefab.renderer = spikeRenderer;
+            spikePrefab.entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 
             // Setup Puddle Prefab
             var puddleObject = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite("SpinyBSODA_Puddle.png", 10f), false).AddSpriteHolder(out var puddleRenderer, 0.01f);
             puddleObject.name = "GreenPuddle";
             puddleObject.gameObject.layer = LayerStorage.ignoreRaycast;
             puddleRenderer.transform.Rotate(90f, 0f, 0f);
+            puddleRenderer.gameObject.layer = 0;
 
             var puddleCollider = puddleObject.gameObject.AddComponent<BoxCollider>();
             puddleCollider.isTrigger = true;
@@ -72,7 +74,8 @@ namespace LotsOfItems.CustomItems.BSODAs
             StartCoroutine(BarrierAndExplode());
         }
 
-        internal override bool EntityTriggerStayOverride(Collider other)
+        internal override bool EntityTriggerStayOverride(Collider other) => false; // Don't allow normal nana peel behaviour
+        internal override void EntityTriggerEnterOverride(Collider other)
         {
             if (isActiveBarrier && other.isTrigger)
             {
@@ -81,10 +84,11 @@ namespace LotsOfItems.CustomItems.BSODAs
                 {
                     Vector3 pushDir = (entity.transform.position - transform.position).normalized;
                     entity.AddForce(new Force(pushDir, pushForce, pushForce * -0.5f));
+                    audioManager.PlaySingle(audHit);
                 }
             }
-            return false;
         }
+
 
         private IEnumerator BarrierAndExplode()
         {
@@ -93,23 +97,24 @@ namespace LotsOfItems.CustomItems.BSODAs
             renderer.enabled = false;
             entity.SetFrozen(true);
             entity.SetInteractionState(false);
-            audMan.PlaySingle(audDropPuddle);
-            audMan.PlaySingle(audExplode);
+            audioManager.PlaySingle(audDropPuddle);
+            audioManager.PlaySingle(audExplode);
 
-            isActiveBarrier = false;
+            isActiveBarrier = false;// Spawn Puddle
+            SodaPuddle puddle = Instantiate(puddlePrefab, transform.position.ZeroOutY(), Quaternion.identity);
+            puddle.Initialize(sodaPoolLifeTime, ec);
+            var puddleCollider = puddle.GetComponent<Collider>();
             // Spawn Spikes
             for (int i = 0; i < 8; i++)
             {
-                Quaternion rotation = Quaternion.Euler(0, i * 45f, 0);
-                SpinySpike spike = Instantiate(spikePrefab, transform.position, rotation);
-                spike.Initialize(ec, rotation.eulerAngles, spikeSpeed);
+                float angle = 45f * i;
+                Vector3 rotation = new(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+                SpinySpike spike = Instantiate(spikePrefab, transform.position, Quaternion.identity);
+                spike.Initialize(ec, rotation, spikeSpeed);
+                Physics.IgnoreCollision(spike.entity.collider, puddleCollider, true);
             }
 
-            // Spawn Puddle
-            SodaPuddle puddle = Instantiate(puddlePrefab, transform.position.ZeroOutY(), Quaternion.identity);
-            puddle.Initialize(sodaPoolLifeTime, ec);
-
-            while (audMan.AnyAudioIsPlaying)
+            while (audioManager.AnyAudioIsPlaying)
                 yield return null;
 
             Destroy(gameObject);
@@ -120,9 +125,9 @@ namespace LotsOfItems.CustomItems.BSODAs
     {
         public Entity entity;
         private EnvironmentController ec;
-        private int bounces = 2;
+        private int bounces = Random.Range(5, 15);
         float rotationDegrees = Random.Range(0f, 360f);
-        float speed, bounceTime = Random.Range(0f, 5f);
+        float speed, bounceTime = Random.Range(0f, 5f), bounceTimeSpeed = Random.Range(0.65f, 1.75f);
         Vector3 direction;
         bool active = false;
 
@@ -171,23 +176,23 @@ namespace LotsOfItems.CustomItems.BSODAs
             }
         }
 
-        public void EntityTriggerEnter(Collider other)
+        public void EntityTriggerEnter(Collider other, bool hasCollided)
         {
-            if (!active) return;
+            if (!active || !other.isTrigger) return;
 
-            if (other.isTrigger && other.TryGetComponent<NPC>(out var npc))
+            if ((other.CompareTag("Player") || other.CompareTag("NPC")) && other.TryGetComponent<Entity>(out var e))
             {
-                Vector3 pushDir = (npc.transform.position - transform.position).normalized;
-                npc.Navigator.Entity.AddForce(new Force(pushDir, speed * 0.5f, speed * -0.4f));
+                Vector3 pushDir = (e.transform.position - transform.position).normalized;
+                e.AddForce(new Force(pushDir, speed * 0.5f, speed * -0.4f));
                 Hide();
                 audMan.PlaySingle(audHit);
-                StartCoroutine(SlowNpc(npc));
+                StartCoroutine(SlowEntity(e));
             }
         }
 
-        public void EntityTriggerStay(Collider other) { }
+        public void EntityTriggerStay(Collider other, bool hasCollided) { }
 
-        public void EntityTriggerExit(Collider other) { }
+        public void EntityTriggerExit(Collider other, bool hasCollided) { }
 
         void Update()
         {
@@ -197,11 +202,14 @@ namespace LotsOfItems.CustomItems.BSODAs
                 return;
             }
             entity.UpdateInternalMovement(direction * speed * ec.EnvironmentTimeScale);
-            bounceTime += Time.deltaTime * ec.EnvironmentTimeScale;
+            bounceTime += bounceTimeSpeed * Time.deltaTime * ec.EnvironmentTimeScale;
             entity.SetHeight(Mathf.Abs(Mathf.Sin(bounceTime * bounceSpeed)) * bouncingHeight);
 
-            rotationDegrees = (bounceSpeed * rotationDegrees + Time.deltaTime * ec.EnvironmentTimeScale) % 360;
-            renderer.SetSpriteRotation(rotationDegrees);
+            if (Time.timeScale != 0)
+            {
+                rotationDegrees = (bounceSpeed * rotationDegrees + Time.deltaTime * ec.EnvironmentTimeScale) % 360;
+                renderer.SetSpriteRotation(rotationDegrees);
+            }
         }
 
 
@@ -213,11 +221,11 @@ namespace LotsOfItems.CustomItems.BSODAs
             active = false;
         }
 
-        private IEnumerator SlowNpc(NPC npc)
+        private IEnumerator SlowEntity(Entity entity)
         {
-            npc.Navigator.Am.moveMods.Add(slowDownMod);
+            entity.ExternalActivity.moveMods.Add(slowDownMod);
             yield return new WaitForSecondsEnvironmentTimescale(ec, slowDownTimer);
-            npc?.Navigator.Am.moveMods.Remove(slowDownMod);
+            entity?.ExternalActivity.moveMods.Remove(slowDownMod);
 
             Destroy(gameObject);
         }

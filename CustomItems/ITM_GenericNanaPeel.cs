@@ -15,6 +15,7 @@ namespace LotsOfItems.CustomItems
 		internal virtual bool OnCollisionOverride(RaycastHit hit) => true;
 		internal virtual void OnFloorHit() { }
 		internal virtual bool EntityTriggerStayOverride(Collider other) => true;
+		internal virtual void EntityTriggerEnterOverride(Collider other) { }
 		internal virtual void VirtualUpdate() { }
 		internal virtual bool VirtualEnd() => true;
 	}
@@ -55,6 +56,14 @@ namespace LotsOfItems.CustomItems
 			if (__instance is ITM_GenericNanaPeel gen && ___ready && !___slipping)
 				return gen.EntityTriggerStayOverride(other);
 			return true;
+		}
+
+		[HarmonyPatch("EntityTriggerEnter")]
+		[HarmonyPrefix]
+		static void TriggerEnterExtra(ITM_NanaPeel __instance, Collider other, bool ___ready, bool ___slipping)
+		{
+			if (__instance is ITM_GenericNanaPeel gen && ___ready && !___slipping)
+				gen.EntityTriggerEnterOverride(other);
 		}
 
 		[HarmonyPatch("Update")]

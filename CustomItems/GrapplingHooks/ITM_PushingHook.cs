@@ -66,7 +66,7 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 			}
 		}
 
-		public override void EntityTriggerEnter(Collider other)
+		public override void EntityTriggerEnter(Collider other, bool hasCollided)
 		{
 			if (!locked && other.isTrigger && other.CompareTag("NPC"))
 			{

@@ -19,6 +19,7 @@ public class ITM_SpeedyYTP : ITM_GenericZestyEatable
         Singleton<CoreGameManager>.Instance.AddPoints(points, pm.playerNumber, true);
 
         this.pm = pm;
+        gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, affectorTime);
         StartCoroutine(SpeedAffector(pm.GetMovementStatModifier()));
         return true;
     }

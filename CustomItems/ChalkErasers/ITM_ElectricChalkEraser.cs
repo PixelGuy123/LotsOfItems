@@ -15,7 +15,7 @@ public class ITM_ElectricChalkEraser : ChalkEraser, IItemPrefab
         cloud.name = "ElectricCoverCloud";
         var renderer = cloud.GetComponentInChildren<ParticleSystemRenderer>();
 
-        var newTexture = Instantiate((Texture2D)renderer.material.mainTexture);
+        var newTexture = Instantiate(LotOfItemsPlugin.assetMan.Get<Texture2D>("DustCloudTexture"));
         newTexture.name = "YellowDustCloud";
 
         renderer.material = new Material(renderer.material)

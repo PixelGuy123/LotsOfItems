@@ -78,7 +78,7 @@ namespace LotsOfItems.CustomItems.Apples
             }
         }
 
-        public void EntityTriggerEnter(Collider other)
+        public void EntityTriggerEnter(Collider other, bool hasTouched)
         {
             // Check if we hit Baldi
             if (other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<Baldi>(out var baldi) && baldi.Character == Character.Baldi)
@@ -96,7 +96,7 @@ namespace LotsOfItems.CustomItems.Apples
                 Destroy(gameObject);
             }
         }
-        public void EntityTriggerExit(Collider other) { }
-        public void EntityTriggerStay(Collider other) { }
+        public void EntityTriggerExit(Collider other, bool hasTouched) { }
+        public void EntityTriggerStay(Collider other, bool hasTouched) { }
     }
 }

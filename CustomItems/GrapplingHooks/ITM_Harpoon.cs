@@ -74,7 +74,7 @@ namespace LotsOfItems.CustomItems.GrapplingHooks
 				npc?.Navigator.Am.moveMods.Remove(moveMod);
 		}
 
-		public override void EntityTriggerEnter(Collider other)
+		public override void EntityTriggerEnter(Collider other, bool hasCollided)
 		{
 			if (!touchedNPCs && !locked && other.isTrigger && other.CompareTag("NPC"))
 			{

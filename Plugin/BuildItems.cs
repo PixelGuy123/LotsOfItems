@@ -80,6 +80,7 @@ namespace LotsOfItems.Plugin
 				F5 = "F5",
 				END = "END";
 
+			LotOfItemsPlugin.assetMan.Add("DustCloudTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud").MakeReadableCopy(true));
 			var dustCloudSprite = AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("DustCloud"),
 		((ITM_BSODA)ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value.item).spriteRenderer.sprite.pixelsPerUnit);
 			LotOfItemsPlugin.assetMan.Add("DustCloudSprite", dustCloudSprite);
@@ -279,6 +280,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(500)
 			.SetMeta(ItemFlags.InstantUse | ItemFlags.Persists, [YTPVARTAG])
 			.SetPickupSound(GetGenericYtpAudio(1))
+			.SetAsInstantUse()
 			.SetEnum("SpeedyYTP")
 			.SetItemComponent<ITM_SpeedyYTP>()
 			.SetNameAndDescription("LtsOItems_SpeedyYTP_Name", "LtsOItems_SpeedyYTP_Desc")
@@ -293,6 +295,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(500)
 			.SetMeta(ItemFlags.Persists, [YTPVARTAG])
 			.SetPickupSound(GetGenericYtpAudio(0))
+			.SetAsInstantUse()
 			.SetEnum("DirtYTP")
 			.SetItemComponent<ITM_OutsideYTPS>()
 			.SetNameAndDescription("LtsOItems_TheOutsideYTPs_Name", "LtsOItems_TheOutsideYTPs_Desc")
@@ -306,6 +309,7 @@ namespace LotsOfItems.Plugin
 			.SetGeneratorCost(22)
 			.SetShopPrice(500)
 			.SetMeta(ItemFlags.Persists, [YTPVARTAG])
+			.SetAsInstantUse()
 			.SetPickupSound(GetGenericYtpAudio(1))
 			.SetEnum("GrassYTP")
 			.SetItemComponent<ITM_OutsideYTPS>()
@@ -319,6 +323,7 @@ namespace LotsOfItems.Plugin
 			.SetGeneratorCost(22)
 			.SetShopPrice(500)
 			.SetMeta(ItemFlags.Persists, [YTPVARTAG])
+			.SetAsInstantUse()
 			.SetPickupSound(GetGenericYtpAudio(2))
 			.SetEnum("FlowerYTP")
 			.SetItemComponent<ITM_OutsideYTPS>()
@@ -629,6 +634,28 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 15, acceptableFloors: [F2, F3, F4, F5, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("MysteryBrewCoffee")
+			.SetGeneratorCost(30)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists, [FOOD_TAG, DRINK_TAG, ZESTYVARTAG])
+			.SetEnum("MysteryBrewCoffee")
+			.SetItemComponent<ITM_MysteryBrewCoffee>()
+			.SetNameAndDescription("LtsOItems_MysteryBrewCoffee_Name", "LtsOItems_MysteryBrewCoffee_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ZestyMegaBar")
+			.SetGeneratorCost(40)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.Persists, [FOOD_TAG, ZESTYVARTAG, PIRATE_CANN_HATE])
+			.SetEnum("ZestyMegaBar")
+			.SetItemComponent<ITM_ZestyMegaBar>()
+			.SetNameAndDescription("LtsOItems_ZestyMegaBar_Name", "LtsOItems_ZestyMegaBar_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 15, acceptableFloors: [F3, F4, F5, END]);
+
 
 			#endregion
 
@@ -756,6 +783,17 @@ namespace LotsOfItems.Plugin
 
 			pocketTeleporter.CreateNewReusableInstances(item, "LtsOItems_PocketTeleporter_Name", 4);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("GatewayTeleporter")
+			.SetGeneratorCost(45)
+			.SetShopPrice(950)
+			.SetMeta(ItemFlags.Persists, [DANGERTELEPORTERVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("GatewayTeleporter")
+			.SetItemComponent<ITM_GatewayTeleporter>()
+			.SetNameAndDescription("LtsOItems_GatewayTeleporter_Name", "LtsOItems_GatewayTeleporter_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 10, acceptableFloors: [F3, F4, F5, END]);
+
 			#endregion
 
 			// ---------- WHISTLES VARIANTS ----------
@@ -788,6 +826,17 @@ namespace LotsOfItems.Plugin
 			new(F4, LevelType.Laboratory, LevelType.Schoolhouse),
 			new(F5, LevelType.Laboratory, LevelType.Schoolhouse)
 			, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("FramingWhistle")
+			.SetGeneratorCost(28)
+			.SetShopPrice(400)
+			.SetMeta(ItemFlags.Persists, [PRINCIPALWHISTLEVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("FramingWhistle")
+			.SetItemComponent<ITM_FramingWhistle>()
+			.SetNameAndDescription("LtsOItems_FramingWhistle_Name", "LtsOItems_FramingWhistle_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.PrincipalWhistle, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, F5, END]);
 
 			#endregion
 
@@ -880,17 +929,28 @@ namespace LotsOfItems.Plugin
 			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 25, acceptableFloors: [F2, F3, F4, F5, END]);
 
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
-			.AutoGetSprites("BagOMarbles_5")
+			.AutoGetSprites("BagOMarbles")
 			.SetGeneratorCost(25)
 			.SetShopPrice(400)
 			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [NANAPEELVARTAG])
 			.SetEnum("BagOMarbles")
-			.SetItemComponent<ITM_BagOMarbles>()
+			.SetItemComponent<ITM_BagOMarbles>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_BagOMarbles_Name_5", "LtsOItems_BagOMarbles_Desc")
 			.BuildAndSetup<ITM_BagOMarbles>(out var bag)
 			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 15, acceptableFloors: [F1, F2, F3, END]);
 
 			bag.CreateNewReusableInstances(item, "LtsOItems_BagOMarbles_Name", 4);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BucketOWater")
+			.SetGeneratorCost(15)
+			.SetShopPrice(200)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG])
+			.SetEnum("BucketOWater")
+			.SetItemComponent<ITM_BucketOWater>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_BucketOWater_Name", "LtsOItems_BucketOWater_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
 			#endregion
 
@@ -935,7 +995,18 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<ITM_3DPrintedQuarter>()
 			.SetNameAndDescription("LtsOItems_3DPrintedQuarter_Name", "LtsOItems_3DPrintedQuarter_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(Items.Quarter, appearsInStore: true, weight: 45, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+			.StoreAsNormal(Items.Quarter, appearsInStore: true, weight: 25, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ChippedPenny")
+			.SetGeneratorCost(25)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.None, [QUARTERVARTAG])
+			.SetEnum("ChippedPenny")
+			.SetItemComponent<ITM_ChippedPenny>()
+			.SetNameAndDescription("LtsOItems_ChippedPenny_Name", "LtsOItems_ChippedPenny_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Quarter, appearsInStore: true, weight: 15, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
 			#endregion
 
@@ -1506,6 +1577,20 @@ namespace LotsOfItems.Plugin
 			new(F4, LevelType.Laboratory),
 			new(F5, LevelType.Laboratory)
 			, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("AdaptivePortalPoster")
+			.SetGeneratorCost(50)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.Persists, [PORTALVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("AdaptivePortalPoster")
+			.SetItemComponent<ITM_AdaptivePortalPoster>()
+			.SetNameAndDescription("LtsOItems_AdaptivePortalPoster_Name", "LtsOItems_AdaptivePortalPoster_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.PortalPoster, appearsInStore: true, goToFieldTrips: true, weight: 10, acceptableFloors: [F2, F3,
+			new(F4, LevelType.Laboratory),
+			new(F5, LevelType.Laboratory), END]);
+
 			#endregion
 
 			// ----- Invisibility Elixir variant -----
@@ -2002,6 +2087,17 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 15, acceptableFloors: [F2, F3, F4, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("MSODA")
+			.SetGeneratorCost(35)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("MagneticBSODA")
+			.SetItemComponent<ITM_MagneticBSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_MSODA_Name", "LtsOItems_MSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 15, acceptableFloors: [F2, F3, F4, F5, END]);
+
 			#endregion
 
 			// ------ Wd40 Variants ------
@@ -2260,6 +2356,45 @@ namespace LotsOfItems.Plugin
 					});
 				return state;
 			});
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("TeddyBear")
+			.SetGeneratorCost(25)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.NoUses, [APPLEVARTAG])
+			.SetEnum("TeddyBear")
+			.SetItemComponent<Item>()
+			.SetNameAndDescription("LtsOItems_TeddyBear_Name", "LtsOItems_TeddyBear_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 40, goToFieldTrips: true, acceptableFloors: [F1, F2, F3, END]);
+
+			TeddyBearPatches.audPlaytimeHappy = ObjectCreators.CreateSoundObject(
+				AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "TeddyBear_Wholesome.wav")),
+				 "LtsOItems_Vfx_PlaytimeTeddyBear_0", SoundType.Voice, Color.red);
+			TeddyBearPatches.audPlaytimeHappy.additionalKeys = [
+				new() { key = "LtsOItems_Vfx_PlaytimeTeddyBear_1", time = 0.869f},
+				new() { key = "LtsOItems_Vfx_PlaytimeTeddyBear_2", time = 2.126f}
+			];
+			TeddyBearPatches.teddyBearItem = item.itemType;
+
+			var playtimeRef = (Playtime)NPCMetaStorage.Instance.Get(Character.Playtime).value;
+			TeddyBearPatches.playtimeSprite = AssetLoader.SpriteFromFile(
+				Path.Combine(LotOfItemsPlugin.ModPath, "TeddyBear_Playtime.png"),
+			 	Vector2.one * 0.5f,
+				playtimeRef.spriteRenderer[0].sprite.pixelsPerUnit);
+
+			// ########### HIGH NOTE: IT NEEDS TO BE MARKED AS AN APPLE TO FUNCTION AS INTENDED. WAITING FOR SABEH'S VOICELINE.
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ShinyTrophy")
+			.SetGeneratorCost(40)
+			.SetShopPrice(950)
+			.SetMeta(ItemFlags.NoUses, [APPLEVARTAG])
+			.SetEnum("ShinyTrophy")
+			.SetItemComponent<Item>()
+			.SetNameAndDescription("LtsOItems_ShinyTrophy_Name", "LtsOItems_ShinyTrophy_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 10, acceptableFloors: [F2, F3, F4, F5, END]);
+			AppleItemPatches.trophyItem = item.itemType;
 
 			#endregion
 			// ----- Bus Pass -----

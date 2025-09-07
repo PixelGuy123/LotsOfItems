@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
@@ -13,11 +14,17 @@ public class ITM_AcidSoda : ITM_GenericBSODA
 
     [SerializeField]
     internal float blindTime = 10f;
+    [SerializeField]
+    internal AudioManager audMan;
+    [SerializeField]
+    internal SoundObject audAcidNoise;
 
     protected override void VirtualSetupPrefab(ItemObject itm)
     {
         base.VirtualSetupPrefab(itm);
         spriteRenderer.sprite = this.GetSprite("AcidSoda_Spray.png", spriteRenderer.sprite.pixelsPerUnit);
+        audMan = gameObject.CreateAudioManager(15, 85);
+        audAcidNoise = this.GetSound("AcidSoda_Noise.wav", "LtsOItems_Vfx_AcidBurn", SoundType.Effect, Color.white);
         this.DestroyParticleIfItHasOne();
     }
 
@@ -28,6 +35,7 @@ public class ITM_AcidSoda : ITM_GenericBSODA
             NPC npc = other.GetComponent<NPC>();
             if (npc != null && !hitNpcs.Contains(npc))
             {
+                audMan.PlaySingle(audAcidNoise);
                 hitNpcs.Add(npc);
                 StartCoroutine(BlindNpc(npc, blindTime));
             }

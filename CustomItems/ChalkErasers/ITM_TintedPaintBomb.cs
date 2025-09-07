@@ -31,7 +31,7 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
     protected override void VirtualSetupPrefab(ItemObject itm)
     {
         base.VirtualSetupPrefab(itm);
-        for (int i = 5; i >= 1; i++)
+        for (int i = 5; i >= 1; i--)
             bombTickingSecondSprites.Add(this.GetSpriteSheet($"TintedPaintBomb_World_{i}Sec.png", 2, 2, 25f).RemoveEmptySprites());
 
         animComp = gameObject.AddComponent<AnimationComponent>();
@@ -44,7 +44,7 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
                 .gameObject.SwapComponent<CoverCloud, TintedCoverCloud>();
         cloudPrefab.name = "TintedCloud";
         var cloudRenderer = cloudPrefab.particelRenderer.GetComponent<ParticleSystemRenderer>();
-        var newTexture = Instantiate((Texture2D)cloudRenderer.material.mainTexture);
+        var newTexture = Instantiate(LotOfItemsPlugin.assetMan.Get<Texture2D>("DustCloudTexture"));
         newTexture.name = "TintedCloud";
 
         cloudRenderer.material = new Material(cloudRenderer.material)

@@ -4,140 +4,139 @@ using LotsOfItems.Plugin;
 using PixelInternalAPI.Classes;
 using UnityEngine;
 
-namespace LotsOfItems.CustomItems.BSODAs
+namespace LotsOfItems.CustomItems.BSODAs;
+
+public class ITM_SadSoda : ITM_GenericBSODA
 {
-	public class ITM_SadSoda : ITM_GenericBSODA
+	private NPC targetNpc;
+
+	[SerializeField]
+	private Components.MomentumNavigator momentumNav;
+
+	[SerializeField]
+	private float detectionDistance = 9999f;
+
+	private bool hasDetectedTarget;
+	HashSet<NPC> touchedNPCs;
+	DijkstraMap map;
+
+	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
-		[SerializeField]
-		private NPC targetNpc;
+		base.VirtualSetupPrefab(itm);
+		momentumNav = gameObject.AddComponent<Components.MomentumNavigator>();
+		momentumNav.maxSpeed = speed;
 
-		[SerializeField]
-		private MomentumNavigator momentumNav;
+		spriteRenderer.sprite = this.GetSprite("SadSoda_drink.png", spriteRenderer.sprite.pixelsPerUnit);
+		this.DestroyParticleIfItHasOne();
+	}
 
-		[SerializeField]
-		private float detectionDistance = 9999f;
+	public override bool Use(PlayerManager pm)
+	{
+		base.Use(pm);
 
-		private bool hasDetectedTarget;
-		readonly HashSet<NPC> touchedNPCs = [];
-		DijkstraMap map;
+		touchedNPCs = [];
+		map = new(ec, PathType.Nav, int.MaxValue, [transform]);
 
-		protected override void VirtualSetupPrefab(ItemObject itm)
+		// NPC detection logic
+		if (Physics.Raycast(pm.transform.position, pm.transform.forward, out var hit, detectionDistance, LayerStorage.principalLookerMask))
 		{
-			base.VirtualSetupPrefab(itm);
-			momentumNav = gameObject.AddComponent<MomentumNavigator>();
-			momentumNav.maxSpeed = speed;
+			targetNpc = hit.collider.GetComponent<NPC>();
+			if (targetNpc != null)
+			{
+				hasDetectedTarget = true;
+			}
+		}
+		if (!hasDetectedTarget)
+			FindNearestNPCToTarget();
+		momentumNav.Initialize(ec);
+		return true;
+	}
 
-			spriteRenderer.sprite = this.GetSprite("SadSoda_drink.png", spriteRenderer.sprite.pixelsPerUnit);
-			this.DestroyParticleIfItHasOne();
+	public override void VirtualUpdate()
+	{
+		if (!hasDetectedTarget)
+		{
+			// Fallback to normal BSODA behavior
+			base.VirtualUpdate();
+			return;
 		}
 
-		public override bool Use(PlayerManager pm)
+		if (targetNpc && targetNpc.gameObject.activeSelf)
 		{
-			base.Use(pm);
-
-			map = new(ec, PathType.Nav, int.MaxValue, [transform]);
-
-			// NPC detection logic
-			if (Physics.Raycast(pm.transform.position, pm.transform.forward, out var hit, detectionDistance, LayerStorage.principalLookerMask))
-			{
-				targetNpc = hit.collider.GetComponent<NPC>();
-				if (targetNpc != null)
-				{
-					hasDetectedTarget = true;
-				}
-			}
-			if (!hasDetectedTarget)
-				FindNearestNPCToTarget();
-			momentumNav.Initialize(ec);
-			return true;
+			momentumNav.FindPath(targetNpc.transform.position);
+		}
+		else
+		{
+			hasDetectedTarget = false;
+			momentumNav.ClearDestination();
+			FindNearestNPCToTarget();
 		}
 
-		public override void VirtualUpdate()
-		{
-			if (!hasDetectedTarget)
-			{
-				// Fallback to normal BSODA behavior
-				base.VirtualUpdate();
-				return;
-			}
 
-			if (targetNpc && targetNpc.gameObject.activeSelf)
+		moveMod.movementAddend = momentumNav.Velocity.normalized * speed * ec.EnvironmentTimeScale;
+		time -= Time.deltaTime * ec.EnvironmentTimeScale;
+
+		if (time <= 0f)
+			VirtualEnd();
+	}
+
+	protected override void VirtualEnd()
+	{
+		hasDetectedTarget = false;
+		targetNpc = null;
+		base.VirtualEnd();
+	}
+
+	void FindNearestNPCToTarget()
+	{
+		map.Calculate();
+
+		float distanceToIt = -1f;
+		targetNpc = null;
+		for (int i = 0; i < ec.Npcs.Count; i++)
+		{
+			if (!ec.Npcs[i].Navigator.isActiveAndEnabled || !ec.Npcs[i].Navigator.Entity.InBounds || touchedNPCs.Contains(ec.Npcs[i]))
+				continue;
+
+			float value = map.Value(IntVector2.GetGridPosition(ec.Npcs[i].transform.position));
+			if (distanceToIt == -1f || value < distanceToIt)
 			{
-				momentumNav.FindPath(targetNpc.transform.position);
+				distanceToIt = value;
+				targetNpc = ec.Npcs[i];
 			}
-			else
+		}
+
+		if (distanceToIt != -1f)
+		{
+			hasDetectedTarget = true;
+		}
+	}
+
+	public override bool VirtualEntityTriggerEnter(Collider other)
+	{
+		if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+		{
+			touchedNPCs.Add(npc);
+			npc.Navigator.Entity.Teleport(transform.position);
+			if (npc == targetNpc)
 			{
 				hasDetectedTarget = false;
 				momentumNav.ClearDestination();
 				FindNearestNPCToTarget();
 			}
-
-
-			moveMod.movementAddend = momentumNav.Velocity.normalized * speed * ec.EnvironmentTimeScale;
-			time -= Time.deltaTime * ec.EnvironmentTimeScale;
-
-			if (time <= 0f)
-				VirtualEnd();
 		}
 
-		protected override void VirtualEnd()
+		return true;
+	}
+
+	public override bool VirtualEntityTriggerExit(Collider other)
+	{
+		if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
 		{
-			hasDetectedTarget = false;
-			targetNpc = null;
-			base.VirtualEnd();
+			touchedNPCs.Remove(npc);
+			momentumNav.ClearDestination();
+			targetNpc = npc;
 		}
-
-		void FindNearestNPCToTarget()
-		{
-			map.Calculate();
-
-			float distanceToIt = -1f;
-			targetNpc = null;
-			for (int i = 0; i < ec.Npcs.Count; i++)
-			{
-				if (!ec.Npcs[i].Navigator.isActiveAndEnabled || !ec.Npcs[i].Navigator.Entity.InBounds || touchedNPCs.Contains(ec.Npcs[i]))
-					continue;
-
-				float value = map.Value(IntVector2.GetGridPosition(ec.Npcs[i].transform.position));
-				if (distanceToIt == -1f || value < distanceToIt)
-				{
-					distanceToIt = value;
-					targetNpc = ec.Npcs[i];
-				}
-			}
-
-			if (distanceToIt != -1f)
-			{
-				hasDetectedTarget = true;
-			}
-		}
-
-		public override bool VirtualEntityTriggerEnter(Collider other)
-		{
-			if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
-			{
-				touchedNPCs.Add(npc);
-				npc.Navigator.Entity.Teleport(transform.position);
-				if (npc == targetNpc)
-				{
-					hasDetectedTarget = false;
-					momentumNav.ClearDestination();
-					FindNearestNPCToTarget();
-				}
-			}
-
-			return true;
-		}
-
-		public override bool VirtualEntityTriggerExit(Collider other)
-		{
-			if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
-			{
-				touchedNPCs.Remove(npc);
-				momentumNav.ClearDestination();
-				targetNpc = npc;
-			}
-			return true;
-		}
+		return true;
 	}
 }

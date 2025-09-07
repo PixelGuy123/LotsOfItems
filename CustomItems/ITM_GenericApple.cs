@@ -106,5 +106,22 @@ namespace LotsOfItems.CustomItems
 			}
 			return true;
 		}
+
+		[HarmonyPatch(typeof(Baldi), "Praise")]
+		[HarmonyPrefix]
+		private static void LongerPraise(ref float time, Baldi __instance)
+		{
+			for (int i = 0; i < Singleton<CoreGameManager>.Instance.TotalPlayers; i++)
+			{
+				PlayerManager player = Singleton<CoreGameManager>.Instance.GetPlayer(i);
+				if (__instance.looker.PlayerInSight(player) && player.itm.Has(trophyItem))
+				{
+					time *= 2f;
+					return;
+				}
+			}
+		}
+
+		internal static Items trophyItem;
 	}
 }

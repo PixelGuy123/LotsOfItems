@@ -22,9 +22,6 @@
   </ItemGroup>
   
   <ItemGroup>
-   <Reference Include="BaldiLevelEditor">
-     <HintPath>ExternalReferences\BaldiLevelEditor.dll</HintPath>
-   </Reference>
    <Reference Include="C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll" Publicize="true" />
    <Reference Include="MTM101BaldAPI">
       <HintPath>ExternalReferences\MTM101BaldAPI.dll</HintPath>
@@ -38,18 +35,22 @@
 	<Reference Include="netstandard">
       <HintPath>ExternalReferences\netstandard.dll</HintPath>
     </Reference>
-	<Reference Include="PlusLevelFormat">
-	  <HintPath>ExternalReferences\PlusLevelFormat.dll</HintPath>
-	</Reference>
-	<Reference Include="PlusLevelLoader">
-	  <HintPath>ExternalReferences\PlusLevelLoader.dll</HintPath>
-	</Reference>
 	<Reference Include="UnityEngine.UI">
 	  <HintPath>ExternalReferences\UnityEngine.UI.dll</HintPath>
 	</Reference>
   <Reference Include="BBTimes">
 	  <HintPath>ExternalReferences\BBTimes.dll</HintPath>
 	</Reference>
+  <Reference Include="PlusLevelStudio">
+	   <HintPath>ExternalReferences\PlusLevelStudio.dll</HintPath>
+	 </Reference>
+   <Reference Include="PlusStudioLevelFormat">
+	   <HintPath>ExternalReferences\PlusStudioLevelFormat.dll</HintPath>
+	 </Reference>
+   <Reference Include="PlusStudioLevelLoader">
+	   <HintPath>ExternalReferences\PlusStudioLevelLoader.dll</HintPath>
+	 </Reference>
+    
   </ItemGroup>
 
   <ItemGroup>

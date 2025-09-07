@@ -1,9 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -27,7 +27,7 @@ public class ITM_ChalkBox : Item, IItemPrefab
 
         var chalkOverlayMaterialClosed = new Material(GenericExtensions.FindResourceObject<StandardDoor>().overlayShut[0])
         {
-            mainTexture = this.GetTexture("ChalkBox_ClosedOverlay.png.png"),
+            mainTexture = this.GetTexture("ChalkBox_ClosedOverlay.png"),
             name = "ChalkedDoorOverlay"
         };
         var chalkOverlayMaterialOpen = new Material(GenericExtensions.FindResourceObject<StandardDoor>().overlayOpen[0])
@@ -37,6 +37,10 @@ public class ITM_ChalkBox : Item, IItemPrefab
         };
         chalkPre.chalkOverlay = [chalkOverlayMaterialClosed, chalkOverlayMaterialOpen];
         chalkPre.meshRenderers = [CreateQuad(false), CreateQuad(true)];
+        chalkPre.colliders = new MeshCollider[chalkPre.meshRenderers.Length];
+        for (int i = 0; i < chalkPre.colliders.Length; i++)
+            chalkPre.colliders[i] = chalkPre.meshRenderers[i].GetComponent<MeshCollider>();
+
         chalkPre.UpdateTextures(chalkPre.chalkOverlay[0]);
 
         audChalk = (ItemMetaStorage.Instance.FindByEnum(Items.ChalkEraser).value.item as ChalkEraser).audUse;
@@ -46,8 +50,10 @@ public class ITM_ChalkBox : Item, IItemPrefab
         {
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.transform.SetParent(chalkObject.transform);
+            quad.layer = LayerStorage.blockRaycast;
             quad.transform.localPosition = Vector3.forward * (isBackOne ? -0.01f : 0.01f);
             quad.transform.localRotation = isBackOne ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
+            quad.transform.localScale = Vector3.one * 10f;
             quad.name = "ChalkRenderer_" + (isBackOne ? "Front" : "Back");
             return quad.GetComponent<MeshRenderer>();
         }
@@ -65,7 +71,7 @@ public class ITM_ChalkBox : Item, IItemPrefab
             if (door)
             {
                 var chalked = Instantiate(chalkPre);
-                chalked.Apply(door, duration);
+                chalked.Apply(door, duration, pm);
                 Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audChalk);
                 return true;
             }
@@ -83,12 +89,14 @@ public class ChalkedDoor : MonoBehaviour
     internal Material[] chalkOverlay; // 0 is closed, 1 is open
     [SerializeField]
     internal MeshRenderer[] meshRenderers;
+    [SerializeField]
+    internal MeshCollider[] colliders;
     private float timer;
     private bool isChalked = false;
     Marker_BlockedStandardDoor blockedDoor;
     bool isOpen = false;
 
-    public void Apply(StandardDoor targetDoor, float duration)
+    public void Apply(StandardDoor targetDoor, float duration, PlayerManager user)
     {
         door = targetDoor;
         timer = duration;
@@ -103,6 +111,10 @@ public class ChalkedDoor : MonoBehaviour
         door.ec.RecalculateNavigation();
 
         StartCoroutine(RevertAfterTime());
+        if (!user) return;
+
+        for (int i = 0; i < colliders.Length; i++) // Prevents collision between the chalk door, to make it passable
+            Physics.IgnoreCollision(user.plm.Entity.collider, colliders[i], true);
     }
 
     private IEnumerator RevertAfterTime()

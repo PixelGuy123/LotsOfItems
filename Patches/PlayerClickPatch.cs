@@ -14,7 +14,7 @@ internal static class PlayerClickPatches
         new CodeMatcher(i)
         .MatchForward(true,
         new(OpCodes.Ldarg_0),
-        new(CodeInstruction.LoadField(typeof(IClickable<int>), "click")),
+        new(CodeInstruction.LoadField(typeof(PlayerClick), "click")),
         new(OpCodes.Ldarg_0),
         new(CodeInstruction.LoadField(typeof(PlayerClick), "pm")),
         new(CodeInstruction.LoadField(typeof(PlayerManager), "playerNumber")),
@@ -22,7 +22,7 @@ internal static class PlayerClickPatches
         )
         .InsertAndAdvance(
             new(OpCodes.Ldarg_0),
-            CodeInstruction.LoadField(typeof(IClickable<int>), "click"),
+            CodeInstruction.LoadField(typeof(PlayerClick), "click"),
             new(OpCodes.Ldarg_0),
             Transpilers.EmitDelegate((IClickable<int> clickable, PlayerClick click) => click.GetHandler().InvokeEvent((clickable as MonoBehaviour).gameObject, click))
         )
@@ -40,5 +40,5 @@ internal class PlayerClickHandler : MonoBehaviour
 {
     public event System.Action<GameObject, PlayerClick> OnPlayerClick;
     internal void InvokeEvent(GameObject clickable, PlayerClick click) =>
-        OnPlayerClick(clickable, click);
+        OnPlayerClick?.Invoke(clickable, click);
 }

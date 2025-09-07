@@ -152,13 +152,14 @@ namespace LotsOfItems.Plugin
     // Texture2D extensions
     public static class Texture2DExtensions
     {
-        public static Texture2D Mask(this Texture2D original, Texture2D texRef) =>
-            original.Mask(texRef.GetPixels());
-        public static Texture2D Mask(this Texture2D original, Color[] colorRef)
+        public static Texture2D Mask(this Texture2D original, Texture2D texRef)
         {
+            if (original.width != texRef.width || original.height != texRef.height)
+                throw new ArgumentException($"Original texture has different dimension of texRef. Original ({original.width}x{original.height}) | TexRef ({texRef.width}x{texRef.height})");
+
+            var colorRef = texRef.GetPixels();
             var pixels = original.GetPixels();
-            if (colorRef.Length != pixels.Length)
-                throw new ArgumentException($"Color reference array has a different length from the original texture given. Ref: ({colorRef.Length}) | Pixels: ({pixels.Length})");
+
             for (int i = 0; i < pixels.Length; i++)
             {
                 if (colorRef[i].a == 0f) // If alpha is 0, it's not inside the mask
@@ -305,7 +306,8 @@ namespace LotsOfItems.Plugin
 
             nanaPeel.ready = true;
             nanaPeel.height = nanaPeel.endHeight;
-            nanaPeel.entity.SetGrounded(value: true);
+            nanaPeel.entity.SetGrounded(true);
+            nanaPeel.entity.SetHeight(nanaPeel.height);
             nanaPeel.audioManager.PlaySingle(nanaPeel.audSplat);
             nanaPeel.time = nanaPeel.maxTime;
         }
@@ -315,19 +317,23 @@ namespace LotsOfItems.Plugin
         public static T GetVariantInstance<T>(Items item) where T : Item
         {
             var ogItem = ItemMetaStorage.Instance.FindByEnum(item).value.item;
+            // Debug.Log($"Instantiating item: {ogItem} object of type {ogItem.GetType().Name} for new type ({typeof(T)})");
 
             ogItem.gameObject.SetActive(false); // To make sure the prefab is disabled and no Awake() is called
-            var itm = UnityEngine.Object.Instantiate(ogItem);
-            itm.name = typeof(T).Name;
+            var itmGO = UnityEngine.Object.Instantiate(ogItem).gameObject;
+            itmGO.name = typeof(T).Name;
+            itmGO.ConvertToPrefab(true);
+
+            var genItemComp = itmGO.GetComponent<Item>();
+
+            T newItm = itmGO.AddComponent<T>();
+
+            if (genItemComp.GetType().IsAssignableFrom(newItm.GetType())) // basically if T inherits itm
+                newItm = newItm.GetACopyFromFields(genItemComp);
 
             ogItem.gameObject.SetActive(true); // Forgot about this lol
 
-            var newItm = itm.gameObject.AddComponent<T>();
-            if (itm.GetType().IsAssignableFrom(typeof(T))) // basically if T inherits itm
-                newItm = newItm.GetACopyFromFields(itm);
-            UnityEngine.Object.DestroyImmediate(itm); // immediately to be sure it is not inherited later
-
-            newItm.gameObject.ConvertToPrefab(true);
+            UnityEngine.Object.Destroy(genItemComp);
 
             return newItm;
         }

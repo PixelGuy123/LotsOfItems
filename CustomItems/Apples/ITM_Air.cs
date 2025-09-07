@@ -1,4 +1,3 @@
-using LotsOfItems.CustomItems;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Apples;
@@ -27,8 +26,9 @@ internal class Baldi_AirState(Baldi baldi, NpcState prevState, SoundObject loopA
         {
             if (!baldi.AudMan.AnyAudioIsPlaying)
             {
-                baldi.AudMan.QueueAudio(loopAudio);
+                baldi.AudMan.maintainLoop = true;
                 baldi.AudMan.SetLoop(true);
+                baldi.AudMan.QueueAudio(loopAudio);
                 startedAirLoop = true;
             }
             return;
@@ -56,6 +56,7 @@ internal class Baldi_AirState(Baldi baldi, NpcState prevState, SoundObject loopA
     {
         base.Exit();
         baldi.Navigator.Am.moveMods.Remove(pushMoveMod);
-        baldi.audMan.FlushQueue(true);
+        baldi.AudMan.maintainLoop = false;
+        baldi.AudMan.FlushQueue(true);
     }
 }

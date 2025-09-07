@@ -47,9 +47,9 @@ namespace LotsOfItems.CustomItems
 			pm.Am.moveMods.Remove(moveMod);
 			StartCoroutine(WaitForAudio());
 		}
-		public virtual void EntityTriggerEnter(Collider other) { }
-		public virtual void EntityTriggerStay(Collider other) { }
-		public virtual void EntityTriggerExit(Collider other) { }
+		public virtual void EntityTriggerEnter(Collider other, bool hasCollided) { }
+		public virtual void EntityTriggerStay(Collider other, bool hasCollided) { }
+		public virtual void EntityTriggerExit(Collider other, bool hasCollided) { }
 
 		void OnDestroy() =>
 			OnDespawn();

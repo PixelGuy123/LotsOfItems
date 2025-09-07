@@ -19,9 +19,9 @@ public class ITM_BagOMarbles : ITM_GenericNanaPeel
         gravity = 10f;
 
         var renderer = GetComponentInChildren<SpriteRenderer>();
-        renderer.sprite = this.GetSprite("BagOMarble_World.png", 25f);
+        renderer.sprite = this.GetSprite("BagOMarbles_World.png", 25f);
 
-        audSplat = this.GetSoundNoSub("BagOMarble_Splat.wav", SoundType.Effect);
+        audSplat = this.GetSoundNoSub("BagOMarbles_Splat.wav", SoundType.Effect);
     }
 
     internal override void VirtualUpdate()

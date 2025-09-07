@@ -16,7 +16,7 @@ public class ITM_3DPrintedQuarter : Item, IItemPrefab
     private RaycastHit hit;
 
     public void SetupPrefab(ItemObject itm) =>
-        audBuzz = LotOfItemsPlugin.assetMan.Get<SoundObject>("aud_buzz");
+        audBuzz = LotOfItemsPlugin.assetMan.Get<SoundObject>("audBuzz");
 
     public void SetupPrefabPost() { }
 

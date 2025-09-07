@@ -6,12 +6,7 @@ namespace LotsOfItems.Patches;
 [HarmonyPatch(typeof(PlayerMovement))]
 static class PlayerMovementPatches
 {
-    [HarmonyPatch(nameof(PlayerMovement.Start)), HarmonyPrefix]
-    static void CheckForOtherPlayers()
-    {
-        while (disallowedPlayersToMove.ContainsKey(null))
-            disallowedPlayersToMove.Remove(null); // If there's a null reference, clean it up
-    }
+
     [HarmonyPatch("StaminaUpdate"), HarmonyPrefix]
     static bool PreventPlayerRunning(PlayerMovement __instance)
     {
@@ -35,7 +30,7 @@ static class PlayerMovementPatches
         return true;
     }
 
-    readonly static Dictionary<PlayerManager, int> disallowedPlayersToMove = [];
+    readonly internal static Dictionary<PlayerManager, int> disallowedPlayersToMove = [];
 
     public static void AddDisabledPlayer(PlayerManager pm)
     {

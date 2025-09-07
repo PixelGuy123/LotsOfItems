@@ -214,9 +214,9 @@ public class StainEffector : MonoBehaviour, IEntityTrigger
 		Destroy(gameObject);
 	}
 
-	public void EntityTriggerEnter(Collider other) { }
-	public void EntityTriggerStay(Collider other) { }
-	public void EntityTriggerExit(Collider other)
+	public void EntityTriggerEnter(Collider other, bool hasCollided) { }
+	public void EntityTriggerStay(Collider other, bool hasCollided) { }
+	public void EntityTriggerExit(Collider other, bool hasCollided)
 	{
 		if (other.transform == targetEntity.transform)
 		{

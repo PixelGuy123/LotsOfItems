@@ -26,12 +26,14 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
 
     [SerializeField]
     internal AudioManager audMan;
+    [SerializeField]
+    SpriteRenderer renderer;
 
     Vector3 direction;
 
     public void SetupPrefab(ItemObject itm)
     {
-        var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite("CreepyBaldiBalloon_World.png", 25f)).AddSpriteHolder(out var renderer, 0f);
+        var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite("CreepyBaldiBalloon_World.png", 25f)).AddSpriteHolder(out renderer, 0f);
         rendererBase.transform.SetParent(transform);
         rendererBase.transform.localPosition = Vector3.zero;
         rendererBase.name = "CreepyBaldiBalloon_Sprite";
@@ -53,6 +55,7 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
     {
         this.pm = pm;
         ec = pm.ec;
+        entity.Initialize(ec, pm.transform.position);
         StartCoroutine(InflationAndMovement());
         entity.OnEntityMoveInitialCollision += (hit) => direction = Vector3.Reflect(direction, hit.normal);
         return true;
@@ -65,12 +68,11 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
         while (scale < 1f)
         {
             scale += ec.EnvironmentTimeScale * Time.deltaTime / audInflate.subDuration;
-            transform.localScale = Vector3.one * Mathf.Clamp01(scale);
+            renderer.transform.localScale = Vector3.one * Mathf.Clamp01(scale);
             transform.position = pm.transform.position + pm.transform.forward * 0.85f;
             yield return null;
         }
 
-        entity.Initialize(ec, pm.transform.position);
         direction = pm.transform.forward;
 
         float acceleration = 0f;
@@ -100,7 +102,7 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
         Destroy(gameObject);
     }
 
-    public void EntityTriggerEnter(Collider other)
+    public void EntityTriggerEnter(Collider other, bool hasCollided)
     {
         if (dead || !other.CompareTag("NPC") || other.gameObject == pm.gameObject) return;
 
@@ -117,7 +119,7 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
         }
     }
 
-    public void EntityTriggerStay(Collider other) { }
+    public void EntityTriggerStay(Collider other, bool hasCollided) { }
 
-    public void EntityTriggerExit(Collider other) { }
+    public void EntityTriggerExit(Collider other, bool hasCollided) { }
 }
