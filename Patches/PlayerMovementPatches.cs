@@ -43,7 +43,11 @@ static class PlayerMovementPatches
     public static void RemoveDisabledPlayer(PlayerManager pm)
     {
         if (disallowedPlayersToMove.TryGetValue(pm, out int val) && val > 0)
+        {
             disallowedPlayersToMove[pm]--;
+            if (val <= 1)
+                disallowedPlayersToMove.Remove(pm);
+        }
         else
             disallowedPlayersToMove.Remove(pm);
     }

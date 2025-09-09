@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using LotsOfItems.Components;
 using LotsOfItems.Plugin;
-using PixelInternalAPI.Classes;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.ChalkErasers

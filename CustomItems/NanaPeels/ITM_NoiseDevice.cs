@@ -30,6 +30,8 @@ public class ITM_NoiseDevice : ITM_GenericNanaPeel
 
         var image = ObjectCreationExtensions.CreateImage(canvasIndicator, this.GetSprite("NoiseDevice_indicator.png", 25f), false);
         image.transform.localPosition = new(205.75f, -138.29f);
+
+        endHeight = 1.25f;
     }
 
     public override bool Use(PlayerManager pm)

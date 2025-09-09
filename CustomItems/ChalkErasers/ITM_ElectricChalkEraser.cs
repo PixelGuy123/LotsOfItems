@@ -31,15 +31,16 @@ public class ITM_ElectricChalkEraser : ChalkEraser, IItemPrefab
 
     public override bool Use(PlayerManager pm)
     {
+        ec = pm.ec;
         IntVector2 gridPosition = IntVector2.GetGridPosition(pm.transform.position);
         pos.x = gridPosition.x * 10f + 5f;
         pos.z = gridPosition.z * 10f + 5f;
         pos.y = ec.transform.position.y + 5f;
 
-        foreach (Cell cell in pm.ec.FindCellsInNavigableRange(radius, gridPosition))
+        foreach (Cell cell in ec.FindCellsInNavigableRange(radius, gridPosition))
         {
             CoverCloud cloud = Instantiate(this.cloud, cell.CenterWorldPosition, Quaternion.identity);
-            cloud.Ec = pm.ec;
+            cloud.Ec = ec;
             cloud.StartEndTimer(setTime);
             cloud.gameObject.AddComponent<ElectricCloudEffect>();
         }
@@ -53,8 +54,9 @@ public class ITM_ElectricChalkEraser : ChalkEraser, IItemPrefab
 
 public class ElectricCloudEffect : MonoBehaviour
 {
-    readonly private MovementModifier shakeMod = new(Vector3.zero, 1f, 0);
+    readonly private MovementModifier shakeMod = new(Vector3.zero, 0.85f, 0);
     readonly private List<Entity> affectedEntities = [];
+    public float shockIntensity = 12.5f;
 
     void OnTriggerEnter(Collider other)
     {
@@ -78,7 +80,8 @@ public class ElectricCloudEffect : MonoBehaviour
 
     void Update()
     {
-        shakeMod.movementAddend = Random.insideUnitSphere * 5f;
+        if (Time.timeScale != 0)
+            shakeMod.movementAddend = Random.insideUnitSphere * shockIntensity;
     }
 
     void OnDestroy()

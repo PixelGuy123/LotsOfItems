@@ -10,8 +10,8 @@ namespace LotsOfItems.CustomItems.BSODAs;
 
 public class ITM_SnowGun : ITM_GenericBSODA
 {
-    public float gravity = 25f;
-    public float slowDuration = 10f, minVerticalSpeed = 0.75f, maxVerticalSpeed = 2f;
+    public float gravity = 0.1f;
+    public float slowDuration = 10f, minVerticalSpeed = 0.05f, maxVerticalSpeed = 0.15f;
     public float slowMultiplier = 0.75f;
     private float verticalSpeed = 0f;
     float verticalLimit = 9.5f, verticalHeight;
@@ -44,7 +44,7 @@ public class ITM_SnowGun : ITM_GenericBSODA
 
         slowMod = new(Vector3.zero, slowMultiplier);
         verticalSpeed = Random.Range(minVerticalSpeed, maxVerticalSpeed);
-        verticalHeight = ec.Height;
+        verticalHeight = pm.plm.Entity.BaseHeight;
         entity.OnEntityMoveInitialCollision += (hit) =>
         {
             if (!hasEnded) VirtualEnd();

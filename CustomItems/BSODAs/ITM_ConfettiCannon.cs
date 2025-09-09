@@ -16,46 +16,59 @@ public class ITM_ConfettiCannon : Item, IItemPrefab
     private SoundObject audUse;
 
     [SerializeField]
-    private float recoilForce = 65f, pushForce = 100f;
+    private float recoilForce = 35f, pushForce = 100f;
     [SerializeField]
     private float planeSpeed = 50f;
 
     public void SetupPrefab(ItemObject itm)
     {
         // Create the confetti plane prefab
-        var planeObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        planeObj.name = "ConfettiPlane";
-        planeObj.layer = LayerStorage.ignoreRaycast;
-        planeObj.transform.localScale = Vector3.one * 8.5f;
-        planeObj.ConvertToPrefab(true);
-
-        var planeRenderer = planeObj.GetComponent<MeshRenderer>();
-        planeRenderer.material = new Material(Shader.Find(LotOfItemsPlugin.tileAlpha_shader))
+        var planeObjHolder = new GameObject("ConfettiPlane")
         {
-            mainTexture = this.GetTexture("ConfettiCannon_Plane.png"),
-            name = "ConfettiMat"
+            layer = LayerStorage.ignoreRaycast
         };
+        MakeQuad(false);
+        MakeQuad(true);
+        planeObjHolder.ConvertToPrefab(true);
 
-        var rb = planeObj.AddComponent<Rigidbody>();
+        var rb = planeObjHolder.AddComponent<Rigidbody>();
         rb.useGravity = true;
         rb.drag = 0.5f;
         rb.freezeRotation = false;
-        rb.isKinematic = true;
 
         // Make sure to not break collision
-        Destroy(planeObj.GetComponent<MeshCollider>()); // We're not using mesh collider, but box collision
-        var box = planeObj.gameObject.AddComponent<BoxCollider>();
-        box.size = new Vector3(2f, 0.5f, 2f);
+        var box = planeObjHolder.gameObject.AddComponent<BoxCollider>();
+        box.size = Vector3.one * 7f;
         box.isTrigger = true;
 
-        planePrefab = planeObj.AddComponent<ConfettiPlane>();
+        planePrefab = planeObjHolder.AddComponent<ConfettiPlane>();
         planePrefab.pushForce = pushForce;
-        planePrefab.audMan = planeObj.CreateAudioManager(20f, 40f);
+        planePrefab.audMan = planeObjHolder.CreateAudioManager(20f, 40f);
         planePrefab.audMan.pitchModifier = 1.25f;
         planePrefab.rb = rb;
         planePrefab.hitSounds = [.. ((Baldi)NPCMetaStorage.Instance.Get(Character.Baldi).value).correctSounds.ConvertAll(x => x.selection)];
 
         audUse = this.GetSoundNoSub("ConfettiCannon_Shoot.wav", SoundType.Effect);
+
+        GameObject MakeQuad(bool isBack)
+        {
+            var planeObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            planeObj.name = "ConfettiPlaneRenderer_" + (isBack ? "Back" : "Front");
+            planeObj.transform.localScale = Vector3.one * 10f;
+            planeObj.transform.SetParent(planeObjHolder.transform);
+            planeObj.transform.localPosition = Vector3.zero;
+            planeObj.transform.localRotation = isBack ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
+
+            var planeRenderer = planeObj.GetComponent<MeshRenderer>();
+            planeRenderer.material = new Material(Shader.Find(LotOfItemsPlugin.tileAlpha_shader))
+            {
+                mainTexture = this.GetTexture("ConfettiCannon_Plane.png"),
+                name = "ConfettiMat"
+            };
+            planeRenderer.transform.localScale = Vector3.one * 10f;
+            Destroy(planeObj.GetComponent<MeshCollider>()); // We're not using mesh collider, but box collision
+            return planeObj;
+        }
     }
     public void SetupPrefabPost() { }
 
@@ -66,6 +79,7 @@ public class ITM_ConfettiCannon : Item, IItemPrefab
         // Spawn confetti plane
         ConfettiPlane plane = Instantiate(planePrefab, camera.position + camera.forward * 2f, camera.rotation);
         plane.rb.velocity = camera.forward * planeSpeed;
+        plane.transform.rotation = Random.rotation;
         plane.RandomizeAngularVelocity();
 
         // Apply recoil
@@ -83,14 +97,15 @@ public class ConfettiPlane : MonoBehaviour
     public AudioManager audMan;
     public Rigidbody rb;
     public SoundObject[] hitSounds;
+    public float maxAngularVelocity = 5f;
 
     public void RandomizeAngularVelocity()
     {
         var vel = rb.angularVelocity;
         Vector3 random = Random.insideUnitSphere;
-        vel.x *= random.x;
-        vel.y *= random.y;
-        vel.z *= random.z;
+        vel.x += random.x * Random.Range(0f, maxAngularVelocity);
+        vel.y += random.y * Random.Range(0f, maxAngularVelocity);
+        vel.z += random.z * Random.Range(0f, maxAngularVelocity);
         rb.angularVelocity = vel;
     }
 
@@ -102,8 +117,8 @@ public class ConfettiPlane : MonoBehaviour
             npc.Navigator.Entity.AddForce(new Force(pushDir, pushForce, -pushForce));
 
             Vector3 vel = rb.velocity;
-            vel.y = Mathf.Abs(vel.y); // Turns absolute to go up
-            rb.velocity = vel * 1.25f; // Get a even stronger boost forwards
+            vel.y = Mathf.Abs(vel.y * 1.085f); // Turns absolute to go up
+            rb.velocity = vel * 1.1f; // Get a even stronger boost forwards
 
             RandomizeAngularVelocity();
 

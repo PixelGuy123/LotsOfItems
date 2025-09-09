@@ -1,9 +1,12 @@
-using UnityEngine;
+using LotsOfItems.ItemPrefabStructures;
 
 namespace LotsOfItems.CustomItems.InvisibilityElixir;
 
-public class ITM_SpecialPotion : ITM_InvisibilityElixir
+public class ITM_SpecialPotion : ITM_InvisibilityElixir, IItemPrefab
 {
+    public void SetupPrefab(ItemObject itm) =>
+        gaugeSprite = itm.itemSpriteSmall;
+    public void SetupPrefabPost() { }
     public override bool Use(PlayerManager pm)
     {
         this.pm = pm;

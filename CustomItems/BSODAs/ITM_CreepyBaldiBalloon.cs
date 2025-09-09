@@ -8,9 +8,10 @@ namespace LotsOfItems.CustomItems.BSODAs;
 
 public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
 {
-    public float speed = 2f;
+    public float speed = 3.5f;
     public float lifetime = 20f;
     public float pushForce = 30f;
+    public float finalScale = 2.5f;
     bool dead = false;
 
     EnvironmentController ec;
@@ -64,11 +65,11 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
     private IEnumerator InflationAndMovement()
     {
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audInflate);
-        float scale = 0f;
-        while (scale < 1f)
+        float t = 0f;
+        while (t < audInflate.subDuration)
         {
-            scale += ec.EnvironmentTimeScale * Time.deltaTime / audInflate.subDuration;
-            renderer.transform.localScale = Vector3.one * Mathf.Clamp01(scale);
+            t += ec.EnvironmentTimeScale * Time.deltaTime;
+            renderer.transform.localScale = Vector3.one * Mathf.Lerp(0f, finalScale, Mathf.Clamp01(t / audInflate.subDuration));
             transform.position = pm.transform.position + pm.transform.forward * 0.85f;
             yield return null;
         }
@@ -112,7 +113,7 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
             Vector3 direction = (hitEntity.transform.position - transform.position).normalized;
             hitEntity.AddForce(new Force(direction, pushForce, -pushForce * 0.5f));
 
-            float reverseForce = pushForce * 0.75f;
+            float reverseForce = pushForce * 0.35f;
             entity.AddForce(new Force(-direction, reverseForce, -reverseForce * 0.5f));
 
             audMan.PlaySingle(audHit);

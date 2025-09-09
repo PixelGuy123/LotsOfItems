@@ -26,6 +26,8 @@ public class ITM_IceNanaPeel : ITM_GenericNanaPeel
         var renderer = GetComponentInChildren<SpriteRenderer>();
         renderer.sprite = itm.itemSpriteLarge.DuplicateItself(renderer.sprite.pixelsPerUnit);
         renderer.sprite.name = $"{itm.itemSpriteLarge.name}_World";
+
+        endHeight = 1.11f;
     }
 
     internal override bool EntityTriggerStayOverride(Collider other)

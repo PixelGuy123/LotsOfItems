@@ -104,7 +104,7 @@ namespace LotsOfItems.Plugin
 				.SetPickupSound(GetGenericYtpAudio(1))
 				.SetItemComponent<ITM_SquareYTP>()
 				.SetNameAndDescription("LtsOItems_SquareYtp_Name", "LtsOItems_SquareYtp_Desc")
-				.Build()
+				.BuildAndSetup()
 				.StoreAsNormal(Items.Points, goToFieldTrips: true, appearsInStore: false, weight: 25, acceptableFloors: [
 					F1, F2, F3, END,
 					F4,
@@ -120,7 +120,7 @@ namespace LotsOfItems.Plugin
 				.SetPickupSound(GetGenericYtpAudio(0))
 				.SetItemComponent<ITM_SquareRootYTP>()
 				.SetNameAndDescription("LtsOItems_SquareRootYtp_Name", "LtsOItems_SquareRootYtp_Desc")
-				.Build()
+				.BuildAndSetup()
 				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 35, acceptableFloors: [
 					F1, F2, F3, END, F4, F5
 				]);
@@ -134,7 +134,7 @@ namespace LotsOfItems.Plugin
 				.SetPickupSound(GetGenericYtpAudio(1))
 				.SetItemComponent<ITM_PiYTP>()
 				.SetNameAndDescription("LtsOItems_PiYtp_Name", "LtsOItems_PiYtp_Desc")
-				.Build()
+				.BuildAndSetup()
 				.StoreAsNormal(Items.Points, appearsInStore: false, weight: 15, acceptableFloors: [
 					F2, F3, END, F4, F5
 				]);
@@ -833,7 +833,7 @@ namespace LotsOfItems.Plugin
 			.SetShopPrice(400)
 			.SetMeta(ItemFlags.Persists, [PRINCIPALWHISTLEVARTAG, CRIMINALPACK_CONTRABAND])
 			.SetEnum("FramingWhistle")
-			.SetItemComponent<ITM_FramingWhistle>()
+			.SetItemComponent<ITM_FramingWhistle>(Items.PrincipalWhistle)
 			.SetNameAndDescription("LtsOItems_FramingWhistle_Name", "LtsOItems_FramingWhistle_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.PrincipalWhistle, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, F5, END]);
@@ -915,7 +915,7 @@ namespace LotsOfItems.Plugin
 			.SetEnum("ChocolateNanaPeel")
 			.SetItemComponent<ITM_ChocolateNanaPeel>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_ChocolateNanaPeel_Name", "LtsOItems_ChocolateNanaPeel_Desc")
-			.Build();
+			.BuildAndSetup();
 
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("IceNanaPeel")
@@ -2290,7 +2290,7 @@ namespace LotsOfItems.Plugin
 			.SetEnum("Air")
 			.SetItemComponent<Item>()
 			.SetNameAndDescription("LtsOItems_Air_Name", "LtsOItems_Air_Desc")
-			.Build()
+			.BuildAndSetup()
 			.StoreAsNormal(Items.Apple, appearsInStore: false, weight: 12, acceptableFloors: [F1, F2, F3, F4, F5, END])
 			.AddItemAsApple(baldi => new Baldi_AirState(baldi, baldi.behaviorStateMachine.CurrentState, airLoop, baldiEatAir, baldiAirThanks));
 
@@ -2303,7 +2303,7 @@ namespace LotsOfItems.Plugin
 			.SetEnum("CaramelizedApple")
 			.SetItemComponent<Item>()
 			.SetNameAndDescription("LtsOItems_CaramelizedApple_Name", "LtsOItems_CaramelizedApple_Desc")
-			.Build()
+			.BuildAndSetup()
 			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 20, acceptableFloors: [F3, F4, F5, END])
 			.AddItemAsApple(baldi => new Baldi_CustomAppleState(baldi, baldi.behaviorStateMachine.CurrentState,
 				sprBaldiCaramelLook,
@@ -2320,7 +2320,7 @@ namespace LotsOfItems.Plugin
 			.SetEnum("ChocolateBanana")
 			.SetItemComponent<Item>()
 			.SetNameAndDescription("LtsOItems_ChocolateBanana_Name", "LtsOItems_ChocolateBanana_Desc")
-			.Build()
+			.BuildAndSetup()
 			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 25, acceptableFloors: [F2, F3, F4, F5, END])
 			.AddItemAsApple(baldi => new Baldi_CustomAppleState(baldi, baldi.behaviorStateMachine.CurrentState,
 					sprBaldiChocoBananaLook,

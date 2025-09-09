@@ -13,15 +13,26 @@ public class ITM_BagOMarbles : ITM_GenericNanaPeel
         base.VirtualSetupPrefab(itm);
         speed = 25f;
         maxTime = 15f;
-        endHeight = 0.2f;
+        endHeight = 0.5f;
         startHeight = 1f;
-        throwSpeed = 10f;
+        throwSpeed = 45f;
         gravity = 10f;
 
         var renderer = GetComponentInChildren<SpriteRenderer>();
-        renderer.sprite = this.GetSprite("BagOMarbles_World.png", 25f);
+        renderer.sprite = this.GetSprite("BagOMarbles_World.png", 75f);
 
         audSplat = this.GetSoundNoSub("BagOMarbles_Splat.wav", SoundType.Effect);
+    }
+
+    public override bool Use(PlayerManager pm)
+    {
+        base.Use(pm);
+        if (nextItem != null)
+        {
+            pm.itm.SetItem(nextItem, pm.itm.selectedItem);
+            return false;
+        }
+        return true;
     }
 
     internal override void VirtualUpdate()

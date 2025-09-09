@@ -10,6 +10,8 @@ public class ITM_360SODA : Item, IItemPrefab
     internal ITM_BSODA bsodaPrefab;
     [SerializeField]
     internal SoundObject audUse;
+    [SerializeField]
+    internal int numOfSodas = 16;
     public void SetupPrefab(ItemObject itm)
     {
         bsodaPrefab = ItemExtensions.GetVariantInstance<ITM_BSODA>(Items.Bsoda);
@@ -20,14 +22,13 @@ public class ITM_360SODA : Item, IItemPrefab
     public override bool Use(PlayerManager pm)
     {
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
-        for (int i = 0; i < 16; i++)
+        float angleAddition = 360f / numOfSodas;
+        float angle = pm.transform.eulerAngles.y;
+        for (int i = 0; i < numOfSodas; i++)
         {
-            float angle = i * (360f / 16f);
-            Quaternion rotation = Quaternion.Euler(0, angle, 0);
-            Vector3 direction = rotation * Vector3.forward;
-
             ITM_BSODA bsoda = Instantiate(bsodaPrefab);
-            bsoda.IndividuallySpawn(pm.ec, pm.transform.position, direction);
+            bsoda.IndividuallySpawn(pm.ec, pm.transform.position, Quaternion.Euler(0, angle, 0) * Vector3.forward);
+            angle = (angle + angleAddition) % 360f;
         }
 
         Destroy(gameObject);

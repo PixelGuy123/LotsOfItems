@@ -51,10 +51,10 @@ public class ITM_ChalkBox : Item, IItemPrefab
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.transform.SetParent(chalkObject.transform);
             quad.layer = LayerStorage.blockRaycast;
-            quad.transform.localPosition = Vector3.forward * (isBackOne ? -0.01f : 0.01f);
+            quad.transform.localPosition = Vector3.forward * (isBackOne ? -0.001f : 0.001f);
             quad.transform.localRotation = isBackOne ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
-            quad.transform.localScale = Vector3.one * 10f;
-            quad.name = "ChalkRenderer_" + (isBackOne ? "Front" : "Back");
+            quad.transform.localScale = new(10.2f, 10f, 10f);
+            quad.name = "ChalkRenderer_" + (!isBackOne ? "Front" : "Back");
             return quad.GetComponent<MeshRenderer>();
         }
     }
@@ -150,7 +150,7 @@ public class ChalkedDoor : MonoBehaviour
         door.ec.RecalculateNavigation();
 
         Destroy(blockedDoor);
-        Destroy(this);
+        Destroy(gameObject);
     }
 
     void OnDestroy() =>

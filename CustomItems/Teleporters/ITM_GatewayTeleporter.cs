@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Teleporters;
@@ -12,21 +13,22 @@ public class ITM_GatewayTeleporter : ITM_GenericTeleporter
             return;
         }
 
-        Elevator targetElevator = null;
+        exclusiveElevators.Clear();
         for (int i = 0; i < pm.ec.elevators.Count; i++)
         {
             var el = pm.ec.elevators[i];
-            if (el.IsOpen && el.Powered)
-            {
-                targetElevator = el;
-                break;
-            }
+            if (lastPickedElevator != el && el.IsOpen && el.Powered)
+                exclusiveElevators.Add(el);
         }
 
-        if (targetElevator == null)
-            targetElevator = pm.ec.elevators[Random.Range(0, pm.ec.elevators.Count)];
+        if (exclusiveElevators.Count == 0)
+            exclusiveElevators.AddRange(pm.ec.elevators); // Just ignore all conditions
 
-        pm.Teleport(pm.ec.CellFromPosition(targetElevator.Door.position + targetElevator.Door.direction.ToIntVector2()).FloorWorldPosition);
+        lastPickedElevator = exclusiveElevators[Random.Range(0, exclusiveElevators.Count)];
+        pm.Teleport(pm.ec.CellFromPosition(lastPickedElevator.Door.position - lastPickedElevator.Door.direction.ToIntVector2()).FloorWorldPosition);
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audTeleport);
     }
+
+    Elevator lastPickedElevator;
+    readonly List<Elevator> exclusiveElevators = [];
 }

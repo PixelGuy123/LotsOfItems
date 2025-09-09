@@ -1,3 +1,4 @@
+using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using UnityEngine;
 
@@ -8,12 +9,19 @@ public class ITM_BucketOWater : ITM_GenericNanaPeel
     [SerializeField]
     [Range(0f, 1f)]
     internal float negateDirectionChance = 0.5f;
+    [SerializeField]
+    internal Sprite puddleSprite;
+    [SerializeField]
+    internal SpriteRenderer renderer;
     protected override void VirtualSetupPrefab(ItemObject itm)
     {
         base.VirtualSetupPrefab(itm);
-        var renderer = GetComponentInChildren<SpriteRenderer>();
+        renderer = GetComponentInChildren<SpriteRenderer>();
         renderer.sprite = itm.itemSpriteLarge.DuplicateItself(renderer.sprite.pixelsPerUnit);
         renderer.sprite.name = $"{itm.itemSpriteLarge.name}_World";
+        audSplat = this.GetSound("BucketOWater_Splash.wav", "LtsOItems_Vfx_Splash", SoundType.Effect, Color.white); // splash!
+        puddleSprite = this.GetSprite("BucketOWater_Puddle.png", renderer.sprite.pixelsPerUnit);
+        endHeight = 1.25f;
     }
 
     internal override bool EntityTriggerStayOverride(Collider other)
@@ -43,5 +51,11 @@ public class ITM_BucketOWater : ITM_GenericNanaPeel
             }
         }
         return false;
+    }
+
+    internal override void OnFloorHit()
+    {
+        base.OnFloorHit();
+        renderer.sprite = puddleSprite;
     }
 }

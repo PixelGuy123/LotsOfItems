@@ -62,7 +62,6 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 		var stats = pm.GetMovementStatModifier();
 		stats.AddModifier("staminaDrop", staminaMod);
 
-
 		yield return null;
 
 		float time = setTime;

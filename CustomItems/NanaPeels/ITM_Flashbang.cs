@@ -42,6 +42,8 @@ public class ITM_Flashbang : ITM_GenericNanaPeel
         image.name = "FlashbangImage";
 
         explosionAnimation = this.GetSpriteSheet("Flashbang_Explosion.png", 4, 3, 25f);
+
+        endHeight = 1.075f;
     }
 
     public override bool Use(PlayerManager pm)

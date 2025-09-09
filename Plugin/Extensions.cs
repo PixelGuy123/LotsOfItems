@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
@@ -34,7 +35,7 @@ namespace LotsOfItems.Plugin
     {
         public static Sprite DuplicateItself(this Sprite ogSpr, float newPixelsPerUnit)
         {
-            var spr = Sprite.Create(ogSpr.texture, ogSpr.textureRect, ogSpr.pivot, newPixelsPerUnit, 0u, SpriteMeshType.FullRect);
+            var spr = AssetLoader.SpriteFromTexture2D(ogSpr.texture, newPixelsPerUnit);
             spr.name = $"{ogSpr.name}_Duplicate";
             return spr;
         }
@@ -400,21 +401,10 @@ namespace LotsOfItems.Plugin
 
         public static ParticleSystem GetNewParticleSystem(this ParticleSystem original, out ParticleSystemRenderer particleSystemRenderer)
         {
-            var particle = UnityEngine.Object.Instantiate(
-                        (
-                            ItemMetaStorage.Instance.FindByEnum(Items.ChalkEraser).value.item as ChalkEraser
-                        ).cloud);
-
-            var obj = particle.gameObject;
-            particle.name = original.name;
-
-            UnityEngine.Object.DestroyImmediate(particle.particles); // Destroys original Particle instance
-
-            particle.particles = obj.AddComponent<ParticleSystem>(); // Adds a new fresh ParticleSystem to have everything set to default values
-            particleSystemRenderer = obj.GetComponent<ParticleSystemRenderer>();
-
-            particleSystemRenderer.material = new(particleSystemRenderer.material) { name = $"{particle.name}_Mat" };
-            return particle.particles;
+            var particleObject = original.gameObject;
+            UnityEngine.Object.DestroyImmediate(original); // Destroys original Particle instance
+            particleSystemRenderer = particleObject.GetComponent<ParticleSystemRenderer>();
+            return particleObject.AddComponent<ParticleSystem>();
         }
     }
 

@@ -33,7 +33,7 @@ public class ITM_KeyRing : Item, IItemPrefab
                 GameLock gLock = hit.transform.GetComponent<GameLock>();
                 if (gLock && gLock.locked)
                 {
-                    gLock.Remove();
+                    gLock.InsertItem(pm, pm.ec); // Force a gameLock removal
                     used = true;
                 }
             }

@@ -1,20 +1,21 @@
+using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI.Registers;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Quarters;
 
-public class ITM_ChippedPenny : Item
+public class ITM_ChippedPenny : Item, IItemPrefab
 {
     [SerializeField]
-    private ItemObject quarterItem;
-    [SerializeField]
-    private ItemObject pennyItem;
+    private ItemObject quarterItem, pennyItem;
 
     public void SetupPrefab(ItemObject itm)
     {
         quarterItem = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
         pennyItem = itm;
     }
+
+    public void SetupPrefabPost() { }
 
     public override bool Use(PlayerManager pm)
     {

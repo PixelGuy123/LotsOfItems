@@ -5,17 +5,23 @@ namespace LotsOfItems.Components;
 public class Marker_StandardDoorSilenced : MonoBehaviour // Works with NoSquee variants
 {
     StandardDoor door;
+    Marker_AudioManagerMute muteComp;
     public void Initialize(StandardDoor door, int silencesCounter)
     {
         this.door = door;
         door.makesNoise = false;
         counter = silencesCounter;
+        muteComp = door.gameObject.AddComponent<Marker_AudioManagerMute>(); // To make sure the door is fully silent regardless
     }
 
     void OnDestroy()
     {
         if (door)
+        {
             door.makesNoise = true;
+            if (muteComp)
+                Destroy(muteComp);
+        }
     }
     public int counter = 0;
 }

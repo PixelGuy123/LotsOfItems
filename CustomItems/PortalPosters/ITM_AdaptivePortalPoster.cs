@@ -38,8 +38,8 @@ public class ITM_AdaptivePortalPoster : Item, IItemPrefab
         portalRenderer.name = "PortalRenderer";
 
         triggerCollider = gameObject.AddComponent<BoxCollider>();
-        triggerCollider.center = Vector3.up * 5f;
-        triggerCollider.size = new(2f, 2f, 2f);
+        triggerCollider.center = new(0f, 0f, -0.25f);
+        triggerCollider.size = new(6f, 6f, 0.15f);
         triggerCollider.isTrigger = true;
         gameObject.layer = LayerStorage.ignoreRaycast;
 

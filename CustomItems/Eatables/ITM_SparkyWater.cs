@@ -59,11 +59,13 @@ public class ITM_SparklyWater : ITM_GenericZestyEatable
                 }
             }
             else blindInterval -= Time.deltaTime * pm.PlayerTimeScale;
+
+            yield return null;
         }
         // Wait until there's no npc blinded
+        gauge.Deactivate();
         while (blindedNPCs > 0)
             yield return null;
-        gauge.Deactivate();
         Destroy(gameObject);
     }
 

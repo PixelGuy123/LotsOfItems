@@ -33,6 +33,7 @@ namespace LotsOfItems.CustomItems.BSODAs
         internal ItemObject nextItem = null;
 
         private float verticalSpeed = 0f;
+        bool letalTouch = true;
 
         protected override void VirtualSetupPrefab(ItemObject itm)
         {
@@ -106,14 +107,15 @@ namespace LotsOfItems.CustomItems.BSODAs
 
         public override bool VirtualEntityTriggerEnter(Collider other)
         {
-            if (other.isTrigger && other.CompareTag("NPC"))
+            if (letalTouch && other.isTrigger && other.CompareTag("NPC"))
             {
                 NPC npc = other.GetComponent<NPC>();
 
-                if (npc != null && npc.isActiveAndEnabled)
+                if (npc && npc.isActiveAndEnabled)
                 {
                     pm?.RuleBreak("Bullying", 2.5f, 0.35f);
                     KillNpc(npc);
+                    letalTouch = false;
                     VirtualEnd();
                     return false; // Prevent default BSODA push
                 }

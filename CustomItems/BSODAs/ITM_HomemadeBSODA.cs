@@ -24,7 +24,7 @@ public class ITM_HomemadeBSODA : ITM_GenericBSODA
             NPC npc = other.GetComponent<NPC>();
             if (npc)
             {
-                StartCoroutine(DisableNPC(npc));
+                npc.StartCoroutine(DisableNPC(npc));
                 return false;
             }
         }
@@ -44,8 +44,6 @@ public class ITM_HomemadeBSODA : ITM_GenericBSODA
         yield return new WaitForSecondsEnvironmentTimescale(ec, disableDuration);
 
         // --- Re-enable NPC ---
-        if (!npc) yield break;
-
         npc.Navigator.Entity.SetFrozen(false);
         npc.Navigator.Entity.SetVisible(true);
         npc.Navigator.Entity.SetInteractionState(true);

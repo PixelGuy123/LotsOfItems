@@ -7,9 +7,9 @@ namespace LotsOfItems.CustomItems.ChalkErasers;
 public class ITM_FireExtinguisher : Item, IItemPrefab
 {
     public CoverCloud coverCloudPrefab;
-    public float cloudLifetime = 8f;
+    public float cloudLifetime = 15f;
     public LayerMask layerHit = LayerMask.NameToLayer("Wall");
-    public float maxDistance = 15f;
+    public float maxDistance = 85f;
     [SerializeField]
     internal SoundObject audExtinguish;
     EnvironmentController ec;

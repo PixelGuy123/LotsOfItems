@@ -20,8 +20,8 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
     public CoverCloud cloudPrefab;
     // public Canvas screenOverlayPrefab;
     public Sprite gaugeSprite;
-    [SerializeField]
-    internal List<Sprite[]> bombTickingSecondSprites = []; // Collection of 3 sprites for each 5 seconds
+    // Needs to be static for serialization
+    static internal List<Sprite[]> bombTickingSecondSprites = []; // Collection of 3 sprites for each 5 seconds
     [SerializeField]
     internal AnimationComponent animComp;
     DijkstraMap map;
@@ -32,12 +32,13 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
     {
         base.VirtualSetupPrefab(itm);
         for (int i = 5; i >= 1; i--)
-            bombTickingSecondSprites.Add(this.GetSpriteSheet($"TintedPaintBomb_World_{i}Sec.png", 2, 2, 25f).RemoveEmptySprites());
+            bombTickingSecondSprites.Add(this.GetSpriteSheet($"TintedPaintBomb_World_{i}Sec.png", 2, 2, 65f).RemoveEmptySprites());
 
         animComp = gameObject.AddComponent<AnimationComponent>();
         animComp.animation = bombTickingSecondSprites[0];
         animComp.speed = 10f;
         animComp.renderers = [GetComponentInChildren<SpriteRenderer>()];
+        animComp.renderers[0].sprite = bombTickingSecondSprites[0][0];
 
         gaugeSprite = this.GetSprite("TintedPaintBomb_GaugeIcon.png", 1);
         cloudPrefab = ParticleExtensions.GetRawChalkParticleGenerator()
@@ -56,6 +57,8 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
         hissSound = GenericExtensions.FindResourceObjectByName<SoundObject>("Fuse");
         explosionSound = LotOfItemsPlugin.assetMan.Get<SoundObject>("aud_explode");
 
+        endHeight = 1f;
+
         // screenOverlayPrefab = ObjectCreationExtensions.CreateCanvas();
         // screenOverlayPrefab.name = "TintedBombCanvasPrefab";
         // screenOverlayPrefab.gameObject.ConvertToPrefab(true);
@@ -66,7 +69,7 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
 
     public override bool Use(PlayerManager pm)
     {
-        animComp.Initialize(ec);
+        animComp.Initialize(pm.ec);
         animComp.Pause(true);
         return base.Use(pm);
     }
@@ -74,7 +77,6 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
     internal override void OnFloorHit()
     {
         map = new(ec, PathType.Nav, explosionRadius, transform);
-        map.Calculate();
         StartCoroutine(DetonationSequence());
     }
 
@@ -96,17 +98,19 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
             if (currentIndex != idx)
             {
                 currentIndex = idx;
-                animComp.animation = bombTickingSecondSprites[Mathf.Min(bombTickingSecondSprites.Count - 1, currentIndex)];
+                animComp.animation = bombTickingSecondSprites[System.Math.Min(currentIndex, bombTickingSecondSprites.Count - 1)];
                 animComp.ResetFrame(true);
             }
             yield return null;
         }
 
+        audioManager.FlushQueue(true);
         audioManager.PlaySingle(explosionSound);
         animComp.renderers[0].enabled = false;
         animComp.enabled = false;
 
         // Create permanent fog clouds
+        map.Calculate();
         foreach (var cell in map.FoundCells())
         {
             CoverCloud cloud = Instantiate(cloudPrefab, cell.CenterWorldPosition, Quaternion.identity, ec.transform);
