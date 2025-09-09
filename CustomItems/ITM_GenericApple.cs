@@ -22,12 +22,12 @@ namespace LotsOfItems.CustomItems
 		{
 			base.Enter();
 			baldi.animator.enabled = false; // Make sure to use customized sprites
-			baldi.audMan.FlushQueue(true);
+			baldi.AudMan.FlushQueue(true);
 
 			baldi.spriteRenderer[0].sprite = customEatSprites.Length > 2 ? customEatSprites[2] : eat1;
 
 			SoundObject activeAudio = thanksAudio ?? baldi.audAppleThanks;
-			baldi.audMan.QueueAudio(activeAudio);
+			baldi.AudMan.QueueAudio(activeAudio);
 
 			waitTimeBeforeEatingApple = activeAudio.subDuration + 0.185f;
 		}
@@ -65,6 +65,16 @@ namespace LotsOfItems.CustomItems
 			base.Exit();
 			baldi.animator.enabled = true;
 			postEating?.Invoke();
+		}
+	}
+
+	internal class Baldi_CustomNoEatAppleState(Baldi baldi, NpcState prevState, Sprite standingSprite, SoundObject talkAudio, Action postAppleEat) : Baldi_CustomAppleState(baldi, prevState, [standingSprite, standingSprite], postAppleEat, thanksAudio: talkAudio)
+	{
+		internal Baldi_CustomNoEatAppleState(Baldi baldi, NpcState prevState, Sprite standingSprite, SoundObject talkAudio) : this(baldi, prevState, standingSprite, talkAudio, null) { }
+		public override void Update()
+		{
+			if (!baldi.AudMan.QueuedAudioIsPlaying)
+				npc.behaviorStateMachine.ChangeState(previousState);
 		}
 	}
 

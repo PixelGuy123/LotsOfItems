@@ -2383,7 +2383,12 @@ namespace LotsOfItems.Plugin
 			 	Vector2.one * 0.5f,
 				playtimeRef.spriteRenderer[0].sprite.pixelsPerUnit);
 
-			// ########### HIGH NOTE: IT NEEDS TO BE MARKED AS AN APPLE TO FUNCTION AS INTENDED. WAITING FOR SABEH'S VOICELINE.
+
+			Sprite[] baldi_trophy_states = AssetLoader.SpritesFromSpritesheet(2, 1, 32f, Vector2.one * 0.5f, AssetLoader.TextureFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "ShinyTrophy_Baldi.png")));
+			SoundObject baldi_trophy_audHappy = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "ShinyTrophy_BaldiSpeech_1.wav")), "LtsOItems_Vfx_BAL_TrophyCatch_1", SoundType.Effect, Color.green);
+			SoundObject baldi_trophy_audAngry = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "ShinyTrophy_BaldiSpeech_2.wav")), "LtsOItems_Vfx_BAL_TrophyCatch_2", SoundType.Effect, Color.green);
+			baldi_trophy_audAngry.additionalKeys = [new() { time = 2.506f, key = "LtsOItems_Vfx_BAL_TrophyCatch_3" }];
+
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("ShinyTrophy")
 			.SetGeneratorCost(40)
@@ -2393,7 +2398,23 @@ namespace LotsOfItems.Plugin
 			.SetItemComponent<Item>()
 			.SetNameAndDescription("LtsOItems_ShinyTrophy_Name", "LtsOItems_ShinyTrophy_Desc")
 			.BuildAndSetup()
-			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 10, acceptableFloors: [F2, F3, F4, F5, END]);
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 10, acceptableFloors: [F2, F3, F4, F5, END])
+			.AddItemAsApple((baldi) =>
+			{
+				var nextState = new Baldi_CustomNoEatAppleState(baldi,
+					baldi.behaviorStateMachine.CurrentState,
+					baldi_trophy_states[1],
+					baldi_trophy_audAngry,
+					postAppleEat: () => baldi.GetExtraAnger(19f)
+					);
+
+				var mainState = new Baldi_CustomNoEatAppleState(baldi,
+					nextState,
+					baldi_trophy_states[0],
+					baldi_trophy_audHappy
+					);
+				return mainState;
+			});
 			AppleItemPatches.trophyItem = item.itemType;
 
 			#endregion
@@ -2633,6 +2654,11 @@ namespace LotsOfItems.Plugin
 				weight += 125; // Lazy approach, but should help balancing out ytp weights
 
 			itm.item.name = "ITM_" + Singleton<LocalizationManager>.Instance.GetLocalizedText(itm.nameKey);
+			if (goToFieldTrips) // This assumes it should be as rare as finding in a crazy vending machine
+			{
+				ResourceManager.AddMysteryItem(new WeightedItemObject() { selection = itm, weight = weight });
+				ResourceManager.AddWeightedItemToCrazyMachine(new WeightedItemObject() { selection = itm, weight = weight });
+			}
 			LotOfItemsPlugin.plug.availableItems.Add(new(itm, replacingItem, goToFieldTrips, appearsInStore, weight, acceptableFloors));
 			return itm;
 		}

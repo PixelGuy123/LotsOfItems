@@ -21,7 +21,7 @@ public class ITM_BucketOWater : ITM_GenericNanaPeel
         renderer.sprite.name = $"{itm.itemSpriteLarge.name}_World";
         audSplat = this.GetSound("BucketOWater_Splash.wav", "LtsOItems_Vfx_Splash", SoundType.Effect, Color.white); // splash!
         puddleSprite = this.GetSprite("BucketOWater_Puddle.png", renderer.sprite.pixelsPerUnit);
-        endHeight = 1.25f;
+        endHeight = 0.95f;
     }
 
     internal override bool EntityTriggerStayOverride(Collider other)

@@ -11,13 +11,13 @@ namespace LotsOfItems.CustomItems.ChalkErasers;
 
 public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
 {
-    public float timer = 5f;
+    public float timer = 5f, tintCloudTime = 120f;
     public float cloudRadius = 50f; // 5 tiles
     public float playerEffectDuration = 30f;
-    public int explosionRadius = 5;
+    public int explosionRadius = 9;
     public SoundObject hissSound;
     public SoundObject explosionSound;
-    public CoverCloud cloudPrefab;
+    public TintedCoverCloud cloudPrefab;
     // public Canvas screenOverlayPrefab;
     public Sprite gaugeSprite;
     // Needs to be static for serialization
@@ -110,11 +110,14 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
         animComp.enabled = false;
 
         // Create permanent fog clouds
-        map.Calculate();
+        map.Calculate(explosionRadius, true, [IntVector2.GetGridPosition(transform.position)]);
         foreach (var cell in map.FoundCells())
         {
-            CoverCloud cloud = Instantiate(cloudPrefab, cell.CenterWorldPosition, Quaternion.identity, ec.transform);
+            TintedCoverCloud cloud = Instantiate(cloudPrefab, cell.CenterWorldPosition, Quaternion.identity, ec.transform);
             cloud.Ec = ec;
+            cloud.owner = this;
+            cloud.StartEndTimer(tintCloudTime);
+            activeTintedCoverClouds++;
         }
 
         // Apply screen effect to nearby players
@@ -127,8 +130,10 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
         //     if (p)
         //         StartCoroutine(PlayerScreenEffect(p));
         // }
-
-        while (activePlayerScreens != 0 || audioManager.AnyAudioIsPlaying) // Wait for the player effects to expire out
+        entity.SetFrozen(true);
+        entity.SetInteractionState(false);
+        entity.SetVisible(false);
+        while (activePlayerScreens != 0 || audioManager.AnyAudioIsPlaying || activeTintedCoverClouds != 0) // Wait for the player effects to expire out
             yield return null;
 
         Destroy(gameObject);
@@ -157,17 +162,76 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
 
     internal override bool EntityTriggerStayOverride(Collider other) => false;
 
+    internal override bool VirtualEnd()
+    {
+        ec.RemoveFog(fog);
+        return base.VirtualEnd();
+    }
+
     int activePlayerScreens = 0;
+    int activeTintedCoverClouds = 0;
+    internal void MarkTintedCloudOver() => activeTintedCoverClouds--;
+    internal void ActivateTintedFog()
+    {
+        if (++fogActivations == 1)
+        {
+            if (fogCoroutine != null)
+                StopCoroutine(fogCoroutine);
+            fogCoroutine = StartCoroutine(FadeInFog());
+        }
+    }
+    internal void DeactivateTintedFog()
+    {
+        if (fogActivations > 0)
+        {
+            if (--fogActivations == 0)
+            {
+                if (fogCoroutine != null)
+                    StopCoroutine(fogCoroutine);
+                fogCoroutine = StartCoroutine(FadeOutFog());
+            }
+        }
+    }
+    int fogActivations = 0;
+    readonly Fog fog = new()
+    {
+        color = Color.black,
+        maxDist = 65f,
+        startDist = 5f
+    };
+    Coroutine fogCoroutine;
+    IEnumerator FadeInFog()
+    {
+        ec.AddFog(fog);
+        while (fog.strength < 1f)
+        {
+            fog.strength += 0.25f * Time.deltaTime;
+            ec.UpdateFog();
+            yield return null;
+        }
+        fog.strength = 1f;
+        ec.UpdateFog();
+    }
+
+    IEnumerator FadeOutFog()
+    {
+        while (fog.strength > 0f)
+        {
+            fog.strength -= 0.25f * Time.deltaTime;
+            ec.UpdateFog();
+            yield return null;
+        }
+        fog.strength = 0f;
+        ec.RemoveFog(fog);
+    }
 }
 
 public class TintedCoverCloud : CoverCloud
 {
     bool hasActiveFog = false;
-    readonly Fog fog = new()
-    {
-        color = Color.black,
-    };
-    Coroutine fogCoroutine;
+    public ITM_TintedPaintBomb owner;
+
+
     private void FixedUpdate()
     {
         bool foundPlayer = false;
@@ -184,17 +248,12 @@ public class TintedCoverCloud : CoverCloud
         if (foundPlayer && !hasActiveFog)
         {
             hasActiveFog = true;
-            if (fogCoroutine != null)
-                StopCoroutine(fogCoroutine);
-            fogCoroutine = StartCoroutine(FadeInFog());
+            owner.ActivateTintedFog();
         }
-
         if (!foundPlayer && hasActiveFog)
         {
             hasActiveFog = false;
-            if (fogCoroutine != null)
-                StopCoroutine(fogCoroutine);
-            fogCoroutine = StartCoroutine(FadeOutFog());
+            owner.DeactivateTintedFog();
         }
 
         if (ec.CurrentEventTypes.Contains(RandomEventType.Flood))
@@ -203,36 +262,16 @@ public class TintedCoverCloud : CoverCloud
         }
     }
 
-    IEnumerator FadeInFog()
-    {
-        fog.startDist = 5f;
-        fog.maxDist = 65f;
-        fog.strength = 0f;
-        float fogStrength = 0f;
-        while (fogStrength < 1f)
-        {
-            fogStrength += 0.25f * Time.deltaTime;
-            fog.strength = fogStrength;
-            ec.UpdateFog();
-            yield return null;
-        }
-        fogStrength = 1f;
-        fog.strength = fogStrength;
-        ec.UpdateFog();
-    }
 
-    IEnumerator FadeOutFog()
+
+    private new void OnDestroy()
     {
-        fog.strength = 1f;
-        float fogStrength = 1f;
-        while (fogStrength > 0f)
+        while (entities.Count > 0)
         {
-            fogStrength -= 0.25f * Time.deltaTime;
-            fog.strength = fogStrength;
-            ec.UpdateFog();
-            yield return null;
+            entities[0].SetHidden(value: false);
+            entities.RemoveAt(0);
         }
-        ec.RemoveFog(fog);
+        owner.MarkTintedCloudOver();
     }
 }
 

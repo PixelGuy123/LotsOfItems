@@ -53,10 +53,11 @@ public class ITM_ChippedPenny : Item, IItemPrefab
 
     private void GiveItem(PlayerManager pm, ItemObject item)
     {
-        if (!pm.itm.AddItem(item, null))
+        if (pm.itm.InventoryFull())
         {
             Pickup pickup = pm.ec.CreateItem(pm.plm.Entity.CurrentRoom, item, new Vector2(pm.transform.position.x, pm.transform.position.z));
             pickup.transform.position += Vector3.up * 5f + Random.insideUnitSphere * 2f;
         }
+        else pm.itm.AddItem(item);
     }
 }
