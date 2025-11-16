@@ -51,7 +51,6 @@ public class ITM_BalletShoes : ITM_Boots, IItemPrefab
 		// Setup stamina drain modifier
 		staminaMod = new ValueModifier(staminaDropMultiplier);
 
-
 		lastPosition = pm.transform.position;
 		StartCoroutine(EnhancedTimer());
 		return true;

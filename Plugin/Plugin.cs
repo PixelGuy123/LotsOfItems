@@ -208,10 +208,11 @@ namespace LotsOfItems.Plugin
 			assetMan.Add("aud_explode", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "fogMachine_explode.wav")), "LtsOItems_Vfx_Explode", SoundType.Effect, Color.white));
 			assetMan.Add("audBump", GenericExtensions.FindResourceObjectByName<SoundObject>("Bang"));
 			assetMan.Add("genericExplosionPrefab", ((LookAtGuy)NPCMetaStorage.Instance.Get(Character.LookAt).value).explosionPrefab);
-			assetMan.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
+			assetMan.Add("quickPop", GenericExtensions.FindResourceObjectByName<QuickExplosion>("QuickPop"));
 			assetMan.Add("tex_white", TextureExtensions.CreateSolidTexture(480, 360, Color.white));
 			assetMan.Add("audDrink", ((ITM_InvisibilityElixir)ItemMetaStorage.Instance.FindByEnum(Items.InvisibilityElixir).value.item).audUse);
 			assetMan.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
+			assetMan.Add("audThrow", ((ITM_NanaPeel)ItemMetaStorage.Instance.FindByEnum(Items.NanaPeel).value.item).audEnd);
 			var wormSound = ObjectCreators.CreateSoundObject(GenericExtensions.FindResourceObjectByName<AudioClip>("WormholeAmbience"), string.Empty, SoundType.Effect, Color.white);
 			wormSound.subtitle = false;
 			assetMan.Add("WormholeAmbience", wormSound);
@@ -220,12 +221,6 @@ namespace LotsOfItems.Plugin
 			SoundObject noEatRule = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(ModPath, "PRI_NoEating.wav")), "Vfx_PRI_NoEating", SoundType.Voice, new(0f, 0.117f, 0.482f));
 			foreach (var principal in GenericExtensions.FindResourceObjects<Principal>())
 				principal.audNoEating = noEatRule;
-
-			foreach (var player in GenericExtensions.FindResourceObjects<PlayerManager>()) // History position record thing
-			{
-				player.gameObject.AddComponent<PlayerPositionHistory>().pm = player;
-				player.gameObject.AddComponent<PlayerCustomAttributes>();
-			}
 
 			// Main part of this code
 			yield return "Loading lots of items...";
@@ -273,13 +268,14 @@ namespace LotsOfItems.Plugin
 
 			for (int i = 0; i < weights.Count; i++)
 			{
-				if (!objectDataPair.TryGetValue(weights[i].selection, out var data))
+				// Null checks because A-Grade somehow screws this up
+				if (!weights[i].selection || !objectDataPair.TryGetValue(weights[i].selection, out var data))
 					continue;
 
 				int valueToBalance = 0, includedItems = 0;
 				for (int z = 0; z < weights.Count; z++)
 				{
-					if (z == i)
+					if (z == i || !weights[z].selection) // Another null check here for the same reason
 						continue;
 
 					if (weights[i].selection.itemType == data.replacingItem || (objectDataPair.TryGetValue(weights[z].selection, out var newData) && newData.replacingItem != data.replacingItem))

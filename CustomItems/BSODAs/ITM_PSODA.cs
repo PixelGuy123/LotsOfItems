@@ -17,9 +17,9 @@ namespace LotsOfItems.CustomItems.BSODAs
             sound = this.GetSoundNoSub("PSODA_Sound.wav", SoundType.Effect);
         }
 
-        public override bool VirtualEntityTriggerEnter(Collider other)
+        public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
         {
-            if (other.isTrigger && other.TryGetComponent<NPC>(out var npc))
+            if (validCollision && other.isTrigger && other.TryGetComponent<NPC>(out var npc))
             {
                 if (!npc.gameObject.GetComponent<PSODA_Electrocute>())
                 {

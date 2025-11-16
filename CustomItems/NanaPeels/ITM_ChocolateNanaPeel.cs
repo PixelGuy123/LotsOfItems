@@ -37,9 +37,9 @@ public class ITM_ChocolateNanaPeel : ITM_GenericNanaPeel
         }
     }
 
-    internal override bool EntityTriggerStayOverride(Collider other)
+    internal override bool EntityTriggerStayOverride(Collider other, bool validCollision)
     {
-        if (!ready || slipping) return false;
+        if (!ready || slipping || !validCollision) return false;
 
         Entity component = other.GetComponent<Entity>();
         if (component != null && component.Grounded)

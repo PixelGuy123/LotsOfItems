@@ -1,3 +1,5 @@
+using System.Collections;
+using MTM101BaldAPI;
 using UnityEngine;
 
 namespace LotsOfItems.Components;
@@ -103,5 +105,41 @@ public class Marker_WeakLockedDoor : MonoBehaviour // Works with ITM_WeakLock
     public void SelfDestroy()
     {
         Destroy(this);
+    }
+}
+
+public class Marker_PrincipalOccupied : MonoBehaviour
+{
+    internal static Sprite[] drinkSprs;
+    internal static SoundObject drinkSound;
+    public void SetTimer(Principal pri, float time) =>
+        StartCoroutine(Timer(pri, time));
+
+    IEnumerator Timer(Principal pri, float t)
+    {
+        MovementModifier moveMod = new(Vector3.zero, 0f);
+        pri.Navigator.Am.moveMods.Add(moveMod);
+        Sprite normalSprite = pri.spriteRenderer[0].sprite;
+        var renderer = pri.spriteRenderer[0];
+        renderer.sprite = drinkSprs[0];
+        var ec = pri.ec;
+        while (t > 0f)
+        {
+            t -= ec.EnvironmentTimeScale * Time.deltaTime;
+
+            if (Random.value > 0.13f)
+            {
+                int idx = Random.Range(0, drinkSprs.Length);
+                if (idx == 1)
+                    pri.audMan.PlaySingle(drinkSound);
+
+                renderer.sprite = drinkSprs[idx];
+            }
+
+            yield return null;
+        }
+        pri.Navigator.Am.moveMods.Remove(moveMod);
+        renderer.sprite = normalSprite;
+        Destroy(this); // Destroys the marker
     }
 }

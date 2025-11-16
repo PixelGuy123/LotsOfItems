@@ -1,17 +1,17 @@
-﻿using UnityEngine;
-using System.Collections;
-using PixelInternalAPI.Extensions;
-using PixelInternalAPI.Classes;
+﻿using System.Collections;
 using LotsOfItems.Components;
-using MTM101BaldAPI;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
 	public class ITM_ShakenSoda : ITM_GenericNanaPeel
 	{
-		[SerializeField] 
+		[SerializeField]
 		private SoundObject audPressureSound, audExplode;
 
 		[SerializeField]
@@ -21,7 +21,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 		[SerializeField]
 		internal SpriteRenderer renderer;
 
-		[SerializeField] 
+		[SerializeField]
 		private SodaPuddle puddlePrefab;
 
 		[SerializeField]
@@ -62,7 +62,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 			endHeight = 1.27f;
 		}
 
-		internal override bool EntityTriggerStayOverride(Collider other) =>
+		internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) =>
 			false;
 		internal override void OnFloorHit()
 		{
@@ -81,7 +81,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 				yield return null;
 			}
 		}
-		
+
 
 		private IEnumerator DetonationSequence()
 		{

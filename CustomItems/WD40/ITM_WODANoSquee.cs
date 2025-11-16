@@ -36,9 +36,9 @@ namespace LotsOfItems.CustomItems.WD40
             }
         }
 
-        public override bool VirtualEntityTriggerEnter(Collider other)
+        public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
         {
-            if (other.isTrigger && other.CompareTag("NPC"))
+            if (validCollision && other.isTrigger && other.CompareTag("NPC"))
             {
                 NPC npc = other.GetComponent<NPC>();
                 if (npc != null && !affectedNpcs.Contains(npc))

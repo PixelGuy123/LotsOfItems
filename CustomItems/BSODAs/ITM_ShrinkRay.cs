@@ -1,9 +1,10 @@
-﻿using LotsOfItems.ItemPrefabStructures;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
+
 public class ITM_ShrinkRay : ITM_GenericBSODA
 {
 	[SerializeField]
@@ -21,9 +22,9 @@ public class ITM_ShrinkRay : ITM_GenericBSODA
 		this.DestroyParticleIfItHasOne();
 	}
 
-	public override bool VirtualEntityTriggerEnter(Collider other)
+	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
-		if (other.isTrigger && other.CompareTag("NPC"))
+		if (validCollision && other.isTrigger && other.CompareTag("NPC"))
 		{
 			NPC npc = other.GetComponent<NPC>();
 			if (npc != null && !alreadyTouchedNPCs.Contains(npc) && npc.Navigator.isActiveAndEnabled && !npc.Navigator.Entity.Squished)

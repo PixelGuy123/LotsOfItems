@@ -200,7 +200,7 @@ public class ITM_Flashbang : ITM_GenericNanaPeel
     }
     // To make sure this item does not behave as a 'Nana Peel
     internal override bool OnCollisionOverride(RaycastHit hit) => false;
-    internal override bool EntityTriggerStayOverride(Collider other) => false;
+    internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) => false;
 
     int activeEffects = 0;
     public bool EffectActive => activeEffects != 0;

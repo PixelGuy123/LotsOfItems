@@ -257,10 +257,18 @@ namespace LotsOfItems.Plugin
             LayerMask collisionLayer,
             float explosionForce,
             float explosionAcceleration
+        ) =>
+        Explode(item.transform.position, explosionRadius, collisionLayer, explosionForce, explosionAcceleration, item.transform);
+
+        public static void Explode(
+            Vector3 position,
+            float explosionRadius,
+            LayerMask collisionLayer,
+            float explosionForce,
+            float explosionAcceleration,
+            Transform transform = null
         )
         {
-            Vector3 position = item.transform.position;
-
             var colliders = Physics.OverlapSphere(
                 position,
                 explosionRadius,
@@ -270,7 +278,7 @@ namespace LotsOfItems.Plugin
 
             for (int i = 0; i < colliders.Length; i++)
             {
-                if (colliders[i].transform == item.transform)
+                if (colliders[i].transform == transform)
                     continue;
 
                 Entity entity = colliders[i].GetComponent<Entity>();
@@ -334,7 +342,7 @@ namespace LotsOfItems.Plugin
 
             ogItem.gameObject.SetActive(true); // Forgot about this lol
 
-            UnityEngine.Object.Destroy(genItemComp);
+            UnityEngine.Object.DestroyImmediate(genItemComp); // Immediately, so item reusable variants don't include this component
 
             return newItm;
         }

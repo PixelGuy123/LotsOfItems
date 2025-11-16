@@ -1,11 +1,12 @@
 ﻿using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Plugin;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using LotsOfItems.Plugin;
 
 namespace LotsOfItems.CustomItems.BSODAs;
+
 public class ITM_Plunger : ITM_GenericBSODA
 {
 	[SerializeField]
@@ -65,8 +66,10 @@ public class ITM_Plunger : ITM_GenericBSODA
 		return val;
 	}
 
-	public override bool VirtualEntityTriggerEnter(Collider other)
+	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
+		if (!validCollision || !other.isTrigger) return false;
+
 		Entity target = other.GetComponent<Entity>();
 		if (target != null && !isStuck)
 		{

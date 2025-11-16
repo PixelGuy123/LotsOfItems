@@ -16,10 +16,10 @@ internal static class MakePickupBounce
     [HarmonyPostfix]
     static void DancingPickupSpecificPatch(Pickup __instance)
     {
-        var bounce = __instance.gameObject.GetComponent<DancingPickup>();
-
-        if (bounce)
+        if (__instance.TryGetComponent<DancingPickup>(out var bounce))
             Object.Destroy(bounce);
+        if (__instance.TryGetComponent<ITM_OutsideYTPS>(out var outside))
+            Object.Destroy(outside);
 
         if (__instance.item.item is ITM_DancingYTP)
         {

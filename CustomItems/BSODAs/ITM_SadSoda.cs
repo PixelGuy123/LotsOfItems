@@ -112,9 +112,9 @@ public class ITM_SadSoda : ITM_GenericBSODA
 		}
 	}
 
-	public override bool VirtualEntityTriggerEnter(Collider other)
+	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
-		if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+		if (validCollision && hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
 		{
 			touchedNPCs.Add(npc);
 			npc.Navigator.Entity.Teleport(transform.position);
@@ -129,9 +129,9 @@ public class ITM_SadSoda : ITM_GenericBSODA
 		return true;
 	}
 
-	public override bool VirtualEntityTriggerExit(Collider other)
+	public override bool VirtualEntityTriggerExit(Collider other, bool validCollision)
 	{
-		if (hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
+		if (validCollision && hasDetectedTarget && other.isTrigger && other.CompareTag("NPC") && other.TryGetComponent<NPC>(out var npc))
 		{
 			touchedNPCs.Remove(npc);
 			momentumNav.ClearDestination();

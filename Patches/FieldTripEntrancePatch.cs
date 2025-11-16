@@ -83,6 +83,12 @@ internal static class FieldTripRelatedPatch
 
     // ************** JOHNNY INTERACTION PATCH **************
 
+    [HarmonyPatch(typeof(StoreRoomFunction), nameof(StoreRoomFunction.OnPlayerEnter))]
+    [HarmonyPostfix]
+    static void AlwaysEnableHotspot(Transform ___johnnyHotspot) =>
+        ___johnnyHotspot.gameObject.SetActive(!Singleton<CoreGameManager>.Instance.tripPlayed); // Ignore the tripAvailable part
+
+
     [HarmonyPatch(typeof(StoreRoomFunction), nameof(StoreRoomFunction.GivenBusPass))]
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> ChangeSequencerConstructor(IEnumerable<CodeInstruction> i) =>
@@ -98,6 +104,8 @@ internal static class FieldTripRelatedPatch
 
     static IEnumerator AlternativeBusPassSequencer(StoreRoomFunction store)
     {
+        bool tripAvailable = Singleton<CoreGameManager>.Instance.tripAvailable; // Will evaluate whether Johnny should really accept the (custom) bus pass or not
+
         var player = Singleton<CoreGameManager>.Instance.GetPlayer(0);
         Items savedLastUsedPass = lastUsedPass; // Use the last item used for Johnny, to keep record for the interaction
         bool hasCustomBusPass = busPasses.TryGetValue(savedLastUsedPass, out var interaction);
@@ -105,7 +113,8 @@ internal static class FieldTripRelatedPatch
         // Attempts to get a token, otherwise null
         BusPassInteraction.JohnnyToken token = hasCustomBusPass ? interaction.johnnyInteraction.Invoke(player) : null;
 
-        if (hasCustomBusPass && token.muteJohnnysFieldTripSpeech)
+        // If the interaction mutes this or if the bus pass isn't customized and there's no trip available, mute johnny
+        if (!tripAvailable || (hasCustomBusPass && token.muteJohnnysFieldTripSpeech))
             store.johnnyAudioManager.FlushQueue(true); // Prevent johnny from loving field trips lol
 
         // Yield returns from the og BusPassSequencer
@@ -118,13 +127,19 @@ internal static class FieldTripRelatedPatch
         // Try to get the last bus pass used to be sure it is a custom one
         if (!hasCustomBusPass)
         {
-            // Immediately calls the field trip thing since johnny's item acceptor should only accept BusPasses in theory
-            Singleton<BaseGameManager>.Instance.CallSpecialManagerFunction(3, store.gameObject);
-            store.johnnyAudioManager.QueueAudio(store.audTripReturn);
+            if (tripAvailable)
+            {
+                // Immediately calls the field trip thing since johnny's item acceptor should only accept BusPasses in theory
+                Singleton<BaseGameManager>.Instance.CallSpecialManagerFunction(3, store.gameObject);
+                store.johnnyAudioManager.QueueAudio(store.audTripReturn);
+            }
+            else
+                store.johnnyHotspot.gameObject.SetActive(true); // guarantee the hotspot is still active
+
             yield break;
         }
 
-        if (!token.acceptsBusPass)
+        if (!token.acceptsBusPass && tripAvailable) // he can't just not accept a bus pass if there's no trip available
         {
             // If the interaction state is not a full kick out of the level, then just simply refuse
             if (token.interactionState != BusPassInteraction.JohnnyToken.JohnnyAction.KickOutOfLevel || Singleton<BaseGameManager>.Instance is not PitstopGameManager pitStopMan)
@@ -162,7 +177,7 @@ internal static class FieldTripRelatedPatch
         // Custom interaction if available
         if (token.customJohnnyBusPassAudio != null)
             store.johnnyAudioManager.QueueRandomAudio(token.customJohnnyBusPassAudio);
-        else
+        else if (tripAvailable)
             store.johnnyAudioManager.QueueAudio(store.audTripReturn);
 
         // If it is a custom reward
@@ -172,9 +187,12 @@ internal static class FieldTripRelatedPatch
             token.customRewardAction?.Invoke(player);
             yield break;
         }
-        Singleton<BaseGameManager>.Instance.CallSpecialManagerFunction(3, store.gameObject);
-        yield break;
 
+        if (tripAvailable) // will only reward field trip loot if there was a field trip
+            Singleton<BaseGameManager>.Instance.CallSpecialManagerFunction(3, store.gameObject);
+        else
+            store.johnnyHotspot.gameObject.SetActive(true);
+        yield break;
     }
 
     [HarmonyPatch(typeof(StoreRoomFunction), nameof(StoreRoomFunction.GivenBusPass))]

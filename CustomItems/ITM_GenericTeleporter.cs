@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems
 {
@@ -24,6 +24,9 @@ namespace LotsOfItems.CustomItems
 		[SerializeField]
 		internal float baseTime = 0.2f, increaseFactor = 1.1f;
 
+		[SerializeField]
+		internal bool startTimerAt0 = false;
+
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;
@@ -37,7 +40,7 @@ namespace LotsOfItems.CustomItems
 			pm.plm.Entity.SetFrozen(true);
 			int teleports = Random.Range(minTeleports, maxTeleports + 1);
 			int teleportCount = 0;
-			float currentTime = baseTime;
+			float currentTime = startTimerAt0 ? 0f : baseTime;
 			while (teleportCount < teleports)
 			{
 				currentTime -= Time.deltaTime * pm.ec.EnvironmentTimeScale;

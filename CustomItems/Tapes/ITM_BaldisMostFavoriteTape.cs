@@ -129,6 +129,8 @@ public class ITM_BaldisMostFavoriteTape : ITM_GenericTape
 			baldi.Navigator.Entity.SetBlinded(false);
 			baldi.enabled = true;
 		}
+
+		tapePlayer.active = false; // Reset to make TapePlayer work again
 		yield break;
 
 

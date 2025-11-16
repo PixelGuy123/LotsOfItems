@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Patches;
+using LotsOfItems.Plugin;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.WD40;
@@ -12,6 +13,8 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
 
     public void SetupPrefab(ItemObject itm)
     {
+        sparkleParticlesPre = sparkleParticlesPre.SafeDuplicatePrefab(true);
+        sparkleParticlesPre.name = "ReverseSparkle";
         var renderer = sparkleParticlesPre.GetComponentInChildren<ParticleSystemRenderer>();
         var newMat = new Material(renderer.material)
         {
@@ -44,17 +47,6 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(sound);
         StartCoroutine(Timer(pm.ec, time));
         return true;
-    }
-
-    private IEnumerator NewTimer(EnvironmentController ec, float time)
-    {
-        while (time > 0f)
-        {
-            time -= Time.deltaTime * ec.EnvironmentTimeScale;
-            yield return null;
-        }
-
-        Destroy(gameObject);
     }
 
     private void OnDestroy()

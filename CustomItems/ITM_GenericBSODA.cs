@@ -66,9 +66,10 @@ public class ITM_GenericBSODA : ITM_BSODA, IItemPrefab
 		}
 	}
 
-	public virtual bool VirtualEntityTriggerEnter(Collider other) =>
+	public virtual bool DisableTouchBehaviourEntirely => false;
+	public virtual bool VirtualEntityTriggerEnter(Collider other, bool validCollision) =>
 		true;
-	public virtual bool VirtualEntityTriggerExit(Collider other) =>
+	public virtual bool VirtualEntityTriggerExit(Collider other, bool validCollision) =>
 		true;
 
 
@@ -100,22 +101,22 @@ static class GenericBSODAPatches
 
 	[HarmonyPatch("EntityTriggerEnter")]
 	[HarmonyPrefix]
-	static bool EntityTriggerEnterOverride(ITM_BSODA __instance, Collider other, bool ___launching)
+	static bool EntityTriggerEnterOverride(ITM_BSODA __instance, Collider other, bool validCollision, bool ___launching)
 	{
 		if ((!___launching || !other.CompareTag("Player")) && __instance is ITM_GenericBSODA generic)
 		{
-			return generic.VirtualEntityTriggerEnter(other);
+			return generic.VirtualEntityTriggerEnter(other, validCollision);
 		}
 		return true;
 	}
 
 	[HarmonyPatch("EntityTriggerExit")]
 	[HarmonyPrefix]
-	static bool EntityTriggerExitOverride(ITM_BSODA __instance, Collider other, ref bool ___launching)
+	static bool EntityTriggerExitOverride(ITM_BSODA __instance, Collider other, bool validCollision, ref bool ___launching)
 	{
 		if (__instance is ITM_GenericBSODA generic)
 		{
-			bool flag = generic.VirtualEntityTriggerExit(other);
+			bool flag = generic.VirtualEntityTriggerExit(other, validCollision);
 			if (!flag && other.CompareTag("Player"))
 				___launching = false;
 

@@ -3,7 +3,6 @@ using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
 
@@ -16,7 +15,7 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 	internal SoundObject audStomp, audFellFloor;
 
 	[SerializeField]
-	internal float squishTime = 10f, timeStuckOnFloor = 5.5f;
+	internal float squishTime = 10f, timeStuckOnFloor = 5.5f, tallHeight = 9.5f, fellDownHeight = 1.5f;
 
 	bool canStomp = true;
 
@@ -45,7 +44,6 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 			return false;
 		}
 
-		overrider.SetHeight(9.5f);
 		pm.plm.Entity.SetResistAddend(true);
 		gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, setTime);
 		this.pm = pm;
@@ -58,8 +56,10 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 	{
 		float time = setTime;
 		yield return null;
+
 		while (time > 0f)
 		{
+			overrider.SetHeight(tallHeight); // I can't understand why it doesn't happen in the first frame
 			for (int i = 0; i < pm.ec.Npcs.Count; i++)
 			{
 				if (!pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity)) // To make sure recently spawned npcs are included too
@@ -85,7 +85,7 @@ public class ITM_ReallyTallBoots : ITM_Boots, IItemPrefab
 
 
 		Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audFellFloor);
-		overrider.SetHeight(1.5f);
+		overrider.SetHeight(fellDownHeight);
 		pm.Am.moveMods.Add(moveMod);
 
 		time = timeStuckOnFloor;

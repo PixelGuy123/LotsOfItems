@@ -21,9 +21,9 @@ public class ITM_PlasticSoda : ITM_GenericBSODA
         this.DestroyParticleIfItHasOne();
     }
 
-    public override bool VirtualEntityTriggerEnter(Collider other)
+    public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
     {
-        if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
+        if (validCollision && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
         {
             if (--hits <= 0)
             {
@@ -33,6 +33,6 @@ public class ITM_PlasticSoda : ITM_GenericBSODA
             else
                 spriteRenderer.sprite = damageSprites[damageSprites.Length - hits]; // Will never throw an exception here, since hit = 0 ends the soda
         }
-        return base.VirtualEntityTriggerEnter(other);
+        return base.VirtualEntityTriggerEnter(other, validCollision);
     }
 }

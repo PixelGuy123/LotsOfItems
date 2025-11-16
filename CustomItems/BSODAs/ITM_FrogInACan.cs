@@ -41,9 +41,9 @@ public class ITM_FrogInACan : ITM_GenericBSODA
 	}
 
 
-	public override bool VirtualEntityTriggerEnter(Collider other)
+	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
-		if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+		if (validCollision && other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
 		{
 			Entity target = other.GetComponent<Entity>();
 			if (target != null && !isStuck)

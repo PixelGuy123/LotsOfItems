@@ -57,6 +57,7 @@ namespace LotsOfItems.Plugin
 				BOOTSVARTAG = "LtsOfItms_Boots_Variant",
 				ALARMCLOCKVARTAG = "LtsOfItms_AlarmClock_Variant",
 				GRAPPLEVARTAG = "LtsOfItms_GrappleHook_Variant",
+				LOSTITEMVARTAG = "LtsOfItms_LostItem_Variant",
 				TAPEVARTAG = "LtsOfItms_Tape_Variant",
 				PORTALVARTAG = "LtsOfItms_Portal_Variant",
 				SODAVARTAG = "LtsOfItms_Bsoda_Variant",
@@ -794,6 +795,28 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 10, acceptableFloors: [F3, F4, F5, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ProtoTeleporter")
+			.SetGeneratorCost(45)
+			.SetShopPrice(950)
+			.SetMeta(ItemFlags.Persists, [DANGERTELEPORTERVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("ProtoTeleporter")
+			.SetItemComponent<ITM_ProtoTeleporter>()
+			.SetNameAndDescription("LtsOItems_ProtoTeleporter_Name", "LtsOItems_ProtoTeleporter_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 15, acceptableFloors: [F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SuperchargedTeleporter")
+			.SetGeneratorCost(50)
+			.SetShopPrice(1200)
+			.SetMeta(ItemFlags.Persists, [DANGERTELEPORTERVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("SuperchargedTeleporter")
+			.SetItemComponent<ITM_SuperchargedTeleporter>()
+			.SetNameAndDescription("LtsOItems_SuperchargedTeleporter_Name", "LtsOItems_SuperchargedTeleporter_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 20, acceptableFloors: [F3, F4, F5, END]);
+
 			#endregion
 
 			// ---------- WHISTLES VARIANTS ----------
@@ -951,6 +974,19 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_BucketOWater_Name", "LtsOItems_BucketOWater_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ExoticButters")
+			.SetGeneratorCost(20)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, FOOD_TAG])
+			.SetEnum("ExoticButters")
+			.SetItemComponent<ITM_ExoticButters>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_ExoticButters_Name_5", "LtsOItems_ExoticButters_Desc")
+			.BuildAndSetup<ITM_ExoticButters>(out var exoticButters)
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 40, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			exoticButters.CreateNewReusableInstances(item, "LtsOItems_ExoticButters_Name", 4);
 
 			#endregion
 
@@ -1359,6 +1395,18 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 12, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("IronShoes")
+			.SetGeneratorCost(30)
+			.SetShopPrice(550)
+			.SetMeta(ItemFlags.Persists, [BOOTSVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("IronShoes")
+			.SetItemComponent<ITM_IronShoes>(Items.Boots)
+			.SetNameAndDescription("LtsOItems_IronShoes_Name", "LtsOItems_IronShoes_Desc")
+			.BuildAndSetup(out boots)
+			.StoreAsNormal(Items.Boots, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, F5, END]);
+			boots.setTime = 25f;
+
 			#endregion
 
 			// ---- Alarm Clock variant ----
@@ -1546,6 +1594,17 @@ namespace LotsOfItems.Plugin
 			var hookRenderer = hook.GetComponentInChildren<SpriteRenderer>();
 			hookRenderer.sprite = AssetLoader.SpriteFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "CheapGrapplingHook_world.png"), Vector2.one * 0.5f, hookRenderer.sprite.pixelsPerUnit);
 			hook.uses = 0;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("CharginHook")
+			.SetGeneratorCost(40)
+			.SetShopPrice(770)
+			.SetMeta(ItemFlags.Persists, [GRAPPLEVARTAG])
+			.SetEnum("CharginHook")
+			.SetItemComponent<ITM_CharginHook>()
+			.SetNameAndDescription("LtsOItems_CharginHook_Name", "LtsOItems_CharginHook_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.GrapplingHook, appearsInStore: true, goToFieldTrips: true, weight: 15, acceptableFloors: [F2, F3, F4, F5, END]);
 
 			#endregion
 			// ----- portal poster variant -----
@@ -2063,6 +2122,17 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 15, acceptableFloors: [F3, F4, F5, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("LaboratoryBSODA")
+			.SetGeneratorCost(35)
+			.SetShopPrice(1000)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("LaboratoryBSODA")
+			.SetItemComponent<ITM_LaboratoryBSODA>()
+			.SetNameAndDescription("LtsOItems_LaboratoryBSODA_Name", "LtsOItems_LaboratoryBSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 35, acceptableFloors: [F3, F4, F5, END]);
+
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("SnowGun")
 			.SetGeneratorCost(30)
@@ -2097,6 +2167,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_MSODA_Name", "LtsOItems_MSODA_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 15, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("CeleSoda")
+			.SetGeneratorCost(35)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG])
+			.SetEnum("CeleSoda")
+			.SetItemComponent<ITM_CeleSoda>(Items.DietBsoda)
+			.SetNameAndDescription("LtsOItems_CeleSoda_Name", "LtsOItems_CeleSoda_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 45, acceptableFloors: [F2, F3, F4, F5, END]);
 
 			#endregion
 
@@ -2136,6 +2217,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_WDRetroSquee_Name", "LtsOItems_WDRetroSquee_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Wd40, appearsInStore: true, weight: 40, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("MultiPurposeCleaner")
+			.SetGeneratorCost(25)
+			.SetShopPrice(350)
+			.SetMeta(ItemFlags.None, [WD40VARTAG])
+			.SetEnum("MultiPurposeCleaner")
+			.SetItemComponent<ITM_MultiPurposeCleaner>(Items.Wd40)
+			.SetNameAndDescription("LtsOItems_WDRetroSquee_Name", "LtsOItems_WDRetroSquee_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Wd40, appearsInStore: true, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
 			#endregion
 
@@ -2223,7 +2315,7 @@ namespace LotsOfItems.Plugin
 			GenericExtensions.FindResourceObjects<RendererContainer>().DoIf(x => x.name.StartsWith("Plant"), plant =>
 			{
 				var acceptor = new GameObject("Plant_GreenAppleAcceptor").AddComponent<GrowItemAcceptor>();
-				acceptor.transform.SetParent(plant.transform);
+				acceptor.transform.SetParent(plant.renderers[0].transform);
 				acceptor.transform.localPosition = Vector3.zero;
 				acceptor.gameObject.layer = LayerStorage.iClickableLayer;
 
@@ -2357,6 +2449,30 @@ namespace LotsOfItems.Plugin
 				return state;
 			});
 
+			Sprite[] sprBaldiAppleJuiceLook = AssetLoader.SpritesFromSpritesheet(2, 1, 32f, Vector2.one * 0.5f, AssetLoader.TextureFromFile(Path.Combine(LotOfItemsPlugin.ModPath, "ExplosiveAppleJuice_Baldi.png")));
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ExplosiveAppleJuice")
+			.SetGeneratorCost(38)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.NoUses, [APPLEVARTAG, NANAPEELVARTAG, FOOD_TAG])
+			.SetEnum("ExplosiveAppleJuice")
+			.SetItemComponent<Item>()
+			.SetNameAndDescription("LtsOItems_ExplosiveAppleJuice_Name", "LtsOItems_ExplosiveAppleJuice_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 25, acceptableFloors: [F1, F2, F3, F4, F5, END])
+			.AddItemAsApple((baldi) =>
+			{
+				var state = new Baldi_CustomAppleState(baldi, baldi.behaviorStateMachine.CurrentState,
+					sprBaldiAppleJuiceLook,
+					postAppleEat: () =>
+					{
+						Object.Instantiate(LotOfItemsPlugin.assetMan.Get<QuickExplosion>("genericExplosionPrefab"), baldi.transform.position, Quaternion.identity);
+						ItemExtensions.Explode(baldi.transform.position + Random.onUnitSphere, 30f, LotOfItemsPlugin.onlyNpcPlayerLayers, 35f, -11.5f);
+					});
+				return state;
+			});
+
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("TeddyBear")
 			.SetGeneratorCost(25)
@@ -2416,6 +2532,30 @@ namespace LotsOfItems.Plugin
 				return mainState;
 			});
 			AppleItemPatches.trophyItem = item.itemType;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("CupOfTeaForPrincipal")
+			.SetGeneratorCost(25)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.NoUses, [APPLEVARTAG])
+			.SetEnum("CupOfTeaForPrincipal")
+			.SetItemComponent<Item>()
+			.SetNameAndDescription("LtsOItems_CupOfTeaForPrincipal_Name", "LtsOItems_CupOfTeaForPrincipal_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 40, goToFieldTrips: true, acceptableFloors: [F1, F2, F3, END]);
+			var principalRef = (Playtime)NPCMetaStorage.Instance.Get(Character.Playtime).value;
+
+			Marker_PrincipalOccupied.drinkSound = ObjectCreators.CreateSoundObject(
+				LotOfItemsPlugin.assetMan.Get<SoundObject>("audDrink").soundClip,
+				 "LtsOItems_Vfx_Drinking", SoundType.Voice, principalRef.audMan.subtitleColor);
+			TeaPatches.teaItem = item.itemType;
+
+			Marker_PrincipalOccupied.drinkSprs = TextureExtensions.LoadSpriteSheet(
+				2, 1,
+				principalRef.spriteRenderer[0].sprite.pixelsPerUnit,
+				LotOfItemsPlugin.ModPath, "CupOfTeaForPrincipal_Drink.png");
+
+
 
 			#endregion
 			// ----- Bus Pass -----
@@ -2573,6 +2713,24 @@ namespace LotsOfItems.Plugin
 				prefab = shadyGuy.transform,
 				replaceable = false
 			});
+
+			#endregion
+
+			#region LOST ITEMS
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("LostAndFoundBox")
+			.SetGeneratorCost(32)
+			.SetShopPrice(800)
+			.SetMeta(ItemFlags.NoUses, [LOSTITEMVARTAG])
+			.SetEnum("LostAndFoundBox")
+			.SetItemComponent<ITM_Acceptable>()
+			.SetNameAndDescription("LtsOItems_LostAndFoundBox_Name", "LtsOItems_LostAndFoundBox_Desc")
+			.BuildAndSetup(out acceptable)
+			.StoreAsNormal(Items.lostItem0, appearsInStore: false, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			acceptable.layerMask = playerClickLayer;
+			StudentPatches.globallyAcceptableLostItems.Add(item.itemType);
 
 			#endregion
 		}

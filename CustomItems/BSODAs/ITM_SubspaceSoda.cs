@@ -115,9 +115,9 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		audMan.PlaySingle(audExplode);
 	}
 
-	public override bool VirtualEntityTriggerEnter(Collider other)
+	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
-		if (isArmed)
+		if (isArmed || !validCollision)
 			return true;
 		if (!triggered && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 		{

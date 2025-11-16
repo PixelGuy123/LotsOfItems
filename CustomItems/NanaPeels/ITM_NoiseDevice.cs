@@ -68,5 +68,5 @@ public class ITM_NoiseDevice : ITM_GenericNanaPeel
             Activate();
     }
 
-    internal override bool EntityTriggerStayOverride(Collider other) => false;
+    internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) => false;
 }

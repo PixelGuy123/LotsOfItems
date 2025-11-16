@@ -84,7 +84,6 @@ namespace LotsOfItems.Patches
 			TapePlayerPatch.newEnumerator = newEnumerator;
 			activateOriginalEnumeratorToo = activateOgEnumerator;
 			tp.OverridenInsertItem(pm, ec);
-
 		}
 
 	}

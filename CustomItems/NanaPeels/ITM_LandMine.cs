@@ -52,8 +52,11 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 	}
 
 	// Trigger explosion when an entity collides
-	internal override bool EntityTriggerStayOverride(Collider other)
+	internal override bool EntityTriggerStayOverride(Collider other, bool validCollision)
 	{
+		if (!validCollision)
+			return false;
+
 		if (!hasExploded && other.isTrigger)
 		{
 			var entity = other.GetComponent<Entity>();

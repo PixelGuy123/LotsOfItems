@@ -1,7 +1,7 @@
-﻿using LotsOfItems.ItemPrefabStructures;
+﻿using System.Collections;
+using LotsOfItems.ItemPrefabStructures;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Tapes
@@ -35,6 +35,8 @@ namespace LotsOfItems.CustomItems.Tapes
 				npc.Navigator.Entity.SetBlinded(false);
 				npc.GetNPCContainer().RemoveLookerMod(blindModifier);
 			}
+
+			tapePlayer.active = false; // Reset to make TapePlayer work again
 		}
 	}
 }

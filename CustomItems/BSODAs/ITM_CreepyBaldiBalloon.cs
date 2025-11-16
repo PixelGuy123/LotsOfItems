@@ -23,7 +23,10 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
     internal SphereCollider collider;
 
     [SerializeField]
-    internal SoundObject audInflate, audHit, audPop;
+    internal SoundObject audInflate, audHit;
+
+    [SerializeField]
+    internal QuickExplosion pop;
 
     [SerializeField]
     internal AudioManager audMan;
@@ -48,7 +51,8 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
         audMan = gameObject.CreatePropagatedAudioManager(45f, 95f);
         audInflate = this.GetSound("CreepyBaldiBalloon_Inflate.wav", "LtsOItems_Vfx_Inflate", SoundType.Effect, Color.white);
         audHit = this.GetSoundNoSub("CreepyBaldiBalloon_Hit.wav", SoundType.Effect);
-        audPop = LotOfItemsPlugin.assetMan.Get<SoundObject>("audPop");
+
+        pop = LotOfItemsPlugin.assetMan.Get<QuickExplosion>("quickPop");
     }
     public void SetupPrefabPost() { }
 
@@ -91,15 +95,8 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
             yield return null;
         }
 
-        audMan.PlaySingle(audPop);
-        dead = true;
-
-        entity.UpdateInternalMovement(Vector3.zero);
-        entity.SetFrozen(true);
-        entity.SetVisible(false);
-
-        while (audMan.AnyAudioIsPlaying)
-            yield return null;
+        // Pop!
+        Instantiate(pop, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 

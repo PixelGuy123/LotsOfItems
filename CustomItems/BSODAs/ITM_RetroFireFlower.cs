@@ -105,9 +105,9 @@ namespace LotsOfItems.CustomItems.BSODAs
         }
 
 
-        public override bool VirtualEntityTriggerEnter(Collider other)
+        public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
         {
-            if (letalTouch && other.isTrigger && other.CompareTag("NPC"))
+            if (validCollision && letalTouch && other.isTrigger && other.CompareTag("NPC"))
             {
                 NPC npc = other.GetComponent<NPC>();
 
@@ -123,7 +123,9 @@ namespace LotsOfItems.CustomItems.BSODAs
             return false;
         }
 
-        public override bool VirtualEntityTriggerExit(Collider other) => false; // No need for a trigger exit in this case
+        public override bool VirtualEntityTriggerExit(Collider other, bool validCollision) => false; // No need for a trigger exit in this case
+
+        public override bool DisableTouchBehaviourEntirely => true; // hopefully this works
 
         private void KillNpc(NPC npc)
         {

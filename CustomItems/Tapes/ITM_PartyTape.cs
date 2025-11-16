@@ -1,8 +1,9 @@
-﻿using PixelInternalAPI.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using PixelInternalAPI.Extensions;
 
 namespace LotsOfItems.CustomItems.Tapes;
+
 public class ITM_PartyTape : ITM_GenericTape
 {
 	protected override void VirtualSetupPrefab(ItemObject itm) =>
@@ -28,5 +29,7 @@ public class ITM_PartyTape : ITM_GenericTape
 
 		foreach (NavigationState_PartyEvent navigationState_PartyEvent in navigationStates)
 			navigationState_PartyEvent.End();
+
+		tapePlayer.active = false; // Reset to make TapePlayer work again
 	}
 }

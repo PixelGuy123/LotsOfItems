@@ -1,4 +1,3 @@
-using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using PixelInternalAPI.Classes;
@@ -20,9 +19,11 @@ public class ITM_SpikyBall : ITM_GenericBSODA
     [SerializeField]
     private float pushAcceleration = -25f;
     [SerializeField]
-    private SoundObject audBounce, audPop;
+    private SoundObject audBounce;
     [SerializeField]
     private AudioManager audMan;
+    [SerializeField]
+    QuickExplosion quickPop;
 
     private int hits = 0;
     private float verticalSpeed = 0f;
@@ -33,7 +34,8 @@ public class ITM_SpikyBall : ITM_GenericBSODA
         speed = 40f;
         time = lifeTime;
         audBounce = this.GetSound("SpikyBall_Bounce.wav", "LtsOItems_Vfx_Bounce", SoundType.Effect, Color.white);
-        audPop = LotOfItemsPlugin.assetMan.Get<SoundObject>("audPop");
+        quickPop = LotOfItemsPlugin.assetMan.Get<QuickExplosion>("quickPop");
+        sound = LotOfItemsPlugin.assetMan.Get<SoundObject>("audThrow");
 
         spriteRenderer.sprite = this.GetSprite("SpikyBall_World.png", 30f);
         this.DestroyParticleIfItHasOne();
@@ -42,6 +44,8 @@ public class ITM_SpikyBall : ITM_GenericBSODA
         GetComponent<CapsuleCollider>().radius *= 0.5f; // Halfen the size of this collision, the ball is way too small for it
 
         audMan = gameObject.CreatePropagatedAudioManager(25f, 150f);
+
+        breaksRuleWhenUsed = false;
     }
 
     public override bool Use(PlayerManager pm)
@@ -78,9 +82,9 @@ public class ITM_SpikyBall : ITM_GenericBSODA
         entity.SetHeight(height);
     }
 
-    public override bool VirtualEntityTriggerEnter(Collider other)
+    public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
     {
-        if (!other.isTrigger || (!other.CompareTag("Player") && !other.CompareTag("NPC")) || hasEnded) return true;
+        if (!validCollision || !other.isTrigger || (!other.CompareTag("Player") && !other.CompareTag("NPC")) || hasEnded) return true;
 
         var targetEntity = other.GetComponent<Entity>();
         if (targetEntity)
@@ -95,22 +99,11 @@ public class ITM_SpikyBall : ITM_GenericBSODA
         return false;
     }
 
-    public override bool VirtualEntityTriggerExit(Collider other) => false;
+    public override bool VirtualEntityTriggerExit(Collider other, bool validCollision) => false;
 
     protected override void VirtualEnd()
     {
-        if (hasEnded) return;
-        hasEnded = true;
-        entity.SetVisible(false);
-        entity.SetFrozen(true);
-        entity.SetInteractionState(false);
-        audMan.PlaySingle(audPop);
-        StartCoroutine(WaitBeforeDie());
-    }
-
-    IEnumerator WaitBeforeDie()
-    {
-        while (audMan.AnyAudioIsPlaying) yield return null;
         base.VirtualEnd();
+        Instantiate(quickPop, transform.position, Quaternion.identity);
     }
 }

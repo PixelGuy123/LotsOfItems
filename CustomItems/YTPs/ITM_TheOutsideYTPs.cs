@@ -45,7 +45,7 @@ public class OutsideYTP : MonoBehaviour
 
     void Update()
     {
-        if (!initialized)
+        if (!initialized || positionsToGo.Count == 0)
             return;
 
         cooldown -= Time.deltaTime * ec.EnvironmentTimeScale;

@@ -35,8 +35,12 @@ namespace LotsOfItems.Components
 	[HarmonyPatch]
 	public static class AttributeContributes
 	{
-		public static PlayerCustomAttributes GetAttributes(this PlayerManager pm) =>
-			pm.GetComponent<PlayerCustomAttributes>();
+		public static PlayerCustomAttributes GetAttributes(this PlayerManager pm)
+		{
+			if (pm.TryGetComponent<PlayerCustomAttributes>(out var comp))
+				return comp;
+			return pm.gameObject.AddComponent<PlayerCustomAttributes>();
+		}
 
 		[HarmonyPatch(typeof(StandardDoor), "Clicked")]
 		[HarmonyPrefix]

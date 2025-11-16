@@ -117,7 +117,7 @@ namespace LotsOfItems.CustomItems
 			return true;
 		}
 
-		[HarmonyPatch(typeof(Baldi), "Praise")]
+		[HarmonyPatch(typeof(Baldi), nameof(Baldi.Praise))]
 		[HarmonyPrefix]
 		private static void LongerPraise(ref float time, Baldi __instance)
 		{

@@ -10,7 +10,7 @@ namespace LotsOfItems.Patches
         // A set to store all cells that are currently amplifying sound.
         public static readonly HashSet<Cell> amplifiedCells = [];
 
-        [HarmonyPatch("MakeNoise", typeof(GameObject), typeof(Vector3), typeof(int))]
+        [HarmonyPatch(nameof(EnvironmentController.MakeNoise), typeof(GameObject), typeof(Vector3), typeof(int), typeof(bool))]
         [HarmonyPrefix]
         private static void AmplifySoundInCell(EnvironmentController __instance, Vector3 position, ref int value)
         {

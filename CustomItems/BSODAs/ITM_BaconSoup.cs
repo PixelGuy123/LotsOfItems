@@ -6,6 +6,7 @@ using MTM101BaldAPI;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
+
 public class ITM_BaconSoup : ITM_GenericBSODA
 {
     [SerializeField]
@@ -31,9 +32,9 @@ public class ITM_BaconSoup : ITM_GenericBSODA
         return base.Use(pm);
     }
 
-    public override bool VirtualEntityTriggerEnter(Collider other)
+    public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
     {
-        if (other.isTrigger && !hasEnded)
+        if (other.isTrigger && !hasEnded && validCollision)
         {
             Entity target = other.GetComponent<Entity>();
             if (target != null && !inkedEntities.Contains(target))

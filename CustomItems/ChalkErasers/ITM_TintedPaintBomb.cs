@@ -160,7 +160,7 @@ public class ITM_TintedPaintBomb : ITM_GenericNanaPeel
     //     activePlayerScreens--;
     // }
 
-    internal override bool EntityTriggerStayOverride(Collider other) => false;
+    internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) => false;
 
     internal override bool VirtualEnd()
     {

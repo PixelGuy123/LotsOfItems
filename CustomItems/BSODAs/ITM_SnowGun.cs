@@ -77,9 +77,9 @@ public class ITM_SnowGun : ITM_GenericBSODA
         base.VirtualUpdate();
     }
 
-    public override bool VirtualEntityTriggerEnter(Collider other)
+    public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
     {
-        if (other.isTrigger && other.CompareTag("NPC"))
+        if (validCollision && other.isTrigger && other.CompareTag("NPC"))
         {
             NPC npc = other.GetComponent<NPC>();
             if (npc && npc.Navigator.isActiveAndEnabled)
@@ -94,7 +94,7 @@ public class ITM_SnowGun : ITM_GenericBSODA
         return false;
     }
 
-    public override bool VirtualEntityTriggerExit(Collider other) => false; // Prevents any action with this
+    public override bool VirtualEntityTriggerExit(Collider other, bool validCollision) => false; // Prevents any action with this
 
     protected override void VirtualEnd()
     {

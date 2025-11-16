@@ -30,8 +30,10 @@ public class ITM_IceNanaPeel : ITM_GenericNanaPeel
         endHeight = 1.11f;
     }
 
-    internal override bool EntityTriggerStayOverride(Collider other)
+    internal override bool EntityTriggerStayOverride(Collider other, bool validCollision)
     {
+        if (!validCollision) return true;
+
         Entity component = other.GetComponent<Entity>();
         if (component != null && component.Grounded && component.Velocity.magnitude > 0f)
         {

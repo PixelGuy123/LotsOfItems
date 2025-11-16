@@ -684,6 +684,13 @@
             <param name="layer"></param>
             <returns>The <paramref name="entity"/> itself</returns>
         </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddStaticRigidBody(UnityEngine.GameObject)">
+            <summary>
+            Adds a static <see cref="T:UnityEngine.Rigidbody"/> component to the specified <see cref="T:UnityEngine.GameObject"/> with predefined settings (usually for <see cref="T:Entity"/> or clickable hotspots objects.).
+            </summary>
+            <param name="obj">The <see cref="T:UnityEngine.GameObject"/> to which the <see cref="T:UnityEngine.Rigidbody"/> will be added.</param>
+            <returns>The added <see cref="T:UnityEngine.Rigidbody"/> component.</returns>
+        </member>
         <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateSodaMachineInstance(UnityEngine.Texture,UnityEngine.Texture,System.Boolean)">
             <summary>
             Creates a new <see cref="T:SodaMachine"/> instance. <paramref name="sodaTex"/> and <paramref name="sodaOutTex"/> sets the textures for new <see cref="T:SodaMachine"/>.

@@ -102,7 +102,7 @@ namespace LotsOfItems.CustomItems.ChalkErasers
             Explode();
         }
 
-        internal override bool EntityTriggerStayOverride(Collider other) => false;
+        internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) => false;
 
         private void Explode()
         {

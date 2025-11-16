@@ -74,10 +74,10 @@ namespace LotsOfItems.CustomItems.BSODAs
             StartCoroutine(BarrierAndExplode());
         }
 
-        internal override bool EntityTriggerStayOverride(Collider other) => false; // Don't allow normal nana peel behaviour
-        internal override void EntityTriggerEnterOverride(Collider other)
+        internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) => false; // Don't allow normal nana peel behaviour
+        internal override void EntityTriggerEnterOverride(Collider other, bool validCollision)
         {
-            if (isActiveBarrier && other.isTrigger)
+            if (validCollision && isActiveBarrier && other.isTrigger)
             {
                 Entity entity = other.GetComponent<Entity>();
                 if (entity != null && entity.Grounded)

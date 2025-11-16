@@ -100,9 +100,9 @@ namespace LotsOfItems.CustomItems.NanaPeels
             arrowRenderer.transform.rotation = Quaternion.Euler(90f, preSelectedDirection.ToDegrees(), 0f);
         }
 
-        internal override bool EntityTriggerStayOverride(Collider other) // Copy paste from NanaPeel, to have a direction selection :()
+        internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) // Copy paste from NanaPeel, to have a direction selection :()
         {
-            if (!ready || slipping) return false;
+            if (!ready || slipping || !validCollision) return false;
             Entity component = other.GetComponent<Entity>();
             if (component != null && component.Grounded && component.Velocity.magnitude > 0f)
             {

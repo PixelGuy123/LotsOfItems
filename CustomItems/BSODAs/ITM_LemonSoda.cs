@@ -1,11 +1,12 @@
-﻿using LotsOfItems.ItemPrefabStructures;
-using MTM101BaldAPI;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
+using MTM101BaldAPI;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
+
 public class ITM_LemonSoda : ITM_GenericBSODA
 {
 	readonly HashSet<Entity> touchedEntities = [];
@@ -25,9 +26,9 @@ public class ITM_LemonSoda : ITM_GenericBSODA
 		spriteRenderer.sprite = this.GetSprite("LemonSoda_soda.png", spriteRenderer.sprite.pixelsPerUnit);
 		this.DestroyParticleIfItHasOne();
 	}
-	public override bool VirtualEntityTriggerEnter(Collider other)
+	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
-		if (other.isTrigger && !hasEnded)
+		if (validCollision && other.isTrigger && !hasEnded)
 		{
 			Entity target = other.GetComponent<Entity>();
 			if (target != null && !touchedEntities.Contains(target))

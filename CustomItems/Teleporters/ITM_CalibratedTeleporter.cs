@@ -1,8 +1,8 @@
-﻿using LotsOfItems.ItemPrefabStructures;
-using System.Collections;
-using UnityEngine;
+﻿using System.Collections;
 using HarmonyLib;
+using LotsOfItems.ItemPrefabStructures;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Teleporters
 {
@@ -47,8 +47,8 @@ namespace LotsOfItems.CustomItems.Teleporters
 
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).mapCam.enabled = false;
 			Singleton<CoreGameManager>.Instance.Pause(false);
-			Singleton<CoreGameManager>.Instance.OpenMap();
-			
+			Singleton<CoreGameManager>.Instance.OpenMap(true);
+
 
 			StartCoroutine(WaitUntilMapClose());
 
