@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Eatables
@@ -8,15 +11,78 @@ namespace LotsOfItems.CustomItems.Eatables
 		protected override void VirtualSetupPrefab(ItemObject itemObject)
 		{
 			base.VirtualSetupPrefab(itemObject);
-			PanicKernelsPatches.itemEnum = itemObject.itemType;
+			PanicKernelsPatches_ITM_BSODA.itemEnum = itemObject.itemType;
 		}
 	}
 
 	[HarmonyPatch]
-	static class PanicKernelsPatches
+	static class PanicKernelsPatch_IBsodaShooter
+	{
+		readonly static Dictionary<System.Type, MethodInfo> _shooterCache = [];
+
+		[HarmonyPrepare]
+		// Prepare the method beforehand, to be sure anything was found first
+		static bool PrepareGettingMethods()
+		{
+			var interfaceType = typeof(IBsodaShooter);
+			var implementingTypes = AccessTools.AllTypes().Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
+
+			if (!implementingTypes.Any())
+			{
+				Debug.Log("No types implementing IBsodaShooter found.");
+				return false; // Prevents the patch from being applied if no targets are found
+			}
+
+			foreach (var type in implementingTypes)
+			{
+				if (_shooterCache.ContainsKey(type)) continue;
+
+				var method = AccessTools.Method(type, "ShootBsoda");
+				if (method != null)
+				{
+					_shooterCache.Add(type, method);
+					Debug.Log($"{type.FullName}::{method.Name}");
+				}
+				else
+				{
+					Debug.LogWarning($"Type {type.FullName} implements IBsodaShooter but no ShootBsoda method was found.");
+				}
+			}
+
+			return _shooterCache.Any(); // Only proceed with patching if at least one target method was found
+		}
+
+		[HarmonyTargetMethods]
+		static IEnumerable<MethodBase> GetShooterMethods() => _shooterCache.Values;
+
+		[HarmonyPostfix]
+		static void ForceBSODAShoot(object __instance, ITM_BSODA bsoda, PlayerManager pm, Vector3 position, Quaternion rotation)
+		{
+			int idx = pm.itm.FindKernel();
+			if (!PanicKernelsPatches_ITM_BSODA.canInstantiateSodas || idx == -1)
+			{
+				PanicKernelsPatches_ITM_BSODA.canInstantiateSodas = false;
+				return;
+			}
+			pm.itm.RemoveItem(idx);
+
+			PanicKernelsPatches_ITM_BSODA.canInstantiateSodas = false;
+			Vector3 spawnPos = position;
+			Quaternion baseRot = rotation;
+
+			var instType = __instance.GetType();
+
+			// calls this patched method twice
+			_shooterCache[instType].Invoke(__instance, [bsoda, pm, spawnPos, baseRot * Quaternion.Euler(0, 45, 0)]);
+			_shooterCache[instType].Invoke(__instance, [bsoda, pm, spawnPos, baseRot * Quaternion.Euler(0, -45, 0)]);
+		}
+	}
+
+	[HarmonyPatch]
+	static class PanicKernelsPatches_ITM_BSODA
 	{
 		public static Items itemEnum;
-		static bool canInstantiateSodas = false;
+		internal static bool canInstantiateSodas = false;
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(ITM_BSODA), nameof(ITM_BSODA.Use))]
@@ -37,11 +103,9 @@ namespace LotsOfItems.CustomItems.Eatables
 			// Create angled variants
 			CreateAngledProjectile(pm, (ITM_BSODA)pm.itm.items[pm.itm.selectedItem].item, spawnPos, baseRot * Quaternion.Euler(0, 45, 0));
 			CreateAngledProjectile(pm, (ITM_BSODA)pm.itm.items[pm.itm.selectedItem].item, spawnPos, baseRot * Quaternion.Euler(0, -45, 0));
-
-
 		}
 
-		static int FindKernel(this ItemManager itm)
+		internal static int FindKernel(this ItemManager itm)
 		{
 			for (int i = 0; i <= itm.maxItem; i++)
 				if (itm.items[i].itemType == itemEnum && !itm.slotLocked[i])

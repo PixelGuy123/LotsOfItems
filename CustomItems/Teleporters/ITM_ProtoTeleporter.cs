@@ -11,5 +11,6 @@ public class ITM_ProtoTeleporter : ITM_GenericTeleporter
         minTeleports = 8;
         maxTeleports = 8;
         startTimerAt0 = true;
+        freezePlayer = false;
     }
 }

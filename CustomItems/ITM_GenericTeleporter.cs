@@ -25,7 +25,7 @@ namespace LotsOfItems.CustomItems
 		internal float baseTime = 0.2f, increaseFactor = 1.1f;
 
 		[SerializeField]
-		internal bool startTimerAt0 = false;
+		internal bool startTimerAt0 = false, freezePlayer = true;
 
 		public override bool Use(PlayerManager pm)
 		{
@@ -36,8 +36,11 @@ namespace LotsOfItems.CustomItems
 
 		private IEnumerator Teleporter()
 		{
-			pm.plm.Entity.SetInteractionState(false);
-			pm.plm.Entity.SetFrozen(true);
+			if (freezePlayer)
+			{
+				pm.plm.Entity.SetInteractionState(false);
+				pm.plm.Entity.SetFrozen(true);
+			}
 			int teleports = Random.Range(minTeleports, maxTeleports + 1);
 			int teleportCount = 0;
 			float currentTime = startTimerAt0 ? 0f : baseTime;
@@ -53,8 +56,11 @@ namespace LotsOfItems.CustomItems
 				}
 				yield return null;
 			}
-			pm.plm.Entity.SetInteractionState(true);
-			pm.plm.Entity.SetFrozen(false);
+			if (freezePlayer)
+			{
+				pm.plm.Entity.SetInteractionState(true);
+				pm.plm.Entity.SetFrozen(false);
+			}
 			Destroy(gameObject);
 			yield break;
 		}

@@ -19,6 +19,9 @@ public class ITM_CeleSoda : ITM_GenericBSODA
     [SerializeField]
     internal float balloonCooldown = 15f;
 
+    [SerializeField]
+    QuickExplosion pop;
+
     protected override void VirtualSetupPrefab(ItemObject itm)
     {
         base.VirtualSetupPrefab(itm);
@@ -27,6 +30,7 @@ public class ITM_CeleSoda : ITM_GenericBSODA
         this.DestroyParticleIfItHasOne();
 
         balloons = GenericExtensions.FindResourceObject<PartyEvent>().balloon;
+        pop = LotOfItemsPlugin.assetMan.Get<QuickExplosion>("quickPop");
     }
 
     public override bool Use(PlayerManager pm)
@@ -42,8 +46,8 @@ public class ITM_CeleSoda : ITM_GenericBSODA
         for (int i = 0; i < balloonCount; i++)
         {
             var bal = Instantiate(balloons[Random.Range(0, balloons.Length)]);
-            bal.transform.position = pm.transform.position;
             bal.Initialize(pm.ec.CellFromPosition(pm.transform.position).room);
+            bal.transform.position = pm.transform.position;
             bal.StartCoroutine(DestroyTimer(bal));
         }
 
@@ -53,6 +57,7 @@ public class ITM_CeleSoda : ITM_GenericBSODA
     IEnumerator DestroyTimer(Balloon bal)
     {
         yield return new WaitForSecondsEnvironmentTimescale(pm.ec, balloonCooldown);
+        Instantiate(pop, bal.transform.position, Quaternion.identity);
         Destroy(bal.gameObject);
     }
 }

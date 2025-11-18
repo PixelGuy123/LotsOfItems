@@ -1,10 +1,18 @@
 using System.Collections;
+using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.Boots;
 
-public class ITM_IronShoes : ITM_Boots
+public class ITM_IronShoes : ITM_Boots, IItemPrefab
 {
+
+    public void SetupPrefab(ItemObject itm)
+    {
+        gaugeSprite = itm.itemSpriteSmall;
+    }
+    public void SetupPrefabPost() { }
+
     readonly EntityOverrider overrider = new();
     public override bool Use(PlayerManager pm)
     {
@@ -15,7 +23,6 @@ public class ITM_IronShoes : ITM_Boots
         }
 
         this.pm = pm;
-        overrider.SetHeight(0.5f);
         gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, setTime);
         StartCoroutine(EffectTimer());
         return true;
@@ -34,6 +41,7 @@ public class ITM_IronShoes : ITM_Boots
         float timer = setTime;
         while (timer > 0f)
         {
+            overrider.SetHeight(0.5f);
             for (int i = 0; i < pm.ec.Npcs.Count; i++)
             {
                 if (!pm.ec.Npcs[i].Navigator.Entity.IsIgnoring(pm.plm.Entity)) // To make sure recently spawned npcs are included too

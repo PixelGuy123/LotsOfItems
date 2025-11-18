@@ -988,6 +988,17 @@ namespace LotsOfItems.Plugin
 
 			exoticButters.CreateNewReusableInstances(item, "LtsOItems_ExoticButters_Name", 4);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("GlassNanaPeel")
+			.SetGeneratorCost(35)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("GlassNanaPeel")
+			.SetItemComponent<ITM_GlassNanaPeel>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_GlassNanaPeel_Name", "LtsOItems_GlassNanaPeel_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 25, acceptableFloors: [F2, F3, F4, F5, END]);
+
 			#endregion
 
 			// ------------ QUARTERS -------------
@@ -2179,6 +2190,28 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 45, acceptableFloors: [F2, F3, F4, F5, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("ExplodaBSODA")
+			.SetGeneratorCost(30)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG])
+			.SetEnum("ExplodaBSODA")
+			.SetItemComponent<ITM_ExplodaBSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_ExplodaBSODA_Name", "LtsOItems_ExplodaBSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, goToFieldTrips: true, weight: 35, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("OneLiterBSODA")
+			.SetGeneratorCost(38)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.Persists, [SODAVARTAG])
+			.SetEnum("OneLiterBSODA")
+			.SetItemComponent<ITM_OneLiterBSODA>()
+			.SetNameAndDescription("LtsOItems_OneLiterBSODA_Name", "LtsOItems_OneLiterBSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, F5, END]);
+
 			#endregion
 
 			// ------ Wd40 Variants ------
@@ -2222,10 +2255,10 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("MultiPurposeCleaner")
 			.SetGeneratorCost(25)
 			.SetShopPrice(350)
-			.SetMeta(ItemFlags.None, [WD40VARTAG])
+			.SetMeta(ItemFlags.Persists, [WD40VARTAG])
 			.SetEnum("MultiPurposeCleaner")
 			.SetItemComponent<ITM_MultiPurposeCleaner>(Items.Wd40)
-			.SetNameAndDescription("LtsOItems_WDRetroSquee_Name", "LtsOItems_WDRetroSquee_Desc")
+			.SetNameAndDescription("LtsOItems_MultiPurposeCleaner_Name", "LtsOItems_MultiPurposeCleaner_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Wd40, appearsInStore: true, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_DietDietDietDietBSODA : Item, IItemPrefab
+public class ITM_DietDietDietDietBSODA : Item, IItemPrefab, IBsodaShooter
 {
     public void SetupPrefab(ItemObject itm)
     {
@@ -46,14 +46,10 @@ public class ITM_DietDietDietDietBSODA : Item, IItemPrefab
         }
 
         // Normal Direction
-        var bsoda = Instantiate(bsodaChain[currentChainIndex], pm.transform.position, Quaternion.identity);
-        bsoda.IndividuallySpawn(pm.ec, lastRecordedPositionsOfSodas[0], originalPlayerRotation);
-        activeSodas.Add(bsoda);
+        ShootBsoda(bsodaChain[currentChainIndex], pm, lastRecordedPositionsOfSodas[0], Quaternion.LookRotation(originalPlayerRotation));
 
         // Inverse direction
-        bsoda = Instantiate(bsodaChain[currentChainIndex], pm.transform.position, Quaternion.identity);
-        bsoda.IndividuallySpawn(pm.ec, lastRecordedPositionsOfSodas[1], -originalPlayerRotation);
-        activeSodas.Add(bsoda);
+        ShootBsoda(bsodaChain[currentChainIndex], pm, lastRecordedPositionsOfSodas[1], Quaternion.LookRotation(-originalPlayerRotation));
 
         if (++currentChainIndex >= bsodaChain.Length)
         {
@@ -75,6 +71,13 @@ public class ITM_DietDietDietDietBSODA : Item, IItemPrefab
         {
             CreateBSODAs();
         }
+    }
+
+    public void ShootBsoda(ITM_BSODA bsoda, PlayerManager pm, Vector3 position, Quaternion rotation)
+    {
+        var newBsoda = Instantiate(bsoda, position, Quaternion.identity);
+        newBsoda.IndividuallySpawn(pm.ec, position, rotation * Vector3.forward);
+        activeSodas.Add(newBsoda);
     }
 
     int currentChainIndex = 0;

@@ -2,7 +2,7 @@ using LotsOfItems.ItemPrefabStructures;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_360SODA : ITM_MultiDirectionalBSODA, IItemPrefab
+public class ITM_360SODA : ITM_MultiDirectionalBSODA
 {
     protected override void VirtualSetupPrefab(ItemObject itm)
     {
