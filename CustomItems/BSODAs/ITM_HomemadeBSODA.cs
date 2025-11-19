@@ -22,7 +22,7 @@ public class ITM_HomemadeBSODA : ITM_GenericBSODA
         if (validCollision && other.isTrigger && other.CompareTag("NPC"))
         {
             NPC npc = other.GetComponent<NPC>();
-            if (npc)
+            if (npc && npc.Character != Character.Null)
             {
                 npc.StartCoroutine(DisableNPC(npc));
                 return false;
@@ -39,7 +39,7 @@ public class ITM_HomemadeBSODA : ITM_GenericBSODA
         npc.Navigator.Entity.SetBlinded(true);
         npc.Navigator.Entity.propagatedAudioManager.gameObject.AddComponent<Marker_AudioManagerMute>();
 
-        Instantiate(explosionPrefab, npc.spriteRenderer[0].transform);
+        Instantiate(explosionPrefab, npc.transform.position, Quaternion.identity);
 
         yield return new WaitForSecondsEnvironmentTimescale(ec, disableDuration);
 

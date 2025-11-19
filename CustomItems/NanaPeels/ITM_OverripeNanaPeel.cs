@@ -1,4 +1,5 @@
 using System.Collections;
+using LotsOfItems.Plugin;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.NanaPeels;
@@ -7,6 +8,13 @@ public class ITM_OverripeNanaPeel : ITM_GenericNanaPeel
 {
     [SerializeField]
     internal float hitTouchForce = 85f;
+    protected override void VirtualSetupPrefab(ItemObject itm)
+    {
+        base.VirtualSetupPrefab(itm);
+        var renderer = GetComponentInChildren<SpriteRenderer>();
+        renderer.sprite = itm.itemSpriteLarge.DuplicateItself(renderer.sprite.pixelsPerUnit);
+        endHeight = 1.1f;
+    }
     internal override bool EntityTriggerStayOverride(Collider other, bool validCollision)
     {
         if (!validCollision || !ready || slipping)

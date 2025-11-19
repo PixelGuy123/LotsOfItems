@@ -70,7 +70,7 @@ public class ITM_APizzaForEveryone : Item, IItemPrefab
         projectilePre.eatingParticles = eatingParticles;
 
         projectilePre.audEat = this.GetSoundNoSub("APizzaForEveryone_Eating.wav", SoundType.Voice);
-        projectilePre.audMan = projectilePre.gameObject.CreatePropagatedAudioManager(35f, 60f);
+        projectilePre.audMan = projectilePre.gameObject.CreatePropagatedAudioManager(15f, 90f);
     }
 
     public void SetupPrefabPost() { }
@@ -158,9 +158,11 @@ public class ITM_PizzaSlice : MonoBehaviour, IEntityTrigger
 
         npc.Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
 
-        particleRendererToEnableForSomeReason.enabled = true;
         var emission = eatingParticles.emission;
         emission.enabled = true;
+
+        yield return null;
+        particleRendererToEnableForSomeReason.enabled = true;
 
         float timer = eatingTime;
         while (timer > 0f)
@@ -170,9 +172,8 @@ public class ITM_PizzaSlice : MonoBehaviour, IEntityTrigger
                 Destroy(gameObject);
                 yield break;
             }
-            if (Time.timeScale != 0f && Random.value <= 0.05f)
+            if (Time.timeScale != 0f && Random.value <= 0.075f)
             {
-                // audMan.pitchModifier = Random.Range(-0.25f, 0.25f);
                 audMan.PlaySingle(audEat);
             }
 

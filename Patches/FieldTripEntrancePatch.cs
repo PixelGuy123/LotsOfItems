@@ -11,12 +11,18 @@ namespace LotsOfItems.Patches;
 internal static class FieldTripRelatedPatch
 {
     readonly internal static Dictionary<Items, BusPassInteraction> busPasses = []; // Main dictionary for this class
+    readonly internal static HashSet<Items> doesNotRequireFieldTripActiveItems = [];
+
     [HarmonyPatch(typeof(ItemAcceptor), nameof(ItemAcceptor.ItemFits))]
     [HarmonyPostfix]
-    static void RegisterLastUsedItem(Items item, bool __result)
+    static void RegisterLastUsedItem(Items item, ref bool __result)
     {
         if (__result)
+        {
             lastUsedPass = item;
+            if (!doesNotRequireFieldTripActiveItems.Contains(item)) // If this item doesn't require a field trip, there's no need for this check
+                __result = !Singleton<CoreGameManager>.Instance.tripPlayed && Singleton<CoreGameManager>.Instance.tripAvailable;
+        }
     }
 
     // ********** BALDI INTERACTION PATCH ************
@@ -229,6 +235,7 @@ internal readonly struct BusPassInteraction(Func<PlayerManager, BusPassInteracti
         public SoundObject[] customJohnnyBusPassAudio = null;
         public Action<PlayerManager> customRewardAction = null;
         public bool muteJohnnysFieldTripSpeech = false;
+        public bool specificForFieldTrip = true;
     }
 
 }

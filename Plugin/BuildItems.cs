@@ -2856,7 +2856,7 @@ namespace LotsOfItems.Plugin
 			.StoreAsNormal(Items.BusPass, appearsInStore: false, weight: 75, acceptableFloors: [F2, F3, F4])
 			.MarkAsBusPass(new(
 				johnnyInteraction: (pm) => oneDollar_johnnyInteraction
-			));
+			), false);
 			acceptable.item = item.itemType;
 			acceptable.layerMask = playerClickLayer;
 
@@ -2912,6 +2912,8 @@ namespace LotsOfItems.Plugin
 
 			#region LOST ITEMS
 
+			LayerMaskObject lostItemsLayer = GenericExtensions.FindResourceObjectByName<LayerMaskObject>("LostItemsLayer");
+
 			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("LostAndFoundBox")
 			.SetGeneratorCost(32)
@@ -2923,7 +2925,8 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup(out acceptable)
 			.StoreAsNormal(Items.lostItem0, appearsInStore: false, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
-			acceptable.layerMask = playerClickLayer;
+			acceptable.layerMask = lostItemsLayer;
+			acceptable.item = item.itemType;
 			StudentPatches.globallyAcceptableLostItems.Add(item.itemType);
 
 			#endregion
@@ -2984,8 +2987,10 @@ namespace LotsOfItems.Plugin
 			return itm;
 		}
 
-		static ItemObject MarkAsBusPass(this ItemObject itm, BusPassInteraction interaction)
+		static ItemObject MarkAsBusPass(this ItemObject itm, BusPassInteraction interaction, bool requiresFieldTrip = true)
 		{
+			if (!requiresFieldTrip)
+				FieldTripRelatedPatch.doesNotRequireFieldTripActiveItems.Add(itm.itemType);
 			FieldTripRelatedPatch.busPasses.Add(itm.itemType, interaction);
 			GenericExtensions.FindResourceObjects<StoreRoomFunction>()
 			.First(x => !x.name.Contains("Tutorial"))

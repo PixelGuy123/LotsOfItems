@@ -18,6 +18,7 @@ public class ITM_JKYTP : Item, IItemPrefab
         var visual = ObjectCreationExtensions.CreateSpriteBillboard(itm.itemSpriteLarge);
         visual.transform.SetParent(transform, false);
         effectPrefab = gameObject.AddComponent<JK_VisualEffect>();
+        effectPrefab.renderer = visual;
         audLaugh = this.GetSoundNoSub("JKYTP_Laugh.wav", SoundType.Effect);
     }
     public void SetupPrefabPost() =>
@@ -68,21 +69,19 @@ public class ITM_JKYTP_PickupBehavior : MonoBehaviour
 public class JK_VisualEffect : MonoBehaviour
 {
     public float timer = 0f;
-    public Vector3 startPos;
+    public SpriteRenderer renderer;
 
     void Start()
     {
-        startPos = transform.position;
-        // Float 2 units above
         transform.position += Vector3.up * 2f;
     }
 
     void Update()
     {
         timer += Time.deltaTime;
-        // Random linear scalings (dancing)
 
         transform.localScale = new Vector3(MoreOrLess, MoreOrLess, 1f);
+        renderer.SetSpriteRotation(Random.Range(-45f, 45f));
 
         if (timer > 2f) // Disappear after a bit
         {
@@ -90,5 +89,5 @@ public class JK_VisualEffect : MonoBehaviour
         }
     }
 
-    float MoreOrLess => Random.value >= 0.55f ? Random.Range(1.25f, 1.5f) : Random.Range(0.65f, 0.85f);
+    float MoreOrLess => Random.value >= 0.55f ? Random.Range(1.65f, 2f) : Random.Range(0.25f, 0.65f);
 }

@@ -116,7 +116,7 @@ namespace LotsOfItems.CustomItems.BSODAs
             {
                 NPC npc = other.GetComponent<NPC>();
 
-                if (npc && npc.isActiveAndEnabled)
+                if (npc && npc.isActiveAndEnabled && npc.Character != Character.Null)
                 {
                     pm?.RuleBreak("Bullying", 2.5f, 0.35f);
                     KillNpc(npc);
