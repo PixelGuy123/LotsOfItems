@@ -9,7 +9,7 @@ namespace LotsOfItems.Patches
 	[HarmonyPatch(typeof(TapePlayer))]
 	internal static class TapePlayerPatch
 	{
-		[HarmonyPatch("InsertItem")]
+		[HarmonyPatch(nameof(TapePlayer.InsertItem))]
 		[HarmonyReversePatch]
 		static void OverridenInsertItem(this TapePlayer instance, PlayerManager pm, EnvironmentController ec)
 		{
@@ -20,10 +20,10 @@ namespace LotsOfItems.Patches
 					new(OpCodes.Ldarg_0),
 					Transpilers.EmitDelegate((TapePlayer tapePlayer) =>
 					{
-						//Debug.Log($"playing with: {newAudio} ref and enumerator ref: {newEnumerator}");
-
 						if (newAudio == null)
-							tapePlayer.time = tapePlayer.audInsert.soundClip.length; // Make sure it has a dynamic length to the environment muting thing
+						{
+							tapePlayer.time = tapePlayer.beep.soundClip.length; // Make sure it has a dynamic length to the environment muting thing
+						}
 						else
 						{
 							tapePlayer.time = 0f;
@@ -31,22 +31,27 @@ namespace LotsOfItems.Patches
 								tapePlayer.time += newAudio[i].soundClip.length;
 						}
 
-						if (newEnumerator != null)
-						{
-							tapePlayer.StartCoroutine(newEnumerator);
-							if (activateOriginalEnumeratorToo)
-								tapePlayer.StartCoroutine(tapePlayer.Cooldown());
-						}
-						else
-							tapePlayer.StartCoroutine(tapePlayer.Cooldown());
-
 						if (newAudio != null)
 						{
 							tapePlayer.audMan.FlushQueue(true);
 							for (int i = 0; i < newAudio.Length; i++)
 								tapePlayer.audMan.QueueAudio(newAudio[i]);
-							tapePlayer.audMan.PlaySingle(tapePlayer.audInsert);
 						}
+						else
+						{
+							tapePlayer.audMan.FlushQueue(true);
+							tapePlayer.audMan.PlaySingle(tapePlayer.beep);
+						}
+						tapePlayer.audMan.PlaySingle(tapePlayer.audInsert);
+
+						if (newEnumerator != null)
+						{
+							if (activateOriginalEnumeratorToo)
+								tapePlayer.StartCoroutine(tapePlayer.Cooldown());
+							tapePlayer.StartCoroutine(newEnumerator);
+						}
+						else
+							tapePlayer.StartCoroutine(tapePlayer.Cooldown());
 
 						newAudio = null;
 						newEnumerator = null;

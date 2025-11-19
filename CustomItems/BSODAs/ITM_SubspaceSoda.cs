@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_SubspaceSoda : ITM_GenericBSODA
+public class ITM_SubspaceSoda : ITM_GenericBSODA, IBsodaShooter
 {
 	[SerializeField]
 	private float activationDelay = 5f;
@@ -32,6 +32,9 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 	private Sprite tooWeakSprite;
 
 	private bool isArmed = false, triggered = false;
+
+	public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
+
 	Vector3 dirToBlow;
 	Coroutine detonationCor;
 
@@ -61,7 +64,7 @@ public class ITM_SubspaceSoda : ITM_GenericBSODA
 		// Store initial direction and place on floor
 		ec = pm.ec;
 		this.pm = pm;
-		dirToBlow = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+		dirToBlow = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset * Vector3.forward;
 		transform.position = pm.transform.position;
 		entity.Initialize(ec, transform.position);
 		audMan.PlaySingle(audActivate);

@@ -8,13 +8,16 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_SpillingBSODA : ITM_GenericNanaPeel
+public class ITM_SpillingBSODA : ITM_GenericNanaPeel, IBsodaShooter
 {
 	[SerializeField]
 	private float duration = 15f, spawnSpeed = 3.5f;
 
 	[SerializeField]
 	private SpillingBSODA_PuddleTimer puddlePrefab;
+
+	public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
+
 	protected override void VirtualSetupPrefab(ItemObject itm)
 	{
 		var bsodaItm = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
@@ -55,6 +58,21 @@ public class ITM_SpillingBSODA : ITM_GenericNanaPeel
 		endHeight = 1.25f;
 		gravity *= 0.65f;
 		height = 2.5f;
+	}
+
+	public override bool Use(PlayerManager pm)
+	{
+		// ITM_NanaPeel.Use, but with shooter modification
+		if (!spawned)
+		{
+			Vector3 rot = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset * Vector3.forward;
+			Spawn(pm.ec, pm.transform.position, rot, throwSpeed);
+			entity.CopyStatusEffects(pm.plm.Entity);
+			audioManager.PlaySingle(audEnd);
+			return true;
+		}
+
+		return false;
 	}
 
 	internal override void OnFloorHit() // When hitting floor

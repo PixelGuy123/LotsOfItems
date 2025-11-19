@@ -180,6 +180,12 @@ public class MomentumNavigator : MonoBehaviour // used DeepSeek to literally con
 		if (success)
 		{
 			ConvertPath(_path, targetPos);
+
+			if (destinationPoints.Count > 1 && ec.CellFromPosition(destinationPoints[0]) == _startTile)
+			{
+				destinationPoints.RemoveAt(0);
+			}
+
 			currentTargetTile = _targetTile;
 			currentStartTile = _startTile;
 		}

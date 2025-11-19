@@ -1,7 +1,7 @@
 using System.Collections;
-using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -14,69 +14,128 @@ public class ITM_GlassNanaPeel : ITM_GenericNanaPeel
     [SerializeField]
     private float startSpeed = 15f;
     [SerializeField]
-    private float acceleration = 0.05f;
+    private float acceleration = 5f;
     [SerializeField]
     private float stunMoveModMultiplier = 0.45f;
     [SerializeField]
     int noiseVal = 89;
     [SerializeField]
     SoundObject audShatter;
-    private Force rideForce;
+    [SerializeField]
+    float rayCastHitDistance = 3.5f;
+    [SerializeField]
+    private LayerMask collisionLayer = LayerStorage.gumCollisionMask;
+    [SerializeField]
+    SpriteRenderer renderer;
+    private MovementModifier rideForce;
+
+    bool shouldDisableUpdate = false, shattered = false;
+
+    internal override bool DisableUpdate => shouldDisableUpdate;
+
+    public override bool Use(PlayerManager pm)
+    {
+        this.pm = pm;
+        pm.onPlayerTeleport += OnPlayerTeleport;
+        return base.Use(pm);
+    }
+
+    void OnPlayerTeleport(PlayerManager player, Vector3 pos, Vector3 positionDelta) =>
+        VirtualEnd();
+
 
     protected override void VirtualSetupPrefab(ItemObject itm)
     {
         base.VirtualSetupPrefab(itm);
-        var renderer = GetComponentInChildren<SpriteRenderer>();
+        renderer = GetComponentInChildren<SpriteRenderer>();
         renderer.sprite = itm.itemSpriteLarge.DuplicateItself(renderer.sprite.pixelsPerUnit);
         audShatter = GenericExtensions.FindResourceObjectByName<SoundObject>("GlassBreak");
+        endHeight = 1.1f;
     }
 
     internal override bool EntityTriggerStayOverride(Collider other, bool validCollision)
     {
-        if (other.isTrigger && validCollision && other.gameObject == pm.gameObject && !isRiding && ready)
+        if (shattered) return false;
+
+        if (other.isTrigger && validCollision && pm.plm.Entity.Grounded && pm.plm.Entity.Velocity.magnitude > 0f && other.gameObject == pm.gameObject && !isRiding && ready)
         {
             isRiding = true;
             ready = false;
+            slipping = true;
+            audioManager.FlushQueue(true);
+            audioManager.QueueAudio(audSlipping);
+            audioManager.SetLoop(true);
             StartCoroutine(SlideRoutine());
+            shouldDisableUpdate = true; // Disables update, so that it doesn't override the nana's behavior
         }
         return false;
     }
 
+    internal override void VirtualUpdate()
+    {
+        base.VirtualUpdate();
+        if (!pm) // There should be never a glass 'nana peel existing without a Player owner
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // Raycast wall check
+        if (isRiding && Physics.Raycast(pm.transform.position, direction, out var wallHit, rayCastHitDistance, collisionLayer, QueryTriggerInteraction.Collide) && wallHit.transform.CompareTag("Wall"))
+        {
+            VirtualEnd();
+        }
+    }
+
+    internal override bool OnCollisionOverride(RaycastHit hit) => false;
+
+    internal override bool EntityTriggerExitOverride(Collider other, bool validCollision) => false; // No work for here
+
     private IEnumerator SlideRoutine()
     {
-        pm.plm.Entity.OnEntityMoveInitialCollision += Shatter;
         float currentSpeed = startSpeed;
         Vector3 mouseDir = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
-        rideForce = new(mouseDir, currentSpeed, acceleration);
+        rideForce = new(mouseDir * currentSpeed, 0f);
+        pm.Am.moveMods.Add(rideForce);
 
         while (isRiding)
         {
+            entity.Teleport(pm.transform.position);
             mouseDir = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
-            rideForce.direction = new(mouseDir.x, mouseDir.z);
-            pm.plm.Entity.AddForce(rideForce);
+            rideForce.movementAddend = mouseDir * currentSpeed;
 
             rideTime += Time.deltaTime * ec.EnvironmentTimeScale;
+            currentSpeed += Time.deltaTime * ec.EnvironmentTimeScale * acceleration;
             yield return null;
         }
-        rideForce.Kill();
     }
 
     internal override bool VirtualEnd()
     {
-        rideForce?.Kill();
+        shattered = true;
+        isRiding = false;
+
+        pm.Am.moveMods.Remove(rideForce);
 
         pm.StartCoroutine(StunPlayer(pm));
         ec.MakeNoise(pm.transform.position, noiseVal);
+
+        audioManager.FlushQueue(true);
         audioManager.PlaySingle(audShatter);
-        return true;
+
+        StartCoroutine(WaitToDie());
+        renderer.enabled = false;
+
+        pm.onPlayerTeleport -= OnPlayerTeleport;
+
+        return false;
     }
 
-    private void Shatter(RaycastHit hit)
+    IEnumerator WaitToDie()
     {
-        if (!isRiding) return;
+        while (audioManager.AnyAudioIsPlaying) yield return null;
 
-        isRiding = false;
-        pm.plm.Entity.OnEntityMoveInitialCollision -= Shatter;
+        Destroy(gameObject);
     }
 
     IEnumerator StunPlayer(PlayerManager pm)

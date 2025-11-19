@@ -46,6 +46,7 @@ public class ITM_WDYesSquee : ITM_NoSquee, IItemPrefab // Inherits NoSquee to re
 
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(sound);
         StartCoroutine(Timer(pm.ec, time));
+
         return true;
     }
 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
@@ -48,11 +47,12 @@ public class ITM_MultiPurposeCleaner : ITM_NoSquee, IItemPrefab, ISlipperOwner /
         // Find all cells in range
         DijkstraMap dijkstraMap = new(pm.ec, PathType.Nav, int.MaxValue);
         dijkstraMap.Calculate(distance + 1, true, IntVector2.GetGridPosition(pm.transform.position));
+        silencedCells.AddRange(dijkstraMap.FoundCells());
 
         foreach (Cell silencedCell in silencedCells)
         {
             silencedCell.SetSilence(true);
-            sparkleParticelEmitters.Add(Instantiate(sparkleParticlesPre, silencedCell.ObjectBase));
+            sparkleParticelEmitters.Add(Instantiate(sparkleParticlesPre, silencedCell.ObjectBase, false));
             stainController.CreateStain(silencedCell);
         }
 

@@ -30,11 +30,11 @@ public abstract class ITM_GenericAlarmClock : ITM_AlarmClock, IItemPrefab
 
 			if (AllowClickable())
 			{
-				if (time <= setTime[CurrentTimeSet])
+				if (time <= setTime[0])
 					spriteRenderer.sprite = clockSprite[0];
-				else if (time <= setTime[CurrentTimeSet])
+				else if (time <= setTime[1])
 					spriteRenderer.sprite = clockSprite[1];
-				else if (time <= setTime[CurrentTimeSet])
+				else if (time <= setTime[2])
 					spriteRenderer.sprite = clockSprite[2];
 				else
 					spriteRenderer.sprite = clockSprite[3];

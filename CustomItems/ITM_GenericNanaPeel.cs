@@ -16,8 +16,10 @@ namespace LotsOfItems.CustomItems
 		internal virtual void OnFloorHit() { }
 		internal virtual bool EntityTriggerStayOverride(Collider other, bool validCollision) => true;
 		internal virtual void EntityTriggerEnterOverride(Collider other, bool validCollision) { }
+		internal virtual bool EntityTriggerExitOverride(Collider other, bool validCollision) => true;
 		internal virtual void VirtualUpdate() { }
 		internal virtual bool VirtualEnd() => true;
+		internal virtual bool DisableUpdate => false;
 	}
 
 	[HarmonyPatch(typeof(ITM_NanaPeel))]
@@ -66,13 +68,27 @@ namespace LotsOfItems.CustomItems
 				gen.EntityTriggerEnterOverride(other, validCollision);
 		}
 
+		[HarmonyPatch("EntityTriggerExit")]
+		[HarmonyPrefix]
+		static bool TriggerExitExtra(ITM_NanaPeel __instance, Collider other, bool ___ready, bool ___slipping, bool validCollision)
+		{
+			if (__instance is ITM_GenericNanaPeel gen && ___ready && ___slipping)
+				return gen.EntityTriggerExitOverride(other, validCollision);
+			return true;
+		}
+
 		[HarmonyPatch("Update")]
 		[HarmonyPrefix]
-		static void MakeSureFloorHitIsCorrect(ITM_NanaPeel __instance, out bool __state, bool ___ready)
+		static bool MakeSureFloorHitIsCorrect(ITM_NanaPeel __instance, out bool __state, bool ___ready)
 		{
 			__state = ___ready;
 			if (__instance is ITM_GenericNanaPeel gen)
+			{
 				gen.VirtualUpdate();
+				if (gen.DisableUpdate)
+					return false;
+			}
+			return true;
 		}
 
 		[HarmonyPatch("Update")]

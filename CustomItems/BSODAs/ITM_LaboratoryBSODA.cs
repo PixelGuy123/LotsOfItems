@@ -9,5 +9,6 @@ public class ITM_LaboratoryBSODA : ITM_MultiDirectionalBSODA, IItemPrefab
     {
         bsodaPrefab = ItemExtensions.GetVariantInstance<ITM_BSODA>(Items.DietBsoda);
         audUse = bsodaPrefab.sound;
+        numOfSodas = 4;
     }
 }

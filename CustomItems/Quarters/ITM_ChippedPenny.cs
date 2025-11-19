@@ -9,6 +9,9 @@ public class ITM_ChippedPenny : Item, IItemPrefab
     [SerializeField]
     private ItemObject quarterItem, pennyItem;
 
+    private IItemAcceptor _current;
+    bool shouldInsert = true;
+
     public void SetupPrefab(ItemObject itm)
     {
         quarterItem = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
@@ -21,34 +24,42 @@ public class ITM_ChippedPenny : Item, IItemPrefab
     {
         if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.Reach, pm.pc.ClickLayers))
         {
-            IItemAcceptor component = hit.transform.GetComponent<IItemAcceptor>();
-            if (component != null && component.ItemFits(quarterItem.itemType))
+            _current = hit.transform.GetComponent<IItemAcceptor>();
+            if (_current != null && _current.ItemFits(quarterItem.itemType))
             {
                 int outcome = Random.Range(0, 4);
                 switch (outcome)
                 {
                     case 0: // Get both back
-                        component.InsertItem(pm, pm.ec);
                         GiveItem(pm, pennyItem);
                         GiveItem(pm, quarterItem);
                         break;
                     case 1: // Get penny back
-                        component.InsertItem(pm, pm.ec);
                         GiveItem(pm, pennyItem);
                         break;
                     case 2: // Normal use
-                        component.InsertItem(pm, pm.ec);
                         break;
                     case 3: // Gets destroyed
                         // Do nothing, just consume the item
+                        shouldInsert = false;
+                        Destroy(gameObject);
                         break;
                 }
-                Destroy(gameObject);
                 return true;
             }
         }
         Destroy(gameObject);
         return false;
+    }
+
+    public override void PostUse(PlayerManager pm)
+    {
+        base.PostUse(pm);
+        if (_current != null && shouldInsert)
+        {
+            _current.InsertItem(pm, pm.ec);
+            Destroy(gameObject);
+        }
     }
 
     private void GiveItem(PlayerManager pm, ItemObject item)

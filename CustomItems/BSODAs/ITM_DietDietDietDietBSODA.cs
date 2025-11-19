@@ -31,8 +31,12 @@ public class ITM_DietDietDietDietBSODA : Item, IItemPrefab, IBsodaShooter
     {
         this.pm = pm;
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(sound);
-        originalPlayerRotation = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+
+        Quaternion rotation = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset;
+        originalPlayerRotation = rotation * Vector3.forward;
+
         lastRecordedPositionsOfSodas = [pm.transform.position, pm.transform.position];
+        pm.RuleBreak("Drinking", 1f);
         CreateBSODAs();
         return true;
     }
@@ -46,10 +50,14 @@ public class ITM_DietDietDietDietBSODA : Item, IItemPrefab, IBsodaShooter
         }
 
         // Normal Direction
-        ShootBsoda(bsodaChain[currentChainIndex], pm, lastRecordedPositionsOfSodas[0], Quaternion.LookRotation(originalPlayerRotation));
+        var newBsoda = Instantiate(bsodaChain[currentChainIndex], lastRecordedPositionsOfSodas[0], Quaternion.identity);
+        newBsoda.IndividuallySpawn(pm.ec, lastRecordedPositionsOfSodas[0], originalPlayerRotation);
+        activeSodas.Add(newBsoda);
 
         // Inverse direction
-        ShootBsoda(bsodaChain[currentChainIndex], pm, lastRecordedPositionsOfSodas[1], Quaternion.LookRotation(-originalPlayerRotation));
+        newBsoda = Instantiate(bsodaChain[currentChainIndex], lastRecordedPositionsOfSodas[1], Quaternion.identity);
+        newBsoda.IndividuallySpawn(pm.ec, lastRecordedPositionsOfSodas[1], -originalPlayerRotation);
+        activeSodas.Add(newBsoda);
 
         if (++currentChainIndex >= bsodaChain.Length)
         {
@@ -73,16 +81,11 @@ public class ITM_DietDietDietDietBSODA : Item, IItemPrefab, IBsodaShooter
         }
     }
 
-    public void ShootBsoda(ITM_BSODA bsoda, PlayerManager pm, Vector3 position, Quaternion rotation)
-    {
-        var newBsoda = Instantiate(bsoda, position, Quaternion.identity);
-        newBsoda.IndividuallySpawn(pm.ec, position, rotation * Vector3.forward);
-        activeSodas.Add(newBsoda);
-    }
-
     int currentChainIndex = 0;
 
     readonly List<ITM_BSODA> activeSodas = [];
+
+    public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 
     Vector3[] lastRecordedPositionsOfSodas;
 

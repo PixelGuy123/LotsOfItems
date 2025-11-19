@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
+public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger, IBsodaShooter
 {
     public float speed = 3.5f;
     public float lifetime = 20f;
@@ -34,6 +34,8 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
     SpriteRenderer renderer;
 
     Vector3 direction;
+
+    public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 
     public void SetupPrefab(ItemObject itm)
     {
@@ -68,17 +70,18 @@ public class ITM_CreepyBaldiBalloon : Item, IItemPrefab, IEntityTrigger
 
     private IEnumerator InflationAndMovement()
     {
+        var cam = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber);
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audInflate);
         float t = 0f;
         while (t < audInflate.subDuration)
         {
             t += ec.EnvironmentTimeScale * Time.deltaTime;
             renderer.transform.localScale = Vector3.one * Mathf.Lerp(0f, finalScale, Mathf.Clamp01(t / audInflate.subDuration));
-            transform.position = pm.transform.position + pm.transform.forward * 0.85f;
+            transform.position = pm.transform.position + (cam.transform.rotation * PanicKernelRotationOffset * Vector3.forward * 0.85f);
             yield return null;
         }
 
-        direction = pm.transform.forward;
+        direction = cam.transform.rotation * PanicKernelRotationOffset * Vector3.forward;
 
         float acceleration = 0f;
         float speed = 0f;

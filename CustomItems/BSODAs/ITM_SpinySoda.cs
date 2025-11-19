@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
-    public class ITM_SpinyBSODA : ITM_GenericNanaPeel
+    public class ITM_SpinyBSODA : ITM_GenericNanaPeel, IBsodaShooter
     {
         [SerializeField]
         private SpinySpike spikePrefab;
@@ -24,6 +24,7 @@ namespace LotsOfItems.CustomItems.BSODAs
         internal float barrierWaitBeforeExplode = 7f, sodaPoolLifeTime = 10f, pushForce = 20f, spikeSpeed = 40f, puddleSpawnSpeed = 2.75f;
 
         private bool isActiveBarrier = false;
+        public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 
         protected override void VirtualSetupPrefab(ItemObject itm)
         {
@@ -66,6 +67,21 @@ namespace LotsOfItems.CustomItems.BSODAs
             puddlePrefab = puddleObject.gameObject.AddComponent<SodaPuddle>();
             puddlePrefab.speedDebuff.movementMultiplier = 0.35f; // 65% slow
             puddleObject.gameObject.ConvertToPrefab(true);
+        }
+
+        public override bool Use(PlayerManager pm)
+        {
+            // ITM_NanaPeel.Use, but with shooter modification
+            if (!spawned)
+            {
+                Vector3 rot = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset * Vector3.forward;
+                Spawn(pm.ec, pm.transform.position, rot, throwSpeed);
+                entity.CopyStatusEffects(pm.plm.Entity);
+                audioManager.PlaySingle(audEnd);
+                return true;
+            }
+
+            return false;
         }
 
         internal override void OnFloorHit()

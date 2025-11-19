@@ -27,6 +27,9 @@ namespace LotsOfItems.CustomItems.BSODAs
         SpriteRenderer goombaDeathPrefab, respawnPrefab;
 
         [SerializeField]
+        ModdedQuickExplosion popPre;
+
+        [SerializeField]
         AnimationComponent animComp;
 
         [SerializeField]
@@ -41,7 +44,7 @@ namespace LotsOfItems.CustomItems.BSODAs
 
             animComp = gameObject.AddComponent<AnimationComponent>();
             animComp.renderers = [spriteRenderer];
-            animComp.animation = this.GetSpriteSheet("RetroFireFlower_Fireball.png", 2, 2, 20f);
+            animComp.animation = this.GetSpriteSheet("RetroFireFlower_Fireball.png", 4, 1, 10f);
             animComp.speed = 9.5f;
 
             this.DestroyParticleIfItHasOne();
@@ -59,12 +62,14 @@ namespace LotsOfItems.CustomItems.BSODAs
             rb.useGravity = true;
             rb.mass *= 1.75f;
 
-            goombaDeathPrefab.gameObject.CreatePropagatedAudioManager(55f, 120f)
-            .AddStartingAudiosToAudioManager(false, this.GetSoundNoSub("RetroFireFlower_Hit.wav", SoundType.Effect));
-
             respawnPrefab = ObjectCreationExtensions.CreateSpriteBillboard(null);
             respawnPrefab.gameObject.ConvertToPrefab(true);
             respawnPrefab.name = "RespawnSprite";
+
+            popPre = ModdedQuickExplosion.CreatePrefab(10f, [this.GetSoundNoSub("RetroFireFlower_Hit.wav", SoundType.Effect)], this.GetSpriteSheet("RetroFireFlower_FireDeath.png", 3, 1, 20f));
+            popPre.name = "QuickRetroExplosion";
+            popPre.audMan.minDistance = 55f;
+            popPre.audMan.maxDistance = 120f;
 
             breaksRuleWhenUsed = false;
         }
@@ -147,6 +152,9 @@ namespace LotsOfItems.CustomItems.BSODAs
                 rb.AddForce(Vector3.up * goombaDeathForce.y + transform.forward * goombaDeathForce.x, ForceMode.VelocityChange);
                 Destroy(deathSpriteObject.gameObject, 6f); // Destroy after a few seconds
             }
+
+            // Spawns death animation
+            Instantiate(popPre, transform.position, Quaternion.identity);
 
             // Add NPC to disabled list and store coroutine reference
             npc.StartCoroutine(RevivalSequence(npc, disableDuration, flickerDuration, flickerInterval));

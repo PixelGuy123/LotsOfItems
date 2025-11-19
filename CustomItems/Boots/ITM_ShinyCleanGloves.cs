@@ -2,7 +2,6 @@
 using LotsOfItems.Components;
 using LotsOfItems.ItemPrefabStructures;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LotsOfItems.CustomItems.Boots;
 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs;
 
-public class ITM_ConfettiCannon : Item, IItemPrefab
+public class ITM_ConfettiCannon : Item, IItemPrefab, IBsodaShooter
 {
     [SerializeField]
     private ConfettiPlane planePrefab;
@@ -16,9 +16,11 @@ public class ITM_ConfettiCannon : Item, IItemPrefab
     private SoundObject audUse;
 
     [SerializeField]
-    private float recoilForce = 35f, pushForce = 100f;
+    private float recoilForce = 15f, pushForce = 100f;
     [SerializeField]
     private float planeSpeed = 50f;
+
+    public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 
     public void SetupPrefab(ItemObject itm)
     {
@@ -75,15 +77,15 @@ public class ITM_ConfettiCannon : Item, IItemPrefab
     public override bool Use(PlayerManager pm)
     {
         Transform camera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform;
-
+        Vector3 direction = camera.rotation * PanicKernelRotationOffset * Vector3.forward;
         // Spawn confetti plane
-        ConfettiPlane plane = Instantiate(planePrefab, camera.position + camera.forward * 2f, camera.rotation);
-        plane.rb.velocity = camera.forward * planeSpeed;
+        ConfettiPlane plane = Instantiate(planePrefab, camera.position + direction * 2f, camera.rotation);
+        plane.rb.velocity = direction * planeSpeed;
         plane.transform.rotation = Random.rotation;
         plane.RandomizeAngularVelocity();
 
         // Apply recoil
-        pm.plm.Entity.AddForce(new Force(-camera.forward, recoilForce, -recoilForce / 2f));
+        pm.plm.Entity.AddForce(new Force(-direction, recoilForce, -recoilForce * 0.75f));
 
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
         Destroy(gameObject);

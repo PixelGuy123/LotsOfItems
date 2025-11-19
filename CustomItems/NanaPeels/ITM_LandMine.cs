@@ -60,7 +60,7 @@ public class ITM_LandMine : ITM_GenericNanaPeel
 		if (!hasExploded && other.isTrigger)
 		{
 			var entity = other.GetComponent<Entity>();
-			if (entity)
+			if (entity && entity.Grounded)
 				StartCoroutine(Explode());
 		}
 		return false;

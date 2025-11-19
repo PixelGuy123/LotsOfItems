@@ -127,7 +127,7 @@ public class Marker_PrincipalOccupied : MonoBehaviour
         {
             t -= ec.EnvironmentTimeScale * Time.deltaTime;
 
-            if (Random.value > 0.13f)
+            if (Time.timeScale != 0f && Random.value > 0.075f)
             {
                 int idx = Random.Range(0, drinkSprs.Length);
                 if (idx == 1)

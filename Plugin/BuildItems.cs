@@ -333,6 +333,46 @@ namespace LotsOfItems.Plugin
 			OutsideYTP.potentialItems[2] = new() { selection = item, weight = 15 };
 			ytp.value = 200;
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("BlankYTP")
+			.SetGeneratorCost(16)
+			.SetShopPrice(550)
+			.SetPickupSound(GetGenericYtpAudio(0))
+			.SetMeta(ItemFlags.Persists, [YTPVARTAG])
+			.SetAsInstantUse()
+			.SetEnum("BlankYTP")
+			.SetItemComponent<ITM_BlankYTP>()
+			.SetNameAndDescription("LtsOItems_BlankYTP_Name", "LtsOItems_BlankYTP_Desc")
+			.BuildAndSetup(out ytp)
+			.StoreAsNormal(Items.Points, appearsInStore: false, weight: 25, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+			ytp.value = 0;
+
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("EMC2YTP")
+			.SetGeneratorCost(16)
+			.SetShopPrice(550)
+			.SetPickupSound(GetGenericYtpAudio(0))
+			.SetMeta(ItemFlags.Persists, [YTPVARTAG])
+			.SetAsInstantUse()
+			.SetEnum(Items.Points)
+			.SetItemComponent<ITM_EMC2YTP>()
+			.SetNameAndDescription("LtsOItems_EMC2YTP_Name", "LtsOItems_EMC2YTP_Desc")
+			.BuildAndSetup(out ytp)
+			.StoreAsNormal(Items.Points, appearsInStore: false, weight: 12, acceptableFloors: [F2, F3, F4, F5, END]);
+			ytp.value = 150;
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("JKYTP")
+			.SetGeneratorCost(18)
+			.SetEnum(Items.Points)
+			.SetMeta(ItemFlags.InstantUse, [YTPVARTAG])
+			.SetAsInstantUse()
+			.SetItemComponent<ITM_JKYTP>()
+			.SetNameAndDescription("LtsOItems_JKYTP_Name", "LtsOItems_JKYTP_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Points, appearsInStore: false, weight: 25, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+
 			#endregion
 
 
@@ -657,6 +697,28 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 15, acceptableFloors: [F3, F4, F5, END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("Banana")
+			.SetGeneratorCost(15)
+			.SetShopPrice(200)
+			.SetMeta(ItemFlags.None, [FOOD_TAG, ZESTYVARTAG, STACK_NOSTACK])
+			.SetEnum("Banana")
+			.SetItemComponent<ITM_Banana>()
+			.SetNameAndDescription("LtsOItems_Banana_Name", "LtsOItems_Banana_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 50, acceptableFloors: [F1, F2, F3, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SpicyDog")
+			.SetGeneratorCost(30)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.None, [FOOD_TAG, ZESTYVARTAG])
+			.SetEnum("SpicyDog")
+			.SetItemComponent<ITM_SpicyDog>()
+			.SetNameAndDescription("LtsOItems_SpicyDog_Name", "LtsOItems_SpicyDog_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.ZestyBar, appearsInStore: true, weight: 45, acceptableFloors: [F2, F3, F4, END]);
+
 
 			#endregion
 
@@ -816,6 +878,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_SuperchargedTeleporter_Name", "LtsOItems_SuperchargedTeleporter_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Teleporter, appearsInStore: true, weight: 20, acceptableFloors: [F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("WormholeTeleporter")
+			.SetGeneratorCost(50)
+			.SetShopPrice(900)
+			.SetMeta(ItemFlags.None, [DANGERTELEPORTERVARTAG])
+			.SetEnum("WormholeTeleporter")
+			.SetItemComponent<ITM_WormholeTeleporter>()
+			.SetNameAndDescription("LtsOItems_WormholeTeleporter_Name", "LtsOItems_WormholeTeleporter_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Teleporter, appearsInStore: true, goToFieldTrips: true, weight: 15, acceptableFloors: [F4, F5, END]);
 
 			#endregion
 
@@ -979,7 +1052,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("ExoticButters")
 			.SetGeneratorCost(20)
 			.SetShopPrice(450)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG, FOOD_TAG])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [NANAPEELVARTAG, FOOD_TAG])
 			.SetEnum("ExoticButters")
 			.SetItemComponent<ITM_ExoticButters>(Items.NanaPeel)
 			.SetNameAndDescription("LtsOItems_ExoticButters_Name_5", "LtsOItems_ExoticButters_Desc")
@@ -998,6 +1071,28 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_GlassNanaPeel_Name", "LtsOItems_GlassNanaPeel_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 25, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("OverripeNanaPeel")
+			.SetGeneratorCost(30)
+			.SetShopPrice(500)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG])
+			.SetEnum("OverripeNanaPeel")
+			.SetItemComponent<ITM_OverripeNanaPeel>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_OverripeNanaPeel_Name", "LtsOItems_OverripeNanaPeel_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 50, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("SadPeel")
+			.SetGeneratorCost(28)
+			.SetShopPrice(550)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NANAPEELVARTAG])
+			.SetEnum("SadPeel")
+			.SetItemComponent<ITM_SadPeel>(Items.NanaPeel)
+			.SetNameAndDescription("LtsOItems_SadPeel_Name", "LtsOItems_SadPeel_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.NanaPeel, appearsInStore: true, weight: 20, acceptableFloors: [F1, F2, F3, END]);
 
 			#endregion
 
@@ -1515,6 +1610,17 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.AlarmClock, appearsInStore: true, weight: 21, acceptableFloors: [F3, new(F4, LevelType.Laboratory), new(F5, LevelType.Laboratory), END]);
 
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("AngryAlarm")
+			.SetGeneratorCost(45)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [ALARMCLOCKVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetEnum("AngryAlarm")
+			.SetItemComponent<ITM_AngryAlarm>(Items.AlarmClock)
+			.SetNameAndDescription("LtsOItems_AngryAlarm_Name", "LtsOItems_AngryAlarm_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.AlarmClock, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, END]);
+
 			#endregion
 
 			// ---- Tape -----
@@ -1550,6 +1656,17 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_LeastFavoriteTape_Name", "LtsOItems_LeastFavoriteTape_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Tape, goToFieldTrips: true, appearsInStore: true, weight: 15, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("PortalTape")
+			.SetGeneratorCost(45)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists, [TAPEVARTAG])
+			.SetEnum("PortalTape")
+			.SetItemComponent<ITM_PortalTape>()
+			.SetNameAndDescription("LtsOItems_PortalTape_Name", "LtsOItems_PortalTape_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Tape, appearsInStore: true, weight: 20, acceptableFloors: [new(F4, LevelType.Laboratory), new(F5, LevelType.Laboratory), END]);
 
 			// --- Grapples ---
 			#region Grappling Hooks
@@ -2104,7 +2221,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("HomemadeBSODA")
 			.SetGeneratorCost(50)
 			.SetShopPrice(1200)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND, DRINK_TAG])
 			.SetEnum("HomemadeBSODA")
 			.SetItemComponent<ITM_HomemadeBSODA>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_HomemadeBSODA_Name", "LtsOItems_HomemadeBSODA_Desc")
@@ -2126,7 +2243,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("ThreeSixtySODA")
 			.SetGeneratorCost(35)
 			.SetShopPrice(1000)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND, DRINK_TAG])
 			.SetEnum("ThreeSixtySODA")
 			.SetItemComponent<ITM_360SODA>()
 			.SetNameAndDescription("LtsOItems_ThreeSixtySODA_Name", "LtsOItems_ThreeSixtySODA_Desc")
@@ -2137,7 +2254,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("LaboratoryBSODA")
 			.SetGeneratorCost(35)
 			.SetShopPrice(1000)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND, DRINK_TAG])
 			.SetEnum("LaboratoryBSODA")
 			.SetItemComponent<ITM_LaboratoryBSODA>()
 			.SetNameAndDescription("LtsOItems_LaboratoryBSODA_Name", "LtsOItems_LaboratoryBSODA_Desc")
@@ -2148,7 +2265,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("SnowGun")
 			.SetGeneratorCost(30)
 			.SetShopPrice(450)
-			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse | ItemFlags.CreatesEntity, [SODAVARTAG])
+			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG])
 			.SetEnum("SnowGun")
 			.SetItemComponent<ITM_SnowGun>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_SnowGun_Name_3", "LtsOItems_SnowGun_Desc")
@@ -2161,7 +2278,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("SpikyBall")
 			.SetGeneratorCost(35)
 			.SetShopPrice(600)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG])
 			.SetEnum("SpikyBall")
 			.SetItemComponent<ITM_SpikyBall>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_SpikyBall_Name", "LtsOItems_SpikyBall_Desc")
@@ -2172,7 +2289,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("MSODA")
 			.SetGeneratorCost(35)
 			.SetShopPrice(600)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, CRIMINALPACK_CONTRABAND, DRINK_TAG])
 			.SetEnum("MagneticBSODA")
 			.SetItemComponent<ITM_MagneticBSODA>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_MSODA_Name", "LtsOItems_MSODA_Desc")
@@ -2183,7 +2300,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("CeleSoda")
 			.SetGeneratorCost(35)
 			.SetShopPrice(600)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG])
 			.SetEnum("CeleSoda")
 			.SetItemComponent<ITM_CeleSoda>(Items.DietBsoda)
 			.SetNameAndDescription("LtsOItems_CeleSoda_Name", "LtsOItems_CeleSoda_Desc")
@@ -2194,7 +2311,7 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("ExplodaBSODA")
 			.SetGeneratorCost(30)
 			.SetShopPrice(650)
-			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG])
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG])
 			.SetEnum("ExplodaBSODA")
 			.SetItemComponent<ITM_ExplodaBSODA>(Items.Bsoda)
 			.SetNameAndDescription("LtsOItems_ExplodaBSODA_Name", "LtsOItems_ExplodaBSODA_Desc")
@@ -2205,12 +2322,23 @@ namespace LotsOfItems.Plugin
 			.AutoGetSprites("OneLiterBSODA")
 			.SetGeneratorCost(38)
 			.SetShopPrice(700)
-			.SetMeta(ItemFlags.Persists, [SODAVARTAG])
+			.SetMeta(ItemFlags.Persists, [SODAVARTAG, DRINK_TAG])
 			.SetEnum("OneLiterBSODA")
 			.SetItemComponent<ITM_OneLiterBSODA>()
 			.SetNameAndDescription("LtsOItems_OneLiterBSODA_Name", "LtsOItems_OneLiterBSODA_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, F5, END]);
+
+			new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("YSODA")
+			.SetGeneratorCost(35)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [SODAVARTAG, DRINK_TAG])
+			.SetEnum("YSODA")
+			.SetItemComponent<ITM_YSODA>(Items.Bsoda)
+			.SetNameAndDescription("LtsOItems_YSODA_Name", "LtsOItems_YSODA_Desc")
+			.BuildAndSetup()
+			.StoreAsNormal(Items.Bsoda, appearsInStore: true, weight: 15, acceptableFloors: [F2, F3, F4, END]);
 
 			#endregion
 
@@ -2254,7 +2382,7 @@ namespace LotsOfItems.Plugin
 			new ItemBuilder(LotOfItemsPlugin.plug.Info)
 			.AutoGetSprites("MultiPurposeCleaner")
 			.SetGeneratorCost(25)
-			.SetShopPrice(350)
+			.SetShopPrice(550)
 			.SetMeta(ItemFlags.Persists, [WD40VARTAG])
 			.SetEnum("MultiPurposeCleaner")
 			.SetItemComponent<ITM_MultiPurposeCleaner>(Items.Wd40)
@@ -2262,11 +2390,44 @@ namespace LotsOfItems.Plugin
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Wd40, appearsInStore: true, weight: 35, acceptableFloors: [F1, F2, F3, F4, F5, END]);
 
+			item = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("WDNoSqueeX")
+			.SetGeneratorCost(35)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [WD40VARTAG])
+			.SetEnum("WDNoSqueeX")
+			.SetItemComponent<ITM_WDNoSqueeX>(Items.Wd40)
+			.SetNameAndDescription("LtsOItems_WDNoSqueeX_Name_3", "LtsOItems_WDNoSqueeX_Desc")
+			.BuildAndSetup(out ITM_WDNoSqueeX noSqueeX)
+			.StoreAsNormal(Items.Wd40, appearsInStore: true, goToFieldTrips: true, weight: 15, acceptableFloors: [F1, F2, F3, F4, F5, END]);
+
+			noSqueeX.CreateNewReusableInstances(item, "LtsOItems_WDNoSqueeX_Name", 2);
+
 			#endregion
 
 
 			// ------ Apple Variants ------
 			#region APPLES
+
+			var pizzaItem = new ItemBuilder(LotOfItemsPlugin.plug.Info)
+			.AutoGetSprites("APizzaForEveryone")
+			.SetGeneratorCost(35)
+			.SetShopPrice(600)
+			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse | ItemFlags.CreatesEntity, [APPLEVARTAG, FOOD_TAG])
+			.SetEnum("APizzaForEveryone")
+			.SetItemComponent<ITM_APizzaForEveryone>()
+			.SetNameAndDescription("LtsOItems_PizzaEveryone_Name_6", "LtsOItems_PizzaEveryone_Desc")
+			.BuildAndSetup<ITM_APizzaForEveryone>(out var pizza)
+			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 20, acceptableFloors: [F2, F3, F4, END]);
+
+			newInstances = pizza.CreateNewReusableInstances(pizzaItem, "LtsOItems_PizzaEveryone_Name", 5);
+
+			for (int i = 1; i < newInstances.Length; i++)
+			{
+				string itemName = $"APizzaForEveryone_{i + 1}";
+				newInstances[i].itemSpriteLarge = AssetLoader.SpriteFromFile(GetItemIcon(itemName, true), Vector2.one * 0.5f, 50f);
+				newInstances[i].itemSpriteSmall = AssetLoader.SpriteFromFile(GetItemIcon(itemName, false), Vector2.one * 0.5f, 50f);
+			}
 
 			Sprite[] baldiDefaultEatingSprites = [
 				GenericExtensions.FindResourceObjectByName<Sprite>("BaldiApple_0"),
@@ -2576,7 +2737,7 @@ namespace LotsOfItems.Plugin
 			.SetNameAndDescription("LtsOItems_CupOfTeaForPrincipal_Name", "LtsOItems_CupOfTeaForPrincipal_Desc")
 			.BuildAndSetup()
 			.StoreAsNormal(Items.Apple, appearsInStore: true, weight: 40, goToFieldTrips: true, acceptableFloors: [F1, F2, F3, END]);
-			var principalRef = (Playtime)NPCMetaStorage.Instance.Get(Character.Playtime).value;
+			var principalRef = (Principal)NPCMetaStorage.Instance.Get(Character.Principal).value;
 
 			Marker_PrincipalOccupied.drinkSound = ObjectCreators.CreateSoundObject(
 				LotOfItemsPlugin.assetMan.Get<SoundObject>("audDrink").soundClip,

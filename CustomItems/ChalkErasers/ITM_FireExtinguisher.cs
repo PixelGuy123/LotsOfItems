@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using LotsOfItems.ItemPrefabStructures;
 using LotsOfItems.Plugin;
 using UnityEngine;
@@ -30,44 +31,27 @@ public class ITM_FireExtinguisher : Item, IItemPrefab
 
         // If we didn't hit anything, use the max distance point
         Vector3 endPoint = hitInfo.collider ? hitInfo.point : pm.transform.position + pm.transform.forward * maxDistance;
+        float worldDistance = Vector3.Distance(pm.transform.position, endPoint);
 
-        // Convert start and end to grid coordinates
-        var startGrid = IntVector2.GetGridPosition(pm.transform.position);
-        var endGrid = IntVector2.GetGridPosition(endPoint);
+        float stepSize = 1.0f; // Adjust this based on your desired cloud density
+        int steps = Mathf.CeilToInt(worldDistance / stepSize);
 
-        // Bresenham-like stepping between two grid cells (integer grid)
-        int x0 = startGrid.x;
-        int y0 = startGrid.z;
-        int x1 = endGrid.x;
-        int y1 = endGrid.z;
+        HashSet<Cell> coveredCells = [];
 
-        int dx = Mathf.Abs(x1 - x0);
-        int dy = Mathf.Abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int err = dx - dy;
-
-        while (true) // Literally a raycasting algorithm to compensate a super-optimized 3D raycasting
+        for (int i = 0; i <= steps; i++)
         {
-            var cell = ec.CellFromPosition(new IntVector2(x0, y0));
-            if (!cell.Null)
+            float t = (float)i / steps;
+            Vector3 currentWorldPos = Vector3.Lerp(pm.transform.position, endPoint, t); // Lerp from one point to another
+
+            var gridPos = IntVector2.GetGridPosition(currentWorldPos);
+            var cell = ec.CellFromPosition(gridPos);
+
+            if (!cell.Null && !coveredCells.Contains(cell))
             {
+                coveredCells.Add(cell);
                 CoverCloud cloud = Instantiate(coverCloudPrefab, cell.CenterWorldPosition, Quaternion.identity, ec.transform);
                 cloud.Ec = ec;
                 cloud.StartEndTimer(cloudLifetime);
-            }
-
-            if (x0 == x1 && y0 == y1) break;
-            int e2 = err * 2;
-            if (e2 > -dy)
-            {
-                err -= dy;
-                x0 += sx;
-            }
-            if (e2 < dx)
-            {
-                err += dx;
-                y0 += sy;
             }
         }
 

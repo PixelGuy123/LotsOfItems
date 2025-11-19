@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
-	public class ITM_ShakenSoda : ITM_GenericNanaPeel
+	public class ITM_ShakenSoda : ITM_GenericNanaPeel, IBsodaShooter
 	{
 		[SerializeField]
 		private SoundObject audPressureSound, audExplode;
@@ -31,6 +31,8 @@ namespace LotsOfItems.CustomItems.BSODAs
 		internal LayerMask collisionLayer = LotOfItemsPlugin.onlyNpcPlayerLayers;
 
 		Coroutine animationCor;
+
+		public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 
 		protected override void VirtualSetupPrefab(ItemObject itm)
 		{
@@ -60,6 +62,21 @@ namespace LotsOfItems.CustomItems.BSODAs
 			audPressureSound = this.GetSound("ShakenSoda_PitchNoise.wav", "LtsOItems_Vfx_HighPitchNoise", SoundType.Effect, Color.white);
 
 			endHeight = 1.27f;
+		}
+
+		public override bool Use(PlayerManager pm)
+		{
+			// ITM_NanaPeel.Use, but with shooter modification
+			if (!spawned)
+			{
+				Vector3 rot = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset * Vector3.forward;
+				Spawn(pm.ec, pm.transform.position, rot, throwSpeed);
+				entity.CopyStatusEffects(pm.plm.Entity);
+				audioManager.PlaySingle(audEnd);
+				return true;
+			}
+
+			return false;
 		}
 
 		internal override bool EntityTriggerStayOverride(Collider other, bool validCollision) =>

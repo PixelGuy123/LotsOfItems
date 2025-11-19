@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using LotsOfItems.Patches;
-using System.Collections;
+﻿using System.Collections;
 using LotsOfItems.ItemPrefabStructures;
+using LotsOfItems.Patches;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace LotsOfItems.CustomItems
 {
@@ -13,7 +14,7 @@ namespace LotsOfItems.CustomItems
 		protected virtual void VirtualSetupPrefab(ItemObject itm) { }
 
 		[SerializeField]
-		internal SoundObject[] audioToOverride = null;
+		internal SoundObject[] audioToOverride = [GenericExtensions.FindResourceObject<TapePlayer>().beep];
 
 		[SerializeField]
 		internal bool useOriginalTapePlayerFunction = false;
@@ -25,7 +26,7 @@ namespace LotsOfItems.CustomItems
 			{
 				var component = hit.transform.GetComponent<TapePlayer>();
 				if (component != null && component.ItemFits(Items.Tape))
-				{	
+				{
 					component.CustomInsertItem(pm, pm.ec, NewCooldown(component), audioToOverride, useOriginalTapePlayerFunction);
 					Destroy(gameObject);
 					return true;

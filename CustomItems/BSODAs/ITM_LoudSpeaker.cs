@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LotsOfItems.CustomItems.BSODAs
 {
-    public class ITM_LoudSpeaker : Item, IItemPrefab
+    public class ITM_LoudSpeaker : Item, IItemPrefab, IBsodaShooter
     {
         [SerializeField]
         private float noiseInterval = 5f, lifeTime = 30f;
@@ -23,6 +23,8 @@ namespace LotsOfItems.CustomItems.BSODAs
         internal ITM_BSODA foamPrefab;
 
         EnvironmentController ec;
+
+        public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 
         private float noiseTimer;
 
@@ -52,7 +54,7 @@ namespace LotsOfItems.CustomItems.BSODAs
             this.pm = pm;
             ec = pm.ec;
             transform.position = pm.transform.position;
-            transform.forward = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+            transform.forward = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset * Vector3.forward;
             entity.Initialize(ec, transform.position);
 
             noiseTimer = noiseInterval;

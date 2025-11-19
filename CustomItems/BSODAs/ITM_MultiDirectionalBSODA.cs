@@ -12,6 +12,7 @@ public class ITM_MultiDirectionalBSODA : Item, IItemPrefab, IBsodaShooter
     internal SoundObject audUse;
     [SerializeField]
     internal int numOfSodas = 16;
+
     public void SetupPrefab(ItemObject itm) => VirtualSetupPrefab(itm);
     public void SetupPrefabPost() => VirtualSetupPrefabPost();
     protected virtual void VirtualSetupPrefab(ItemObject itm)
@@ -24,7 +25,7 @@ public class ITM_MultiDirectionalBSODA : Item, IItemPrefab, IBsodaShooter
     {
         Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
         float angleAddition = 360f / numOfSodas;
-        float angle = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.eulerAngles.y;
+        float angle = (Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation * PanicKernelRotationOffset).eulerAngles.y;
         for (int i = 0; i < numOfSodas; i++)
         {
             ShootBsoda(bsodaPrefab, pm, pm.transform.position, Quaternion.Euler(0, angle, 0));
@@ -36,7 +37,9 @@ public class ITM_MultiDirectionalBSODA : Item, IItemPrefab, IBsodaShooter
     }
     public void ShootBsoda(ITM_BSODA bsoda, PlayerManager pm, Vector3 position, Quaternion rotation)
     {
+        pm.RuleBreak("Drinking", 1f);
         ITM_BSODA newBsoda = Instantiate(bsoda);
         newBsoda.IndividuallySpawn(pm.ec, position, rotation * Vector3.forward);
     }
+    public Quaternion PanicKernelRotationOffset { get; set; } = Quaternion.identity;
 }

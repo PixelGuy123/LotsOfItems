@@ -68,7 +68,7 @@ public class ITM_Plunger : ITM_GenericBSODA
 
 	public override bool VirtualEntityTriggerEnter(Collider other, bool validCollision)
 	{
-		if (!validCollision || !other.isTrigger) return false;
+		if (!validCollision || !other.isTrigger || (!other.CompareTag("NPC") && !other.CompareTag("Player"))) return false;
 
 		Entity target = other.GetComponent<Entity>();
 		if (target != null && !isStuck)

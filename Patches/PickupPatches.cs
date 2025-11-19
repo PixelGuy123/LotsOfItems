@@ -7,7 +7,7 @@ using UnityEngine;
 namespace LotsOfItems.Patches;
 
 [HarmonyPatch(typeof(Pickup))]
-internal static class MakePickupBounce
+internal static class PickupPatches
 {
 
     // ********** Overriding YTPs Pickup Patch ***********
@@ -20,6 +20,8 @@ internal static class MakePickupBounce
             Object.Destroy(bounce);
         if (__instance.TryGetComponent<ITM_OutsideYTPS>(out var outside))
             Object.Destroy(outside);
+        if (__instance.TryGetComponent<ITM_JKYTP_PickupBehavior>(out var jk))
+            Object.Destroy(jk);
 
         if (__instance.item.item is ITM_DancingYTP)
         {
@@ -32,14 +34,29 @@ internal static class MakePickupBounce
             __instance.gameObject.AddComponent<OutsideYTP>().Initialize(Singleton<BaseGameManager>.Instance.Ec, __instance);
             return;
         }
+
+        if (__instance.item.item is ITM_BlankYTP)
+        {
+            __instance.gameObject.AddComponent<BlankYTP_Pickup>().Initialize(__instance, Singleton<BaseGameManager>.Instance.Ec);
+            return;
+        }
+
+        if (__instance.item.item is ITM_JKYTP)
+        {
+            __instance.gameObject.AddComponent<ITM_JKYTP_PickupBehavior>().Initialize(__instance);
+            return;
+        }
     }
 
     // ********** Teleporting YTP Pickup Patches ***********
 
     [HarmonyPatch("Collect")]
     [HarmonyPrefix]
-    static void RegisterItemObjectForTpYTP(Pickup __instance, out ItemObject __state) =>
+    static void RegisterItemObjectForTpYTP(Pickup __instance, out ItemObject __state)
+    {
         __state = __instance.item;
+        lastPickedUpItem = __state;
+    }
 
     [HarmonyPatch("Collect")]
     [HarmonyPostfix]
@@ -85,6 +102,8 @@ internal static class MakePickupBounce
 
     readonly static List<RoomController> potentialRooms = [];
 
+    public static ItemObject lastPickedUpItem;
+
 
     // ********** Something Pickup Patch ***********
 
@@ -126,8 +145,6 @@ internal static class MakePickupBounce
         }
 
         return true;
-
-
     }
 
 

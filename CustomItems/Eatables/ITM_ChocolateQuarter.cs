@@ -14,21 +14,29 @@ namespace LotsOfItems.CustomItems.Eatables
 		{
 			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out hit, pm.pc.reach, pm.pc.ClickLayers))
 			{
-				IItemAcceptor component = hit.transform.GetComponent<IItemAcceptor>();
-				if (component != null && component.ItemFits(quarterType))
+				_current = hit.transform.GetComponent<IItemAcceptor>();
+				if (_current != null && _current.ItemFits(quarterType))
 				{
-					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
-					component.InsertItem(pm, pm.ec);
-					Destroy(gameObject);
 					return true;
 				}
 			}
-			
+
 			return base.Use(pm);
 		}
 
+		public override void PostUse(PlayerManager pm)
+		{
+			base.PostUse(pm);
+			if (_current == null) return;
 
-		RaycastHit hit;
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
+			_current.InsertItem(pm, pm.ec);
+			Destroy(gameObject);
+		}
+
+
+		private RaycastHit hit;
+		private IItemAcceptor _current;
 
 		[SerializeField]
 		internal Items quarterType = Items.Quarter;

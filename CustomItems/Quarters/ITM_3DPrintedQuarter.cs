@@ -14,6 +14,8 @@ public class ITM_3DPrintedQuarter : Item, IItemPrefab
     [SerializeField]
     internal SoundObject audBuzz;
     private RaycastHit hit;
+    private IItemAcceptor _current;
+    bool successInsert = false;
 
     public void SetupPrefab(ItemObject itm) =>
         audBuzz = LotOfItemsPlugin.assetMan.Get<SoundObject>("audBuzz");
@@ -26,24 +28,22 @@ public class ITM_3DPrintedQuarter : Item, IItemPrefab
 
         if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out hit, pm.pc.reach, pm.pc.ClickLayers))
         {
-            IItemAcceptor acceptor = hit.transform.GetComponent<IItemAcceptor>();
+            _current = hit.transform.GetComponent<IItemAcceptor>();
 
-            if (acceptor != null && acceptor.ItemFits(quarterType))
+            if (_current != null && _current.ItemFits(quarterType))
             {
                 // Roll the dice for success chance
                 if (Random.value <= successChance)
                     // Success!
-                    acceptor.InsertItem(pm, pm.ec);
+                    successInsert = true;
                 else
                 {
                     // Fail!
                     Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBuzz);
                     pm.RuleBreak("Bullying", 2.5f, 1f);
+                    Destroy(gameObject);
                 }
 
-
-                // Quartrer is used regardless
-                Destroy(gameObject);
                 return true;
             }
         }
@@ -51,5 +51,15 @@ public class ITM_3DPrintedQuarter : Item, IItemPrefab
         // If raycast missed or hit something invalid, consume the item and return false.
         Destroy(gameObject);
         return false;
+    }
+
+    public override void PostUse(PlayerManager pm)
+    {
+        base.PostUse(pm);
+        if (_current != null && successInsert)
+        {
+            _current.InsertItem(pm, pm.ec);
+            Destroy(gameObject);
+        }
     }
 }

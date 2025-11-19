@@ -11,7 +11,7 @@ internal static class TeaPatches
     static bool CheckIfDetentionIsNecessary(Principal __instance)
     {
         if (!__instance.targetedPlayer.itm.Has(teaItem) && !__instance.GetComponent<Marker_PrincipalOccupied>()) return true;
-
+        __instance.targetedPlayer.itm.Remove(teaItem);
         __instance.targetedPlayer.ClearGuilt();
         __instance.detentionLevel = 0; // Resets fully his detentions
         __instance.gameObject.AddComponent<Marker_PrincipalOccupied>().SetTimer(__instance, 60f);

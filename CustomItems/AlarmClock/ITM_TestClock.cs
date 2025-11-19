@@ -4,6 +4,7 @@ using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace LotsOfItems.CustomItems.AlarmClock;
+
 public class ITM_TestClock : ITM_GenericAlarmClock
 {
 	protected override void VirtualSetupPrefab(ItemObject itm)
@@ -15,9 +16,11 @@ public class ITM_TestClock : ITM_GenericAlarmClock
 			]; // The audio loop is overriden
 		spriteRenderer.sprite = this.GetSprite("TestClock_World.png", spriteRenderer.sprite.pixelsPerUnit);
 		spriteRenderer.transform.localPosition = Vector3.down * 0.25f;
-		clockSprite = [spriteRenderer.sprite];
 		gaugeSprite = itm.itemSpriteLarge;
 		audMan.useUnscaledPitch = true;
+
+		for (int i = 0; i < clockSprite.Length; i++)
+			clockSprite[i] = spriteRenderer.sprite;
 	}
 
 	private TimeScaleModifier timeScaleModifier;

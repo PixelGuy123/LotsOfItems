@@ -18,7 +18,8 @@ namespace LotsOfItems.CustomItems.Eatables
 	[HarmonyPatch]
 	static class PanicKernelsPatch_IBsodaShooter
 	{
-		readonly static Dictionary<System.Type, MethodInfo> _shooterCache = [];
+		readonly static List<MethodInfo> useItemCache = [];
+		readonly static Dictionary<System.Type, PropertyInfo> _shooterPropertyCache = [];
 
 		[HarmonyPrepare]
 		// Prepare the method beforehand, to be sure anything was found first
@@ -29,37 +30,44 @@ namespace LotsOfItems.CustomItems.Eatables
 
 			if (!implementingTypes.Any())
 			{
-				Debug.Log("No types implementing IBsodaShooter found.");
+				// Debug.Log("No types implementing IBsodaShooter found.");
 				return false; // Prevents the patch from being applied if no targets are found
 			}
 
 			foreach (var type in implementingTypes)
 			{
-				if (_shooterCache.ContainsKey(type)) continue;
+				if (_shooterPropertyCache.ContainsKey(type)) continue;
 
-				var method = AccessTools.Method(type, "ShootBsoda");
+				var method = AccessTools.Method(type, nameof(Item.Use)); // Get item use to instantiate it
 				if (method != null)
 				{
-					_shooterCache.Add(type, method);
-					Debug.Log($"{type.FullName}::{method.Name}");
+					useItemCache.Add(method);
+					var property = AccessTools.Property(type, nameof(IBsodaShooter.PanicKernelRotationOffset));
+					_shooterPropertyCache.Add(type, property);
+
+					// Debug.Log($"{type.FullName}::{method.Name}\n{type.FullName}::{property.Name}");
 				}
 				else
 				{
-					Debug.LogWarning($"Type {type.FullName} implements IBsodaShooter but no ShootBsoda method was found.");
+					// Debug.LogWarning($"Type {type.FullName} implements IBsodaShooter but no ShootBsoda method was found.");
 				}
 			}
 
-			return _shooterCache.Any(); // Only proceed with patching if at least one target method was found
+			return _shooterPropertyCache.Any(); // Only proceed with patching if at least one target method was found
 		}
 
 		[HarmonyTargetMethods]
-		static IEnumerable<MethodBase> GetShooterMethods() => _shooterCache.Values;
+		static IEnumerable<MethodBase> GetShooterMethods() => useItemCache;
 
 		[HarmonyPostfix]
-		static void ForceBSODAShoot(object __instance, ITM_BSODA bsoda, PlayerManager pm, Vector3 position, Quaternion rotation)
+		static void ForceBSODAShoot(bool __result, Item __instance, PlayerManager pm)
 		{
+			if (_executingPatch) return;
+
+			var instType = __instance.GetType();
+
 			int idx = pm.itm.FindKernel();
-			if (!PanicKernelsPatches_ITM_BSODA.canInstantiateSodas || idx == -1)
+			if (!__result || !PanicKernelsPatches_ITM_BSODA.canInstantiateSodas || idx == -1) // If there are any kernels
 			{
 				PanicKernelsPatches_ITM_BSODA.canInstantiateSodas = false;
 				return;
@@ -67,15 +75,37 @@ namespace LotsOfItems.CustomItems.Eatables
 			pm.itm.RemoveItem(idx);
 
 			PanicKernelsPatches_ITM_BSODA.canInstantiateSodas = false;
-			Vector3 spawnPos = position;
-			Quaternion baseRot = rotation;
 
-			var instType = __instance.GetType();
+			// Get ItemObject to be used again
+			var usedItemObject = PanicKernelsPatches_ITM_BSODA.lastUsedItem;
+			try
+			{
+				_executingPatch = true;
+				var setMethod = _shooterPropertyCache[instType].SetMethod;
 
-			// calls this patched method twice
-			_shooterCache[instType].Invoke(__instance, [bsoda, pm, spawnPos, baseRot * Quaternion.Euler(0, 45, 0)]);
-			_shooterCache[instType].Invoke(__instance, [bsoda, pm, spawnPos, baseRot * Quaternion.Euler(0, -45, 0)]);
+				// Add offsets for these items
+				MakeItem(45f);
+				MakeItem(-45f);
+
+				void MakeItem(float angle)
+				{
+					// Do proper instantiation here
+					var newItem = Object.Instantiate(usedItemObject.item);
+					// Set a new rotation offset for this item
+					setMethod.Invoke(newItem, [Quaternion.Euler(0f, angle, 0f)]);
+					// Use item
+					newItem.Use(pm);
+				}
+			}
+			finally
+			{
+				_executingPatch = false; // Safely sets this to false again
+			}
+
 		}
+
+		[System.ThreadStatic] // Makes this field not share the same value between threads, differentiating uniquely to each other. https://learn.microsoft.com/en-us/dotnet/api/system.threadstaticattribute?view=net-9.0
+		static bool _executingPatch = false;
 	}
 
 	[HarmonyPatch]
@@ -86,8 +116,12 @@ namespace LotsOfItems.CustomItems.Eatables
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(ITM_BSODA), nameof(ITM_BSODA.Use))]
-		static void BSODAPostfix(bool __result, PlayerManager pm)
+		[HarmonyPatch(typeof(ITM_GenericBSODA), nameof(ITM_GenericBSODA.Use))]
+		static void BSODAPostfix(object __instance, bool __result, PlayerManager pm)
 		{
+			if (__instance is IBsodaShooter) // Failsafe, if the bsoda shooter is implemented directly into the item
+				return;
+
 			int idx = pm.itm.FindKernel();
 			if (!canInstantiateSodas || !__result || idx == -1)
 			{
@@ -101,8 +135,8 @@ namespace LotsOfItems.CustomItems.Eatables
 			Quaternion baseRot = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation;
 
 			// Create angled variants
-			CreateAngledProjectile(pm, (ITM_BSODA)pm.itm.items[pm.itm.selectedItem].item, spawnPos, baseRot * Quaternion.Euler(0, 45, 0));
-			CreateAngledProjectile(pm, (ITM_BSODA)pm.itm.items[pm.itm.selectedItem].item, spawnPos, baseRot * Quaternion.Euler(0, -45, 0));
+			CreateAngledProjectile(pm, (ITM_BSODA)lastUsedItem.item, spawnPos, baseRot * Quaternion.Euler(0, 45, 0));
+			CreateAngledProjectile(pm, (ITM_BSODA)lastUsedItem.item, spawnPos, baseRot * Quaternion.Euler(0, -45, 0));
 		}
 
 		internal static int FindKernel(this ItemManager itm)
@@ -128,12 +162,17 @@ namespace LotsOfItems.CustomItems.Eatables
 
 		[HarmonyPrefix]
 		[HarmonyPatch(typeof(ItemManager), nameof(ItemManager.UseItem))]
-		static void AllowSodaInstantiation() =>
+		static void AllowSodaInstantiation(ItemManager __instance)
+		{
+			lastUsedItem = __instance.items[__instance.selectedItem];
 			canInstantiateSodas = true;
+		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(ItemManager), nameof(ItemManager.UseItem))]
 		static void DisllowSodaInstantiation() =>
 			canInstantiateSodas = false;
+
+		public static ItemObject lastUsedItem;
 	}
 }
