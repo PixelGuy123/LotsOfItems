@@ -31,10 +31,12 @@ public class ITM_CeleSoda : ITM_GenericBSODA
         spriteRenderer.sprite = this.GetSprite("CeleSoda_soda.png", spriteRenderer.sprite.pixelsPerUnit);
         this.DestroyParticleIfItHasOne();
 
-        balloons = GenericExtensions.FindResourceObject<PartyEvent>().balloon;
+        var balloonRef = GenericExtensions.FindResourceObject<PartyEvent>().balloon;
+
+        balloons = new Balloon[balloonRef.Length];
         for (int i = 0; i < balloons.Length; i++)
         {
-            var bal = balloons[i];
+            var bal = balloonRef[i];
             bal = bal.SafeDuplicatePrefab(true);
             bal.name += "_Celebrative";
             bal.gameObject.AddComponent<CeleSoda_PushingBalloons>(); // Add pushing balloon feature

@@ -26,7 +26,7 @@ namespace LotsOfItems.CustomItems.Eatables
 		static bool PrepareGettingMethods()
 		{
 			var interfaceType = typeof(IBsodaShooter);
-			var implementingTypes = AccessTools.AllTypes().Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
+			var implementingTypes = AccessTools.GetTypesFromAssembly(interfaceType.Assembly).Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
 
 			if (!implementingTypes.Any())
 			{

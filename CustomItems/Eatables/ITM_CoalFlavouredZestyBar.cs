@@ -20,10 +20,15 @@ public class ITM_CoalFlavouredZestyBar : ITM_GenericZestyEatable
 
     protected override bool CanBeDestroyed() => false;
 
+    protected override void VirtualSetupPrefab(ItemObject itemObject)
+    {
+        base.VirtualSetupPrefab(itemObject);
+        audCough = this.GetSound("CoalFlavouredZestyBar_Cough.wav", "LtsOItems_Vfx_Cough", SoundType.Voice, Color.white);
+    }
+
     public override bool Use(PlayerManager pm)
     {
         this.pm = pm;
-        audCough = this.GetSound("CoalFlavouredZestyBar_Cough.wav", "LtsOItems_Vfx_Cough", SoundType.Voice, Color.white);
         slowMod = new(Vector3.zero, slowMultiplier);
         StartCoroutine(CoughingFit());
         return true;

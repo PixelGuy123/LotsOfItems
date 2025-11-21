@@ -95,7 +95,7 @@ public class ITM_SadSoda : ITM_GenericBSODA
 		targetNpc = null;
 		for (int i = 0; i < ec.Npcs.Count; i++)
 		{
-			if (!ec.Npcs[i].Navigator.isActiveAndEnabled || !ec.Npcs[i].Navigator.Entity.InBounds || touchedNPCs.Contains(ec.Npcs[i]))
+			if (ec.CellFromPosition(ec.Npcs[i].transform.position).Null || !ec.Npcs[i].Navigator.isActiveAndEnabled || !ec.Npcs[i].Navigator.Entity.InBounds || touchedNPCs.Contains(ec.Npcs[i]))
 				continue;
 
 			float value = map.Value(IntVector2.GetGridPosition(ec.Npcs[i].transform.position));

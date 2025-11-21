@@ -3009,6 +3009,8 @@ namespace LotsOfItems.Plugin
 		{
 			if (replacingItem == Items.Points)
 				weight += 125; // Lazy approach, but should help balancing out ytp weights
+			else
+				weight += 75;
 
 			itm.item.name = "ITM_" + Singleton<LocalizationManager>.Instance.GetLocalizedText(itm.nameKey);
 			if (goToFieldTrips) // This assumes it should be as rare as finding in a crazy vending machine

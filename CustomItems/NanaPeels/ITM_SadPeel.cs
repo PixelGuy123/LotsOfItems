@@ -40,7 +40,7 @@ public class ITM_SadPeel : ITM_GenericNanaPeel
         float dist = float.MaxValue;
         foreach (var npc in ec.Npcs)
         {
-            if (!npc.Navigator.isActiveAndEnabled || !npc.Navigator.Entity.TotallyActive || !npc.Navigator.Entity.Grounded) continue;
+            if (ec.CellFromPosition(npc.transform.position).Null || !npc.Navigator.isActiveAndEnabled || !npc.Navigator.Entity.TotallyActive || !npc.Navigator.Entity.Grounded) continue;
             float d = Vector3.Distance(transform.position, npc.transform.position);
             if (d < dist)
             {
