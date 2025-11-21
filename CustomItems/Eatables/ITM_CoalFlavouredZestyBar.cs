@@ -13,18 +13,11 @@ public class ITM_CoalFlavouredZestyBar : ITM_GenericZestyEatable
     public float slowMultiplier = 0.5f;
     public float fovChange = -25f;
     public int noiseValue = 25;
-    [SerializeField]
-    internal SoundObject audCough;
+
     MovementModifier slowMod;
     readonly ValueModifier fovMod = new();
 
     protected override bool CanBeDestroyed() => false;
-
-    protected override void VirtualSetupPrefab(ItemObject itemObject)
-    {
-        base.VirtualSetupPrefab(itemObject);
-        audCough = this.GetSound("CoalFlavouredZestyBar_Cough.wav", "LtsOItems_Vfx_Cough", SoundType.Voice, Color.white);
-    }
 
     public override bool Use(PlayerManager pm)
     {
@@ -36,8 +29,6 @@ public class ITM_CoalFlavouredZestyBar : ITM_GenericZestyEatable
 
     private IEnumerator CoughingFit()
     {
-        Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audCough);
-
         pm.Am.moveMods.Add(slowMod);
         var customCam = pm.GetCustomCam();
         customCam.SlideFOVAnimation(fovMod, fovChange, 1.25f);
